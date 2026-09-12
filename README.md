@@ -21,7 +21,7 @@ npm test
 
 GitHub Actions builds `main` and publishes `dist` to GitHub Pages. This is a user site, so assets use root-relative URLs.
 
-Browser checks use full Chromium's current headless mode (`channel: 'chromium'`) for higher-fidelity native touch input, including a scrolling baseline before Ink is enabled. CI retains failed browser traces for seven days.
+The mobile gesture check explicitly enables touch emulation on its own DevTools session and checks native scrolling before Ink is enabled. CI retains failed browser traces for seven days.
 
 ## Content and interactions
 

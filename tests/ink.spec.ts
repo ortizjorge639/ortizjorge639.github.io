@@ -197,6 +197,9 @@ test('drawing creates real audio nodes after a gesture and explicit mute survive
 test('touch drag paints without scrolling, and Ink off restores touch scrolling', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'Requires a real touch-enabled browser context.');
   const session = await context.newCDPSession(page);
+  // A second DevTools session can reset the device fixture's touch emulation.
+  await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
+  expect(await page.evaluate(() => navigator.maxTouchPoints)).toBe(1);
   const swipe = (x: number, y: number, distance: number) => session.send('Input.synthesizeScrollGesture', {
     x, y, yDistance: -distance, speed: 500, gestureSourceType: 'touch',
   });
