@@ -21,7 +21,7 @@ npm test
 
 GitHub Actions builds `main` and publishes `dist` to GitHub Pages. This is a user site, so assets use root-relative URLs.
 
-The mobile gesture check explicitly enables touch emulation on its own DevTools session and checks native scrolling before Ink is enabled. CI retains failed browser traces for seven days.
+CI runs the general browser suite on Ubuntu and a required native-touch gate on macOS. The latter uses the same real swipe, drawing, and pinch-zoom assertions as local testing: Linux Chromium's CDP touch synthesis failed even on an untouched page, so those checks are not substituted with programmatic scrolling or skipped at release. The gesture check explicitly enables touch emulation on its own DevTools session and checks scrolling before Ink is enabled. Deployment requires both jobs; failed browser traces are retained for seven days.
 
 ## Content and interactions
 
