@@ -21,6 +21,8 @@ npm test
 
 GitHub Actions builds `main` and publishes `dist` to GitHub Pages. This is a user site, so assets use root-relative URLs.
 
+Browser checks use full Chromium's current headless mode (`channel: 'chromium'`) for higher-fidelity native touch input, including a scrolling baseline before Ink is enabled. CI retains failed browser traces for seven days.
+
 ## Content and interactions
 
 - `src/projects.ts` is the curated project catalog, ordered by repository update date at review time (September 12, 2026). Update descriptions against the public source READMEs before publishing. No private repositories, private saved items, or confidential project details are included.

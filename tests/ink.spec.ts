@@ -196,12 +196,17 @@ test('drawing creates real audio nodes after a gesture and explicit mute survive
 
 test('touch drag paints without scrolling, and Ink off restores touch scrolling', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'Requires a real touch-enabled browser context.');
+  const session = await context.newCDPSession(page);
+  const swipe = (x: number, y: number, distance: number) => session.send('Input.synthesizeScrollGesture', {
+    x, y, yDistance: -distance, speed: 500, gestureSourceType: 'touch',
+  });
+  await swipe(150, 350, 170);
+  await expect.poll(() => page.evaluate(() => scrollY), { message: 'Native scrolling works before Ink is enabled' }).toBeGreaterThan(0);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
   await page.locator('#ink-toggle').tap();
   const point = await drawingPoint(page);
-  const session = await context.newCDPSession(page);
-  await session.send('Input.synthesizeScrollGesture', {
-    x: point.x, y: point.y + 80, yDistance: -60, speed: 500, gestureSourceType: 'touch',
-  });
+  await swipe(point.x, point.y + 80, 60);
   await expect(ink(page)).toHaveAttribute('data-action-count', '1');
   expect(await page.evaluate(() => scrollY)).toBe(0);
   expect(await pixels(page, point.x, point.y + 80)).toEqual([49, 87, 188, 255]);
@@ -211,63 +216,8 @@ test('touch drag paints without scrolling, and Ink off restores touch scrolling'
   expect(await page.locator('body').evaluate((body) => getComputedStyle(body).touchAction)).toBe('auto');
   await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   const before = await snapshot(page);
-  await page.evaluate(() => {
-    const events: object[] = [];
-    for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'touchstart', 'touchmove', 'touchend']) {
-      document.addEventListener(type, (event) => {
-        if (events.length < 30) events.push({
-          type, prevented: event.defaultPrevented, target: (event.target as HTMLElement).tagName,
-          x: event instanceof PointerEvent ? event.clientX : null,
-          y: event instanceof PointerEvent ? event.clientY : null,
-        });
-        document.documentElement.dataset.gestureEvents = JSON.stringify(events);
-      }, { capture: true, passive: true });
-    }
-  });
-  await session.send('Input.synthesizeScrollGesture', { x: 150, y: 350, yDistance: -170, speed: 500, gestureSourceType: 'touch' });
-  console.log('[DEBUG-ink-touch]', await page.evaluate(() => {
-    const chain = [];
-    for (let el = document.elementFromPoint(150, 350); el; el = el.parentElement) {
-      const css = getComputedStyle(el);
-      chain.push({ tag: el.tagName, class: el.className, touch: css.touchAction, overflow: css.overflowY, scrollHeight: el.scrollHeight, clientHeight: el.clientHeight, scrollTop: el.scrollTop });
-    }
-    return {
-      chain, scrollY, innerHeight, scale: visualViewport?.scale, userAgent: navigator.userAgent,
-      events: document.documentElement.dataset.gestureEvents,
-      title: document.querySelector('.title-screen')!.getBoundingClientRect().toJSON(),
-      ink: document.querySelector('#ink-toggle')!.getAttribute('aria-pressed'),
-    };
-  }));
-  const originalScroll = await page.evaluate(() => scrollY);
-  if (originalScroll === 0) {
-    const reset = async () => {
-      await page.reload();
-      await page.evaluate(() => document.fonts.ready);
-    };
-    const swipe = async (x: number) => {
-      await session.send('Input.synthesizeScrollGesture', { x, y: 350, yDistance: -170, speed: 500, gestureSourceType: 'touch' });
-      return page.evaluate(() => scrollY);
-    };
-    await reset();
-    const baselineSvg = await swipe(150);
-    await reset();
-    const baselineMargin = await swipe(5);
-    await reset();
-    const bounds = (await page.locator('#ink-toggle').boundingBox())!;
-    const tap = () => session.send('Input.synthesizeTapGesture', { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2, gestureSourceType: 'touch' });
-    await tap();
-    await expect(page.locator('#ink-toggle')).toHaveAttribute('aria-pressed', 'true');
-    const enabledBounds = (await page.locator('#ink-toggle').boundingBox())!;
-    await session.send('Input.synthesizeTapGesture', { x: enabledBounds.x + enabledBounds.width / 2, y: enabledBounds.y + enabledBounds.height / 2, gestureSourceType: 'touch' });
-    await expect(page.locator('#ink-toggle')).toHaveAttribute('aria-pressed', 'false');
-    const sameSession = await swipe(150);
-    await reset();
-    await page.locator('#ink-toggle').tap();
-    await page.locator('#ink-toggle').tap();
-    const cycledMargin = await swipe(5);
-    console.log('[DEBUG-ink-touch-controls]', { baselineSvg, baselineMargin, sameSession, cycledMargin });
-  }
-  expect(originalScroll).toBeGreaterThan(0);
+  await swipe(150, 350, 170);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
   expect(await snapshot(page)).toBe(before);
   await page.locator('#ink-toggle').tap();
   await session.send('Input.synthesizePinchGesture', { x: 150, y: 220, scaleFactor: 1.5, gestureSourceType: 'touch' });
