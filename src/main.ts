@@ -1,7 +1,8 @@
 import './style.css';
 import { projects, repoUrl, type Category, type Project } from './projects';
 import { icon, illustration } from './art';
-import { setupDrawing } from './drawing';
+import { setupPageInk } from './drawing';
+import { StudioAudio } from './audio';
 import { layout } from './layout';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = layout;
@@ -10,28 +11,11 @@ const projectGrid = document.querySelector<HTMLDivElement>('#project-grid')!;
 const dialog = document.querySelector<HTMLDialogElement>('#project-dialog')!;
 const help = document.querySelector<HTMLDialogElement>('#help-dialog')!;
 let frame = 1;
-let soundEnabled = false;
-let audio: AudioContext | undefined;
+const audio = new StudioAudio();
 let animationTimer: ReturnType<typeof setTimeout> | undefined;
 
 function playFlip() {
-  if (!soundEnabled) return;
-  audio ??= new AudioContext();
-  void audio.resume().catch((error: unknown) => {
-    console.warn('Page sound could not start', error);
-    soundEnabled = false;
-    updateSoundButton();
-  });
-  const oscillator = audio.createOscillator();
-  const gain = audio.createGain();
-  oscillator.type = 'triangle';
-  oscillator.frequency.setValueAtTime(420, audio.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(140, audio.currentTime + 0.07);
-  gain.gain.setValueAtTime(0.035, audio.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.08);
-  oscillator.connect(gain).connect(audio.destination);
-  oscillator.start();
-  oscillator.stop(audio.currentTime + 0.08);
+  audio.playUI();
 }
 
 function renderFeature(animate = false) {
@@ -118,27 +102,16 @@ for (const modal of [dialog, help]) {
   });
 }
 
-function updateSoundButton() {
+audio.subscribe(({ enabled }) => {
   const button = document.querySelector<HTMLButtonElement>('#sound-toggle')!;
-  button.setAttribute('aria-pressed', String(soundEnabled));
-  button.innerHTML = `${icon(soundEnabled ? 'sound' : 'mute')} Sound ${soundEnabled ? 'on' : 'off'}`;
-}
-document.querySelector('#sound-toggle')!.addEventListener('click', () => {
-  soundEnabled = !soundEnabled;
-  updateSoundButton();
-  playFlip();
+  button.setAttribute('aria-pressed', String(enabled));
+  button.innerHTML = `${icon(enabled ? 'sound' : 'mute')} Sound ${enabled ? 'on' : 'off'}`;
 });
+document.querySelector('#sound-toggle')!.addEventListener('click', () => audio.toggle());
 document.querySelector('footer a')!.addEventListener('click', (event) => {
   event.preventDefault();
   window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   document.querySelector<HTMLAnchorElement>('.brand')!.focus({ preventScroll: true });
-});
-const gridToggle = document.querySelector<HTMLButtonElement>('#grid-toggle')!;
-gridToggle.addEventListener('click', () => {
-  const showGrid = gridToggle.getAttribute('aria-pressed') !== 'true';
-  gridToggle.setAttribute('aria-pressed', String(showGrid));
-  gridToggle.textContent = `Grid ${showGrid ? 'on' : 'off'}`;
-  document.querySelector('.canvas-wrap')!.classList.toggle('grid-hidden', !showGrid);
 });
 
 function updateClock() {
@@ -157,4 +130,4 @@ updateClock();
 window.setInterval(updateClock, 30_000);
 renderFeature();
 renderProjects();
-setupDrawing();
+setupPageInk(audio);

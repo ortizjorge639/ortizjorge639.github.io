@@ -65,34 +65,6 @@ test('every card has a working details panel with evidence and source', async ({
   }
 });
 
-test('drawing supports pointer strokes, tools, undo, accessible stamps and PNG export', async ({ page }) => {
-  await page.goto('/');
-  const canvas = page.locator('#drawing');
-  await canvas.scrollIntoViewIfNeeded();
-  const before = await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL());
-  const bounds = (await canvas.boundingBox())!;
-  await page.mouse.move(bounds.x + 40, bounds.y + 45);
-  await page.mouse.down();
-  await page.mouse.move(bounds.x + 130, bounds.y + 90, { steps: 8 });
-  await page.mouse.up();
-  await expect(page.locator('#drawing-status')).toContainText('1 mark');
-  const after = await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL());
-  expect(after).not.toEqual(before);
-  await page.getByRole('button', { name: 'Undo last stroke' }).click();
-  expect(await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL())).toEqual(before);
-  await page.getByRole('button', { name: 'Paintbrush', exact: true }).click();
-  await page.getByRole('button', { name: 'Red ink' }).click();
-  await expect(page.locator('#drawing-status')).toContainText('Red brush');
-  await page.getByRole('button', { name: 'Add a star stamp' }).focus();
-  await page.keyboard.press('Enter');
-  await expect(page.locator('#drawing-status')).toContainText('1 mark');
-  await page.getByRole('button', { name: 'Eraser', exact: true }).click();
-  await expect(canvas).toHaveAttribute('data-tool', 'eraser');
-  const download = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Download drawing as PNG' }).click();
-  expect((await download).suggestedFilename()).toBe('a-little-scribble.png');
-});
-
 test('reduced motion and muted-by-default controls remain usable', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
@@ -147,8 +119,9 @@ test('touch menu destinations and help work with keyboard focus', async ({ page 
   await page.goto('/');
   await page.locator('.launcher[href="#projects"]').click();
   await expect(page).toHaveURL(/#projects$/);
-  await page.locator('.launcher[href="#playground"]').click();
-  await expect(page).toHaveURL(/#playground$/);
+  await page.locator('.launcher[href="#about"]').click();
+  await expect(page).toHaveURL(/#about$/);
+  await expect(page.locator('#playground')).toHaveCount(0);
   await page.getByRole('button', { name: 'Help', exact: false }).click();
   const help = page.getByRole('dialog', { name: 'Studio help' });
   await expect(help).toBeVisible();
@@ -159,20 +132,4 @@ test('touch menu destinations and help work with keyboard focus', async ({ page 
   await page.keyboard.press('Enter');
   await page.getByRole('button', { name: 'Got it' }).click();
   await expect(help).not.toBeVisible();
-});
-
-test('editor grid can be hidden without losing marks or distorting the canvas', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Add a star stamp' }).click();
-  const canvas = page.locator('#drawing');
-  const drawing = await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL());
-  const bounds = (await canvas.boundingBox())!;
-  expect(bounds.width / bounds.height).toBeCloseTo(1000 / 625, 2);
-  await page.getByRole('button', { name: 'Grid on' }).click();
-  await expect(page.getByRole('button', { name: 'Grid off' })).toHaveAttribute('aria-pressed', 'false');
-  expect(await page.locator('.canvas-wrap').evaluate((el) => getComputedStyle(el).backgroundImage)).toBe('none');
-  expect(await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL())).toBe(drawing);
-  await page.getByRole('button', { name: 'Grid off' }).click();
-  await expect(page.getByRole('button', { name: 'Grid on' })).toHaveAttribute('aria-pressed', 'true');
-  expect(await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL())).toBe(drawing);
 });

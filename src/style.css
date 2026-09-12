@@ -93,10 +93,10 @@ main, footer { max-width: 1120px; margin: auto; }
 .feature-caption .eyebrow { color: var(--blue); font-size: 9px; }
 .feature-caption h2 { margin: 0 0 3px; font: 32px/1.1 var(--ui); }
 .feature-caption p { margin: 0; font: 10px/1.7 var(--mono); color: var(--muted); }
-.square-button, .details-button, .filters button, .drawing-toolbar button, .dialog-top button, #grid-toggle, #stamp { border: 1px solid var(--blue); background: var(--paper); box-shadow: var(--bevel), 1px 2px 0 color-mix(in srgb, var(--blue) 20%, var(--paper)); color: var(--blue); border-radius: 0; }
+.square-button, .details-button, .filters button, .dialog-top button { border: 1px solid var(--blue); background: var(--paper); box-shadow: var(--bevel), 1px 2px 0 color-mix(in srgb, var(--blue) 20%, var(--paper)); color: var(--blue); border-radius: 0; }
 .square-button { width: 40px; height: 36px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .details-button { display: flex; align-items: center; gap: 10px; padding: 7px 11px; min-height: 38px; font: 20px var(--ui); flex-shrink: 0; }
-.square-button:hover, .details-button:hover, #stamp:hover, #grid-toggle:hover { background: color-mix(in srgb, var(--blue) 10%, var(--paper)); }
+.square-button:hover, .details-button:hover { background: color-mix(in srgb, var(--blue) 10%, var(--paper)); }
 .book-controls { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; }
 .page-dots { display: flex; gap: 5px; }
 .page-dots button { width: 32px; height: 32px; background: var(--paper); border: 1px solid color-mix(in srgb, var(--blue) 45%, var(--paper)); color: var(--blue); padding: 0; font: 18px var(--ui); }
@@ -145,39 +145,6 @@ main, footer { max-width: 1120px; margin: auto; }
 .panel-bottom a { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; }
 .panel-bottom a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .panel-bottom > span:last-child { font-size: 15px; }
-.editor-layout { display: grid; grid-template-columns: 235px 1fr; padding: 22px; gap: 24px; background-image: var(--grid-paper); background-size: 8px 8px; }
-.editor-guide { padding: 20px 14px; align-self: start; background: var(--paper); border: 1px solid var(--blue); }
-.guide-icon { background: var(--red); width: 56px; height: 56px; color: var(--paper); padding: 11px; box-shadow: var(--bevel); border: 2px solid var(--red); margin-bottom: 16px; }
-.guide-icon .icon { width: 30px; height: 30px; }
-.editor-guide h3 { font: 29px/1 var(--ui); color: var(--blue); margin: 0 0 12px; }
-.editor-guide > p { font: 11px/1.8 var(--mono); color: var(--muted); }
-.editor-guide dl { margin: 22px 0; font: 18px var(--ui); }
-.editor-guide dl > div { display: flex; gap: 8px; margin: 11px 0; }
-.editor-guide dt { color: var(--red); }
-.editor-guide dd { margin: 0; }
-.editor-guide .privacy-note { font-size: 9px; border-top: 1px solid var(--line); padding-top: 14px; margin: 0; }
-.drawing-desk { border: 2px solid var(--blue); background: var(--paper); min-width: 0; align-self: start; }
-.editor-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: color-mix(in srgb, var(--blue) 6%, var(--paper)); padding: 5px 10px; color: var(--blue); font: 16px var(--ui); border-bottom: 1px solid var(--blue); }
-.editor-status > span { display: flex; align-items: center; gap: 7px; }
-.editor-status .icon { width: 16px; height: 16px; }
-#grid-toggle { font: 17px var(--ui); padding: 3px 8px; min-height: 32px; }
-.canvas-wrap { position: relative; aspect-ratio: 1000/625; background-image: var(--grid-paper); background-size: 12px 12px; }
-.canvas-wrap.grid-hidden { background-image: none; }
-#drawing { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
-#drawing[data-tool=eraser] { cursor: cell; }
-.canvas-hint { position: absolute; top: 43%; left: 0; width: 100%; text-align: center; pointer-events: none; font-size: 22px; color: var(--muted); transform: rotate(-3deg); padding: 0 15px; }
-.canvas-hint[hidden] { display: none; }
-.drawing-toolbar { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-top: 2px solid var(--blue); background: color-mix(in srgb, var(--blue) 7%, var(--paper)); }
-.drawing-toolbar > div { display: flex; align-items: center; gap: 6px; }
-.drawing-toolbar button { width: 40px; height: 38px; display: inline-flex; align-items: center; justify-content: center; }
-.drawing-toolbar button[aria-pressed=true] { color: var(--paper); background: var(--blue); }
-.tool-divider { height: 27px; width: 1px; background: color-mix(in srgb, var(--blue) 45%, var(--paper)); }
-.drawing-toolbar .ink-colors button { width: 32px; height: 32px; }
-.ink-colors button::after { content: ''; width: 18px; height: 18px; background: var(--swatch); border: 1px solid var(--paper); }
-.ink-colors button[aria-pressed=true] { outline: 1px solid var(--blue); outline-offset: 2px; }
-.drawing-actions { margin-left: auto; }
-.drawing-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--blue); color: var(--muted); font: 14px var(--ui); }
-#stamp { font: 17px var(--ui); padding: 4px 8px; min-height: 34px; }
 .about-content { display: grid; grid-template-columns: 150px 1fr; gap: 32px; padding: 28px 32px; }
 .avatar-doodle { color: var(--blue); text-align: center; border: 1px solid var(--blue); align-self: start; padding: 5px 10px 12px; background-image: var(--grid-paper); background-size: 8px 8px; }
 .avatar-doodle svg { width: 120px; height: 120px; }
@@ -241,12 +208,6 @@ dialog::backdrop { background: #292b3080; }
   .card-body h3 { font-size: 26px; }
   .card-meta { font-size: 8px; }
   .card-art { height: 170px; }
-  .editor-layout { grid-template-columns: 190px 1fr; gap: 18px; padding: 18px; }
-  .drawing-toolbar { gap: 8px; padding: 8px; }
-  .drawing-toolbar > div { gap: 4px; }
-  .drawing-toolbar button { width: 34px; height: 36px; }
-  .drawing-toolbar .ink-colors button { width: 26px; height: 29px; }
-  .drawing-bottom { align-items: flex-start; flex-direction: column; gap: 6px; }
 }
 @media (max-width: 740px) {
   .site-header, main, footer { margin-left: 22px; margin-right: 22px; }
@@ -288,21 +249,6 @@ dialog::backdrop { background: #292b3080; }
   .card-body > p { min-height: 55px; }
   .panel-bottom { font-size: 16px; padding: 5px 12px; }
   .panel-bottom > span:last-child { font-size: 13px; }
-  .editor-layout { grid-template-columns: 1fr; gap: 17px; padding: 17px; }
-  .editor-guide { padding: 16px; display: grid; grid-template-columns: 48px 1fr; column-gap: 14px; }
-  .guide-icon { width: 45px; height: 45px; padding: 8px; margin: 0; grid-row: span 2; }
-  .guide-icon .icon { width: 26px; height: 26px; }
-  .editor-guide h3 { margin-bottom: 5px; font-size: 27px; }
-  .editor-guide > p { margin: 0; font-size: 10px; }
-  .editor-guide dl { display: none; }
-  .editor-guide .privacy-note { grid-column: 1/-1; margin-top: 13px; padding-top: 9px; font-size: 9px; }
-  .privacy-note br { display: none; }
-  .drawing-toolbar { padding: 9px; gap: 9px; }
-  .drawing-toolbar button { width: 38px; height: 38px; }
-  .drawing-toolbar .ink-colors button { width: 29px; height: 29px; }
-  .drawing-bottom { flex-direction: row; align-items: center; gap: 8px; font-size: 13px; }
-  #stamp { font-size: 16px; padding: 4px 6px; }
-  .canvas-hint { font-size: 20px; }
   .about-content { grid-template-columns: 108px 1fr; gap: 20px; padding: 22px; }
   .avatar-doodle { padding: 5px 5px 10px; }
   .avatar-doodle svg { width: 95px; height: 95px; }
@@ -321,7 +267,7 @@ dialog::backdrop { background: #292b3080; }
   .brand small { font-size: 6px; }
   nav { font-size: 18px; }
   nav a { padding: 5px 8px; }
-  nav a[href="#playground"], nav a span { display: none; }
+  nav a span { display: none; }
   .title-screen { min-height: 305px; }
   .screen-kicker { font-size: 14px; margin-bottom: 19px; }
   .studio-logo span { font-size: 88px; }
@@ -366,16 +312,6 @@ dialog::backdrop { background: #292b3080; }
   .card-meta { font-size: 9px; }
   .panel-bottom { font-size: 14px; gap: 8px; }
   .panel-bottom > span:last-child { font-size: 11px; }
-  .editor-layout { padding: 12px; gap: 14px; }
-  .editor-status { padding: 5px 7px; font-size: 14px; }
-  .drawing-toolbar { gap: 7px; padding: 7px; }
-  .drawing-toolbar > div { gap: 3px; }
-  .drawing-toolbar button { width: 30px; height: 34px; }
-  .drawing-toolbar .ink-colors button { width: 24px; height: 27px; }
-  .ink-colors button::after { width: 14px; height: 14px; }
-  .drawing-toolbar .icon { width: 20px; height: 20px; }
-  .drawing-bottom { flex-wrap: wrap; font-size: 14px; gap: 6px; }
-  .canvas-hint { font-size: 17px; }
   .about-content { grid-template-columns: 1fr; gap: 17px; padding: 20px; }
   .avatar-doodle { max-width: 115px; }
   .avatar-doodle svg { margin: auto; }
@@ -395,10 +331,6 @@ dialog::backdrop { background: #292b3080; }
   .launchers { gap: 16px; }
   .page-dots { gap: 2px; }
   .page-dots button { width: 22px; }
-  .drawing-toolbar { gap: 5px; padding: 6px; }
-  .drawing-toolbar > div { gap: 2px; }
-  .drawing-toolbar button { width: 26px; }
-  .drawing-toolbar .ink-colors button { width: 21px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
