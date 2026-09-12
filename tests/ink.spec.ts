@@ -211,7 +211,33 @@ test('touch drag paints without scrolling, and Ink off restores touch scrolling'
   expect(await page.locator('body').evaluate((body) => getComputedStyle(body).touchAction)).toBe('auto');
   await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   const before = await snapshot(page);
+  await page.evaluate(() => {
+    const events: object[] = [];
+    for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'touchstart', 'touchmove', 'touchend']) {
+      document.addEventListener(type, (event) => {
+        if (events.length < 30) events.push({
+          type, prevented: event.defaultPrevented, target: (event.target as HTMLElement).tagName,
+          x: event instanceof PointerEvent ? event.clientX : null,
+          y: event instanceof PointerEvent ? event.clientY : null,
+        });
+        document.documentElement.dataset.gestureEvents = JSON.stringify(events);
+      }, { capture: true, passive: true });
+    }
+  });
   await session.send('Input.synthesizeScrollGesture', { x: 150, y: 350, yDistance: -170, speed: 500, gestureSourceType: 'touch' });
+  console.log('[DEBUG-ink-touch]', await page.evaluate(() => {
+    const chain = [];
+    for (let el = document.elementFromPoint(150, 350); el; el = el.parentElement) {
+      const css = getComputedStyle(el);
+      chain.push({ tag: el.tagName, class: el.className, touch: css.touchAction, overflow: css.overflowY, scrollHeight: el.scrollHeight, clientHeight: el.clientHeight, scrollTop: el.scrollTop });
+    }
+    return {
+      chain, scrollY, innerHeight, scale: visualViewport?.scale, userAgent: navigator.userAgent,
+      events: document.documentElement.dataset.gestureEvents,
+      title: document.querySelector('.title-screen')!.getBoundingClientRect().toJSON(),
+      ink: document.querySelector('#ink-toggle')!.getAttribute('aria-pressed'),
+    };
+  }));
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
   expect(await snapshot(page)).toBe(before);
   await page.locator('#ink-toggle').tap();
