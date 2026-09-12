@@ -199,21 +199,19 @@ test('touch drag paints without scrolling, and Ink off restores touch scrolling'
   await page.locator('#ink-toggle').tap();
   const point = await drawingPoint(page);
   const session = await context.newCDPSession(page);
-  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x: number, y: number) =>
-    session.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y, id: 1 }] });
-  await touch('touchStart', point.x, point.y);
-  await touch('touchMove', point.x + 70, point.y + 60);
-  await touch('touchEnd', 0, 0);
+  await session.send('Input.synthesizeScrollGesture', {
+    x: point.x, y: point.y + 80, yDistance: -60, speed: 500, gestureSourceType: 'touch',
+  });
   await expect(ink(page)).toHaveAttribute('data-action-count', '1');
   expect(await page.evaluate(() => scrollY)).toBe(0);
-  expect(await pixels(page, point.x, point.y)).toEqual([49, 87, 188, 255]);
+  expect(await pixels(page, point.x, point.y + 80)).toEqual([49, 87, 188, 255]);
   expect(await page.locator('body').evaluate((body) => getComputedStyle(body).touchAction)).toBe('pinch-zoom');
   await page.locator('#ink-toggle').tap();
+  await expect(page.locator('#ink-toggle')).toHaveAttribute('aria-pressed', 'false');
+  expect(await page.locator('body').evaluate((body) => getComputedStyle(body).touchAction)).toBe('auto');
+  await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   const before = await snapshot(page);
-  await touch('touchStart', 150, 350);
-  await touch('touchMove', 150, 280);
-  await touch('touchMove', 150, 180);
-  await touch('touchEnd', 0, 0);
+  await session.send('Input.synthesizeScrollGesture', { x: 150, y: 350, yDistance: -170, speed: 500, gestureSourceType: 'touch' });
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
   expect(await snapshot(page)).toBe(before);
   await page.locator('#ink-toggle').tap();
