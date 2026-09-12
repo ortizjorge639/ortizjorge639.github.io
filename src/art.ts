@@ -1,6 +1,11 @@
 import type { Project } from './projects';
 
 export const icons = {
+  home: '<path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10"/>',
+  book: '<path d="M12 5C8 2 4 3 2 4v15c3-2 7-1 10 1 3-2 7-3 10-1V4c-2-1-6-2-10 1Zm0 0v15"/>',
+  folder: '<path d="M2 6h8l2 3h10v12H2zM2 6V3h8l2 3h8v3"/>',
+  page: '<path d="M5 2h10l5 5v15H5zM15 2v6h5M8 12h9M8 16h7"/>',
+  person: '<path d="M8 3h8v9H8zM8 12v3H4v7h16v-7h-4v-3M8 6h8"/>',
   arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
   external: '<path d="M14 4h6v6m0-6L10 14M10 4H4v16h16v-6"/>',
   pen: '<path d="m5 15 10-10 4 4L9 19l-5 1zM13 7l4 4"/>',
@@ -12,7 +17,7 @@ export const icons = {
   download: '<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',
 };
 export const icon = (name: keyof typeof icons, className = '') =>
-  `<svg class="icon ${className}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${icons[name]}</svg>`;
+  `<svg class="icon ${className}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter">${icons[name]}</svg>`;
 
 export function illustration(kind: Project['illustration']): string {
   const art: Record<Project['illustration'], string> = {

@@ -6,7 +6,7 @@ test('loads real portfolio content without browser errors or overflow', async ({
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => { if (message.type() === 'error' && !message.text().includes('fonts.googleapis')) errors.push(message.text()); });
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('A few ideas.A lot of play.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText("Joji's Sketchbook");
   await expect(page.locator('.project-card')).toHaveCount(7);
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('.feature-visual img')).toBeVisible();
@@ -121,4 +121,58 @@ test('narrow phones and tablets do not overflow horizontally', async ({ page }) 
     await expect(page.locator('.project-card')).toHaveCount(7);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `overflow at ${width}px`).toBeTruthy();
   }
+});
+
+test('original palette is retained and handheld screens adapt to the viewport', async ({ page }, testInfo) => {
+  await page.goto('/');
+  await expect(page.locator('.studio-console')).toBeVisible();
+  const palette = await page.evaluate(() => {
+    const root = getComputedStyle(document.documentElement);
+    return ['--blue', '--red', '--paper'].map((name) => root.getPropertyValue(name).trim()).concat(root.backgroundColor);
+  });
+  expect(palette).toEqual(['#3157bc', '#c53f2e', '#fffdf6', 'rgb(246, 243, 233)']);
+  const title = (await page.locator('.title-screen').boundingBox())!;
+  const menu = (await page.locator('.touch-screen').boundingBox())!;
+  if (testInfo.project.name === 'mobile') {
+    expect(menu.y).toBeGreaterThan(title.y + title.height);
+  } else {
+    expect(menu.x).toBeGreaterThan(title.x + title.width);
+    expect(menu.y).toBe(title.y);
+  }
+  await expect(page.locator('#studio-date')).toHaveText(/^\d{2}\/\d{2}\/\d{4}$/);
+  await expect(page.locator('#studio-clock')).toHaveText(/^\d{2}:\d{2}$/);
+});
+
+test('touch menu destinations and help work with keyboard focus', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('.launcher[href="#projects"]').click();
+  await expect(page).toHaveURL(/#projects$/);
+  await page.locator('.launcher[href="#playground"]').click();
+  await expect(page).toHaveURL(/#playground$/);
+  await page.getByRole('button', { name: 'Help', exact: false }).click();
+  const help = page.getByRole('dialog', { name: 'Studio help' });
+  await expect(help).toBeVisible();
+  expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([]);
+  await page.keyboard.press('Escape');
+  await expect(help).not.toBeVisible();
+  await expect(page.locator('#open-help')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await page.getByRole('button', { name: 'Got it' }).click();
+  await expect(help).not.toBeVisible();
+});
+
+test('editor grid can be hidden without losing marks or distorting the canvas', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Add a star stamp' }).click();
+  const canvas = page.locator('#drawing');
+  const drawing = await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL());
+  const bounds = (await canvas.boundingBox())!;
+  expect(bounds.width / bounds.height).toBeCloseTo(1000 / 625, 2);
+  await page.getByRole('button', { name: 'Grid on' }).click();
+  await expect(page.getByRole('button', { name: 'Grid off' })).toHaveAttribute('aria-pressed', 'false');
+  expect(await page.locator('.canvas-wrap').evaluate((el) => getComputedStyle(el).backgroundImage)).toBe('none');
+  expect(await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL())).toBe(drawing);
+  await page.getByRole('button', { name: 'Grid off' }).click();
+  await expect(page.getByRole('button', { name: 'Grid on' })).toHaveAttribute('aria-pressed', 'true');
+  expect(await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL())).toBe(drawing);
 });
