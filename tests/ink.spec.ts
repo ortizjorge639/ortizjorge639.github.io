@@ -238,7 +238,36 @@ test('touch drag paints without scrolling, and Ink off restores touch scrolling'
       ink: document.querySelector('#ink-toggle')!.getAttribute('aria-pressed'),
     };
   }));
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
+  const originalScroll = await page.evaluate(() => scrollY);
+  if (originalScroll === 0) {
+    const reset = async () => {
+      await page.reload();
+      await page.evaluate(() => document.fonts.ready);
+    };
+    const swipe = async (x: number) => {
+      await session.send('Input.synthesizeScrollGesture', { x, y: 350, yDistance: -170, speed: 500, gestureSourceType: 'touch' });
+      return page.evaluate(() => scrollY);
+    };
+    await reset();
+    const baselineSvg = await swipe(150);
+    await reset();
+    const baselineMargin = await swipe(5);
+    await reset();
+    const bounds = (await page.locator('#ink-toggle').boundingBox())!;
+    const tap = () => session.send('Input.synthesizeTapGesture', { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2, gestureSourceType: 'touch' });
+    await tap();
+    await expect(page.locator('#ink-toggle')).toHaveAttribute('aria-pressed', 'true');
+    const enabledBounds = (await page.locator('#ink-toggle').boundingBox())!;
+    await session.send('Input.synthesizeTapGesture', { x: enabledBounds.x + enabledBounds.width / 2, y: enabledBounds.y + enabledBounds.height / 2, gestureSourceType: 'touch' });
+    await expect(page.locator('#ink-toggle')).toHaveAttribute('aria-pressed', 'false');
+    const sameSession = await swipe(150);
+    await reset();
+    await page.locator('#ink-toggle').tap();
+    await page.locator('#ink-toggle').tap();
+    const cycledMargin = await swipe(5);
+    console.log('[DEBUG-ink-touch-controls]', { baselineSvg, baselineMargin, sameSession, cycledMargin });
+  }
+  expect(originalScroll).toBeGreaterThan(0);
   expect(await snapshot(page)).toBe(before);
   await page.locator('#ink-toggle').tap();
   await session.send('Input.synthesizePinchGesture', { x: 150, y: 220, scaleFactor: 1.5, gestureSourceType: 'touch' });
