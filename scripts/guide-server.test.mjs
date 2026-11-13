@@ -114,17 +114,20 @@ test('mentioning the entire catalog cannot consume the detail reservation', () =
   const question = `Compare ${projects.map(project => project.title).join(', ')}`;
   assert.ok(question.length <= 4000);
   const selected = retrieveSources(sources, { ...input, question });
-  const summaries = selected.filter(chunk => chunk.id.endsWith(':summary'));
+  const summaries = selected.filter(chunk => chunk.id.endsWith(':portfolio'));
   assert.equal(summaries.length, projects.length);
-  assert.ok(summaries.reduce((total, chunk) => total + chunk.text.length, 0) <= 18_000);
+  const summaryIds = new Set(sources.summaries.map(chunk => chunk.id));
+  assert.ok(selected.filter(chunk => summaryIds.has(chunk.id)).reduce((total, chunk) => total + chunk.text.length, 0) <= 18_000);
   assert.ok(selected.reduce((total, chunk) => total + chunk.text.length, 0) <= 25_000);
-  assert.ok(selected.some(chunk => !chunk.id.endsWith(':summary')));
+  assert.ok(selected.some(chunk => !summaryIds.has(chunk.id)));
+  assert.equal(selected.find(chunk => chunk.id === 'portfolio:about').text,
+    sources.summaries.find(chunk => chunk.id === 'portfolio:about').text);
 });
 
 test('oversized mandatory summaries fail closed rather than exceed the evidence budget', () => {
-  const oversized = { ...sources, summaries: sources.summaries.map(chunk => ({
+  const oversized = { ...sources, summaries: sources.summaries.map(chunk => chunk.projectId ? ({
     ...chunk, text: JSON.stringify({ ...JSON.parse(chunk.text), note: 'x'.repeat(18_001) }),
-  })) };
+  }) : chunk) };
   assert.throws(() => retrieveSources(oversized, input), error => error.code === 'source_error');
 });
 

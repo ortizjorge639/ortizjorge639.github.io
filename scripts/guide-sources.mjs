@@ -129,6 +129,7 @@ export function retrieveSources(sources, input) {
   // Keep every project discoverable without allowing catalog growth to crowd
   // detailed evidence out of the fixed prompt budget. Preserve caveats and role.
   const selected = sources.summaries.map(chunk => {
+    if (!chunk.projectId) return chunk; // Biography is plain text, not catalog JSON.
     const { title, subtitle, status, note, contribution } = JSON.parse(chunk.text);
     return { ...chunk, text: JSON.stringify({ title, subtitle, status, note, contribution }) };
   });
