@@ -19,8 +19,11 @@ function projectExists(id: unknown): id is string {
 function validSource(url: string, id: string | null) {
   try {
     const parsed = new URL(url);
+    const project = projects.find(p => p.id === id);
+    const repoPath = project?.repo ? new URL(project.repo).pathname : `/ortizjorge639/${id}`;
+    const approvedPage = !!project?.sources?.some(s => s.url === url && ['https://v0-just-play-app.vercel.app/about','https://firstmind.app','https://getflowlog.lovable.app'].includes(s.url));
     return parsed.protocol === 'https:' && !parsed.username && !parsed.password
-      && ((id !== null && parsed.hostname === 'github.com' && parsed.pathname.startsWith(`/ortizjorge639/${id}/`))
+      && (approvedPage || (id !== null && project?.repo !== '' && parsed.hostname === 'github.com' && parsed.pathname.startsWith(`${repoPath}/`))
         || parsed.hostname === 'ortizjorge639.github.io');
   } catch { return false; }
 }
@@ -45,11 +48,12 @@ function readAnswer(value: unknown): Answer {
   };
 }
 
-export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => void) {
-  const host = document.querySelector<HTMLElement>('.upper-screen')!;
-  const app = document.querySelector<HTMLElement>('.studio-app')!;
-  const preview = document.querySelector<HTMLElement>('#upper-scroll')!;
-  const access = document.querySelector<HTMLButtonElement>('#guide-access')!;
+interface GuideSurface { host: HTMLElement; app: HTMLElement; preview: HTMLElement; access: HTMLButtonElement; reading?: boolean }
+export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => void, surface?: GuideSurface) {
+  const host = surface?.host ?? document.querySelector<HTMLElement>('.upper-screen')!;
+  const app = surface?.app ?? document.querySelector<HTMLElement>('.studio-app')!;
+  const preview = surface?.preview ?? document.querySelector<HTMLElement>('#upper-scroll')!;
+  const access = surface?.access ?? document.querySelector<HTMLButtonElement>('#guide-access')!;
   const root = document.createElement('div');
   root.className = 'guide-root';
   root.dataset.guideUi = '';
@@ -77,7 +81,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
         <button id="guide-send" type="submit" aria-label="Send question" disabled>${icon('arrow')}</button>
         <button id="guide-stop" type="button" hidden>Stop</button>
       </form>
-      <details class="guide-privacy"><summary id="guide-connection">Local Copilot CLI · privacy</summary><p id="guide-privacy">Questions and relevant public project excerpts are sent to GitHub Copilot through the local CLI. Copilot may retain local session records. This is an AI guide, not Jorge. Chat here resets on reload.</p></details>
+      <p class="guide-public-links"><a href="/read/">Browse public project notes</a></p><details class="guide-privacy"><summary id="guide-connection">Local Copilot CLI · privacy</summary><p id="guide-privacy">Questions and relevant public project excerpts are sent to GitHub Copilot through the local CLI. Copilot may retain local session records. This is an AI guide, not Jorge. Chat stays in this tab’s memory and resets on reload or a change between reading pages. No chat transcript is uploaded to this site’s storage.</p></details>
     </section>`;
   host.append(root);
 
@@ -119,6 +123,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
     connect.hidden = !reconnect;
   }
   function position(animate = false) {
+    if (surface?.reading) { frog.refreshGaze(); return; }
     const before = trigger.getBoundingClientRect();
     const bounds = host.getBoundingClientRect();
     const mark = current.kind === 'home' && !open ? host.querySelector<HTMLElement>('.flipbook-mark') : null;
@@ -176,7 +181,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
     root.dataset.open = String(open);
     app.dataset.guideOpen = String(open);
     panel.hidden = !open;
-    preview.inert = open;
+    if (!surface?.reading) preview.inert = open;
     trigger.setAttribute('aria-expanded', String(open));
     trigger.setAttribute('aria-label', open ? 'Minimize studio guide' : 'Ask the studio frog');
     access.setAttribute('aria-expanded', String(open));

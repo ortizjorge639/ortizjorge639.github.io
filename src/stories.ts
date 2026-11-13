@@ -1,3 +1,4 @@
+import { currentStories } from './current-stories.ts';
 import type { ProjectStory } from './story-types';
 
 // Authored from the curated catalog and the pinned public README snapshots.
@@ -492,82 +493,5 @@ export const projectStories: Record<string, ProjectStory> = {
       },
     ],
   },
-  'just-play': {
-    projectId: 'just-play',
-    sources: [{
-      id: 'just-play-readme',
-      title: 'Just Play README',
-      url: 'https://github.com/ortizjorge639/just-play/blob/b0ecead4e141b27749ef5327c00ca0d05d5d78b4/README.md',
-    }],
-    scenes: [
-      {
-        id: 'beyond-the-backlog', beat: 'need', duration: 8,
-        headline: 'Finished games should stay part of the collection',
-        body: 'Just Play tracks a backlog, play sessions, and goals while making completed games part of a lasting treehouse collection.',
-        visual: { type: 'contrast', before: 'A queue of games still waiting to be played', after: 'Backlog, play history, and a collection of finished games' },
-        sources: ['just-play-readme'],
-      },
-      {
-        id: 'finished-games-stay', beat: 'approach', duration: 8,
-        headline: 'Each finished game adds to the treehouse',
-        body: 'Move from Backlog to In Progress to Completed. Completed games become characters in the collection rather than disappearing from the list.',
-        visual: { type: 'outcome', result: 'A treehouse collection built around the games you finish.' },
-        sources: ['just-play-readme'],
-      },
-      {
-        id: 'tracking-to-collection', beat: 'flow', duration: 9,
-        headline: 'Game details and play records feed the collection',
-        body: 'IGDB supplies game metadata. The Next.js tracker records game states, sessions, and goals with Supabase authentication and storage.',
-        visual: {
-          type: 'flow',
-          nodes: [
-            { id: 'game-inputs', label: 'Game inputs', detail: 'IGDB metadata and play records' },
-            { id: 'game-tracker', label: 'Tracker', detail: 'States, sessions, goals' },
-            { id: 'supabase-store', label: 'Supabase', detail: 'Authentication and database' },
-            { id: 'treehouse', label: 'Collection', detail: 'Completed games in the treehouse' },
-          ],
-          edges: [
-            { from: 'game-inputs', to: 'game-tracker' }, { from: 'game-tracker', to: 'supabase-store' },
-            { from: 'supabase-store', to: 'treehouse' },
-          ],
-        },
-        sources: ['just-play-readme'],
-      },
-      {
-        id: 'tracker-services', beat: 'build', duration: 8,
-        headline: 'An app framework, account store, and game catalog',
-        body: 'Next.js provides the app framework, Supabase handles authentication and the database, and IGDB supplies game metadata.',
-        visual: {
-          type: 'roles',
-          items: [
-            { name: 'Next.js', role: 'React-based application framework' },
-            { name: 'Supabase', role: 'Authentication and database' },
-            { name: 'IGDB', role: 'Game metadata' },
-          ],
-        },
-        sources: ['just-play-readme'],
-      },
-      {
-        id: 'three-play-states', beat: 'details', duration: 9,
-        headline: 'Keep the queue, the play, and the finish distinct',
-        body: 'The tracker separates games waiting to be played from current sessions and goals, then keeps finished games in the collection.',
-        visual: {
-          type: 'steps',
-          items: [
-            { title: 'Backlog', detail: 'Add games to the queue.' },
-            { title: 'In Progress', detail: 'Track sessions and set goals.' },
-            { title: 'Completed', detail: 'Keep finished games as treehouse characters.' },
-          ],
-        },
-        sources: ['just-play-readme'],
-      },
-      {
-        id: 'v2-local-setup', beat: 'use', duration: 8,
-        headline: 'V2 is still in progress',
-        body: 'The redesign is evolving. A local setup requires your own Supabase and IGDB credentials in .env.local; this is a game tracker, not a game.',
-        visual: { type: 'outcome', result: 'An in-progress tracker with service credentials required for local use.' },
-        sources: ['just-play-readme'],
-      },
-    ],
-  },
+  ...currentStories,
 };

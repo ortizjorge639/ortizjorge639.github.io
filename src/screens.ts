@@ -1,6 +1,6 @@
 import { icon, illustration } from './art';
 import { aboutHash, flipnotes } from './flipnotes';
-import { projects, repoUrl, type Project } from './projects';
+import { projects, repoUrl, readingUrl, type Project } from './projects';
 import { categories, detailPages, filteredProjects, libraryHash, libraryPage, pageSize, projectHash, type Screen } from './navigation';
 import { storyShell } from './story-render';
 
@@ -53,7 +53,7 @@ export function renderScreen(screen: Screen): RenderedScreen {
                 <a class="launcher red-launcher" href="#about" data-focus="meet-joji">${icon('person')}<span>Meet<br>Joji</span><small>THE PERSON BEHIND IT</small></a>
               </div>
               ${socialLinks}
-              <p class="touch-hint">${icon('pen')} Leave a little ink. This screen is yours.</p>
+              <p class="touch-hint">${icon('pen')} Leave a little ink. This screen is yours.</p><a class="reading-entrance" href="/read/">Read the project notes →</a>
             </div>`,
       };
     }
@@ -84,7 +84,7 @@ export function renderScreen(screen: Screen): RenderedScreen {
         ? `<div class="detail-status"><span>${project.categories.join(' / ')}</span><span>${project.status}</span></div><p class="detail-description">${project.description}</p>`
         : screen.page === 'inside'
           ? `<ul class="capabilities">${project.capabilities.map((capability) => `<li>${capability}</li>`).join('')}</ul><div class="stack-tags" aria-label="Technology stack">${project.stack.map((stack) => `<span>${stack}</span>`).join('')}</div>`
-          : `<p class="project-note">${project.note}</p><div class="detail-links">${external(repoUrl(project), 'View repository', 'primary-button')}${project.site ? external(project.site, 'Project walkthrough') : ''}</div>${external(`${repoUrl(project)}#readme`, 'Source: public repository README · reviewed September 2026', 'source-note')}`;
+          : `<p class="project-note">${project.note}</p><div class="detail-links">${repoUrl(project) ? external(repoUrl(project), 'View repository', 'primary-button') : ''}${project.site ? external(project.site, 'Public landing page') : ''}</div>${external(project.sources![0].url, `Source: ${project.sources![0].label} · reviewed ${project.sources![0].reviewed}`, 'source-note')}`;
       return {
         label: 'PROJECT DETAILS',
         title: `${project.title} — ${titles[index]}`,
@@ -92,7 +92,7 @@ export function renderScreen(screen: Screen): RenderedScreen {
         lower: `<article class="detail-content">
           <div class="detail-heading">${heading(titles[index])}<span>${String(index + 1).padStart(2, '0')} / 03</span></div>
           <nav class="detail-tabs" aria-label="Project detail pages">${detailPages.map((name, i) => `<a href="${projectHash(project.id, name)}" data-replace data-focus="detail-${name}" ${name === screen.page ? 'aria-current="page"' : ''}>${titles[i]}</a>`).join('')}</nav>
-          <div class="detail-body">${body}</div>
+          <div class="detail-body">${body}<a class="reading-entrance" href="${readingUrl(project)}">Read project notes →</a></div>
           <div class="detail-pagination">${pageArrow(index > 0 ? projectHash(project.id, detailPages[index - 1]) : undefined, 'Previous detail page', true)}<span>${index === 2 ? 'Follow the work outside the studio.' : 'Turn the page to see more.'}</span>${pageArrow(index < 2 ? projectHash(project.id, detailPages[index + 1]) : undefined, 'Next detail page')}</div>
         </article>`,
       };

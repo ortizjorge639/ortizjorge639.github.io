@@ -269,3 +269,5 @@ html[data-font-fallback] .handwriting, html[data-font-fallback] .creator-signatu
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+.reading-entrance { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; padding: 8px 0; color: var(--blue); font: 13px/1.5 var(--mono); text-decoration: underline; text-underline-offset: 3px; }

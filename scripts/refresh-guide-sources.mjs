@@ -1,10 +1,10 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createHash } from 'node:crypto';
-import { mkdir, writeFile, rename } from 'node:fs/promises';
+import { mkdir, writeFile, rename, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { projects } from '../src/projects.ts';
-import { splitSections } from './guide-sources.mjs';
+import { splitSections, loadSources } from './guide-sources.mjs';
 
 const exec = promisify(execFile);
 async function api(path) {
@@ -17,9 +17,18 @@ async function api(path) {
 }
 
 export async function refreshSources() {
+  await loadSources(); // Verify existing approved-page integrity before retaining it.
+  const previous = JSON.parse(await readFile(new URL('../data/guide-sources.json', import.meta.url), 'utf8'));
   const sources = [];
   for (const project of projects) {
-    const repo = `ortizjorge639/${project.id}`;
+    const retained = previous.sources.find(source => source.projectId === project.id && source.sourceType === 'public-page');
+    if (retained) {
+      sources.push(retained); // Keep the original excerpt date; a refresh is not a new browser review.
+      console.log(`Retained approved public-page excerpt: ${project.id}; manual public-only review required for changes.`);
+      continue;
+    }
+    const repo = project.repo?.replace('https://github.com/', '') ?? `ortizjorge639/${project.id}`;
+    if (!/^ortizjorge639\/[a-z0-9-]+$/.test(repo)) throw new Error('No approved public repository');
     const metadata = await api(`repos/${repo}`);
     if (metadata.private !== false || metadata.visibility !== 'public' || metadata.full_name !== repo) {
       throw new Error(`Source is not verified public: ${repo}`);

@@ -51,17 +51,26 @@ export async function loadSources() {
     const chunks = [];
     for (const source of snapshot.sources) {
       const project = projects.find(item => item.id === source.projectId);
-      if (!project || ids.has(project.id) || source.visibility !== 'public' || source.repo !== `ortizjorge639/${project.id}` ||
-          !/^[a-f0-9]{40}$/.test(source.commit) || !/^[a-f0-9]{40}$/.test(source.sha) ||
-          typeof source.path !== 'string' || !source.path || source.path.split('/').some(part => !part || part === '..' || part === '.') ||
-          typeof source.text !== 'string' || Buffer.byteLength(source.text) > 131_072 || !Number.isFinite(Date.parse(source.retrievedAt))) throw new Error('Invalid provenance');
+      if (!project || ids.has(project.id) || source.visibility !== 'public' ||
+          !/^[a-f0-9]{40}$/.test(source.sha) || typeof source.text !== 'string' ||
+          Buffer.byteLength(source.text) > 131_072 || !Number.isFinite(Date.parse(source.retrievedAt))) throw new Error('Invalid provenance');
+      const publicPage = source.sourceType === 'public-page';
+      if (publicPage) {
+        // Exact user-approved landing pages only. No arbitrary URL ingestion or private app data.
+        const approved = ['https://v0-just-play-app.vercel.app/about', 'https://firstmind.app', 'https://getflowlog.lovable.app'];
+        if (!approved.includes(source.url) || source.url !== project.site || !project.sources?.some(s => s.url === source.url)) throw new Error('Unapproved public page');
+      } else {
+        const repo = project.repo?.replace('https://github.com/', '') ?? `ortizjorge639/${project.id}`;
+        if (source.repo !== repo || !/^[a-f0-9]{40}$/.test(source.commit) || typeof source.path !== 'string' ||
+            !source.path || source.path.split('/').some(part => !part || part === '..' || part === '.')) throw new Error('Invalid repository provenance');
+      }
       ids.add(project.id);
       const sha = createHash('sha1').update(`blob ${Buffer.byteLength(source.text)}\0`).update(source.text).digest('hex');
       if (sha !== source.sha || JSON.stringify(splitSections(source.text, project.id)) !== JSON.stringify(source.sections)) throw new Error('Source integrity failure');
-      const url = `https://github.com/${source.repo}/blob/${source.commit}/${source.path.split('/').map(encodeURIComponent).join('/')}`;
+      const url = publicPage ? source.url : `https://github.com/${source.repo}/blob/${source.commit}/${source.path.split('/').map(encodeURIComponent).join('/')}`;
       chunks.push(...source.sections.map(section => ({
         ...section, title: `${project.title} — ${section.title}`, projectId: project.id,
-        url: `${url}${section.anchor ? `#${encodeURIComponent(section.anchor)}` : ''}`,
+        url: publicPage ? url : `${url}${section.anchor ? `#${encodeURIComponent(section.anchor)}` : ''}`,
       })));
     }
     const summaries = projects.map(project => ({
@@ -94,7 +103,7 @@ export async function loadSources() {
         text: JSON.stringify({ headline: scene.headline, body: scene.body, visual: scene.visual }),
       })));
     }
-    return { chunks, summaries, sourceCount: snapshot.sources.length + 4, snapshotDate: snapshot.retrievedAt };
+    return { chunks, summaries, sourceCount: new Set([...chunks, ...summaries].map(chunk => chunk.url.split('#')[0])).size, snapshotDate: snapshot.retrievedAt };
   } catch {
     throw new GuideError('source_error', 'Public source snapshots are missing or invalid. Refresh the approved sources.', 503);
   }

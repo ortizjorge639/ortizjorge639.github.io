@@ -12,9 +12,11 @@
     "test:responsive": "playwright test --config=playwright.responsive.config.ts --workers=3",
     "validate:stories": "node --experimental-strip-types scripts/validate-stories.mjs",
     "test:stories": "node --experimental-strip-types --test scripts/story-*.test.mjs",
-    "build": "npm run validate:stories && tsc --noEmit && vite build",
+    "build": "npm run validate:stories && tsc --noEmit && vite build && node scripts/build-reading.mjs",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:unit": "node --test scripts/catalog.test.mjs scripts/reading.test.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

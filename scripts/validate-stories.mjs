@@ -19,6 +19,7 @@ const isRecord = value => value !== null && typeof value === 'object' && !Array.
 
 function isSourceUrl(value, approvedRepos) {
   if (typeof value !== 'string') return false;
+  if (['https://v0-just-play-app.vercel.app/about','https://firstmind.app','https://getflowlog.lovable.app'].includes(value)) return true;
   if (/^https:\/\/ortizjorge639\.github\.io\/(?:#[a-zA-Z0-9/_-]+)?$/.test(value)) return true;
   const match = /^https:\/\/github\.com\/ortizjorge639\/([a-z0-9-]+)\/blob\/([a-f0-9]{40})\/([a-zA-Z0-9._/-]+)(?:#[a-zA-Z0-9_-]+)?$/.exec(value);
   return Boolean(match && approvedRepos.has(match[1])
@@ -78,9 +79,10 @@ export function validateStories(stories, catalog) {
     if (!id(project.id, `projects[${index}].id`)) continue;
     if (approvedRepos.has(project.id)) error(`projects[${index}].id`, 'duplicate catalog ID');
     approvedRepos.add(project.id);
+    if (project.repo) { const match = /^https:\/\/github.com\/ortizjorge639\/([a-z0-9-]+)$/.exec(project.repo); if (match) approvedRepos.add(match[1]); }
   }
   if (!isRecord(stories)) return [...errors, 'stories: must be a project-keyed object'];
-  for (const projectId of approvedRepos) {
+  for (const projectId of catalog.map(project => project.id)) {
     if (!Object.hasOwn(stories, projectId)) error(projectId, 'missing story for catalog project');
   }
 
@@ -169,7 +171,7 @@ export function validateStories(stories, catalog) {
       uniqueId(source.id, `${sourcePath}.id`, sourceIds);
       text(source.title, `${sourcePath}.title`, 120);
       if (text(source.url, `${sourcePath}.url`, 2048) && !isSourceUrl(source.url, approvedRepos)) {
-        error(`${sourcePath}.url`, 'must be a pinned 40-SHA GitHub blob in an approved repo or the canonical portfolio URL');
+        error(`${sourcePath}.url`, 'must be a pinned 40-SHA GitHub blob in an approved repo, one of the three exact approved landing URLs, or the canonical portfolio URL');
       }
     });
     if (!array(story.scenes, `${key}.scenes`, 6, 6)) continue;
