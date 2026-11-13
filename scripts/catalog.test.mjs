@@ -28,6 +28,16 @@ test('recent curated technical and creative projects are honest about readiness'
   assert.equal(catalog.find(p=>p.id === 'oneshottober')?.site, 'https://oneshottober.vercel.app/');
 });
 
+test('meeting copilot documents live captions and the opt-in summary pilot without production claims', () => {
+  const meeting = catalog.find(p => p.id === 'bot-meetings-dotnet');
+  assert.match(meeting.description, /live captions/i);
+  assert.match(meeting.capabilities.join(' '), /rolling.*meeting-to-date/i);
+  assert.match(meeting.how, /ended-session|ended session/i);
+  assert.match(meeting.note, /disabled by default/i);
+  assert.match(meeting.note, /corrected.*omitted|omitted.*corrected/i);
+  assert.ok(meeting.sources.some(s => s.url.endsWith('/docs/scheduled-summaries.md')));
+});
+
 test('every project has public dated sources and explicit problem, implementation and attribution', () => {
   assert.equal(new Set(catalog.map(p=>p.id)).size, catalog.length);
   for(const p of catalog) {
