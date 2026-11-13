@@ -27,6 +27,17 @@ test('all canonical catalog stories have six ordered beats and 45–60 second ru
   }
 });
 
+test('meeting story covers current live context and summaries with pinned public evidence', () => {
+  const story = projectStories['bot-meetings-dotnet'];
+  const text = copy('bot-meetings-dotnet');
+  assert.match(text, /finalized captions/i);
+  assert.match(text, /ended captions/i);
+  assert.match(text, /rolling and meeting-to-date summaries/i);
+  assert.match(text, /disabled by default/i);
+  assert.match(text, /omitted a corrected value/i);
+  assert.ok(story.sources.some(source => source.url.endsWith('/docs/scheduled-summaries.md')));
+});
+
 test('sources match the pinned public README snapshots', () => {
   const snapshot = JSON.parse(readFileSync(new URL('../data/guide-sources.json', import.meta.url), 'utf8'));
   for (const [projectId, story] of Object.entries(projectStories)) {

@@ -75,7 +75,7 @@
   {
     "id": "bot-meetings-dotnet",
     "title": "After the meeting",
-    "subtitle": "Less transcript digging. More answers.",
+    "subtitle": "Follow the discussion. Ask during or after.",
     "categories": [
       "AI",
       "Tech"
@@ -83,11 +83,11 @@
     "updated": "2026-11-13",
     "illustration": "bot",
     "color": "blue",
-    "description": "A Microsoft Teams sample that retrieves meeting transcripts through Microsoft Graph and answers post-meeting questions with speaker- and timestamp-aware citations.",
+    "description": "A Microsoft Teams preview that answers questions from captured live captions or completed transcripts, with an opt-in pilot for rolling updates and meeting-to-date summaries.",
     "capabilities": [
-      "Handle Teams meeting and participant events",
-      "Retrieve transcripts through Microsoft Graph",
-      "Answer transcript questions with speaker and timestamp citations"
+      "Answer live-caption and completed-transcript questions with speaker and timestamp citations",
+      "Keep recent ended-session captions available while awaiting the Graph transcript",
+      "Produce opt-in rolling updates and meeting-to-date summaries of supported topics, decisions, actions, risks, and open questions"
     ],
     "stack": [
       ".NET 10",
@@ -95,14 +95,19 @@
       "Azure OpenAI"
     ],
     "status": "Preview sample",
-    "note": "Preview, not production-ready. Transcript jobs and documents use JSON files on one App Service instance. Distributed leases, legal hold, user deletion, and multi-instance consistency remain production gaps. Use non-sensitive test meetings only.",
-    "problem": "Finding a specific answer in a completed meeting should not require manually searching an entire transcript.",
-    "how": "Teams meeting events trigger transcript retrieval through Graph. The .NET sample uses Microsoft Agent Framework and Azure OpenAI to answer questions from the retrieved transcript with citations.",
+    "note": "Preview, not production-ready. Summaries are disabled by default; the November 10 two-meeting pilot was accepted, but a later summary omitted a corrected value. Long-meeting, restart, and multi-speaker accuracy remain separate checks. Single-instance JSON storage still lacks production data controls; use non-sensitive test meetings only.",
+    "problem": "Following decisions during a meeting and finding answers afterward should not require manually searching every caption or transcript.",
+    "how": "An optional ACS browser participant captures finalized live captions; Meeting Copilot answers actual chat mentions. After a session ends, it prefers its completed Graph transcript, otherwise recent ended-session captions. Opt-in summaries post new-caption updates and a condensed meeting-so-far view, using versioned packaged instructions or optional private Blob instructions. Silent windows make no summary model call.",
     "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. This is an adaptation of a Microsoft Teams sample with a documented transcript-question-answering workflow and deployment configuration. Microsoft services and the original sample are dependencies, not original components claimed by this portfolio.",
     "sources": [
       {
         "label": "Public README at reviewed revision",
         "url": "https://github.com/ortizjorge639/bot-meetings-dotnet/blob/3326539385fa9f9c6412e8f1943302b0e4f17616/README.md",
+        "reviewed": "2026-11-13"
+      },
+      {
+        "label": "Scheduled summaries and scoped pilot acceptance",
+        "url": "https://github.com/ortizjorge639/bot-meetings-dotnet/blob/3326539385fa9f9c6412e8f1943302b0e4f17616/docs/scheduled-summaries.md",
         "reviewed": "2026-11-13"
       }
     ]
