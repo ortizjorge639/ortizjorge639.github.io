@@ -8,7 +8,7 @@
     "dev:guide": "node scripts/dev-guide.mjs",
     "guide:serve": "node --experimental-strip-types scripts/guide-server.mjs",
     "guide:sources": "node --experimental-strip-types scripts/refresh-guide-sources.mjs",
-    "test:guide": "node --experimental-strip-types --test scripts/guide-*.test.mjs",
+    "test:guide": "node --experimental-strip-types --test scripts/guide-*.test.mjs scripts/hosted-guide.test.mjs",
     "test:responsive": "playwright test --config=playwright.responsive.config.ts --workers=3",
     "validate:stories": "node --experimental-strip-types scripts/validate-stories.mjs",
     "test:stories": "node --experimental-strip-types --test scripts/story-*.test.mjs",

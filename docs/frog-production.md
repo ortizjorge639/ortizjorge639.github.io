@@ -2,7 +2,7 @@
 
 **Decision date:** September 19, 2026
 
-**Status:** Architecture agreed; production adapters and configuration are not implemented.
+**Status:** The disabled-by-default direct-model adapter, explicit YAML configuration and durable conditional quota path are now implemented; see [current runbook](hosted-frog-runbook.md). Hosted release is still blocked on actual F1 resource quota and all deployment/CI gates. The historical design below is preserved as the original provider-separation contract, not evidence that both proposed public backends were deployed.
 Documenting this decision does not authorize provisioning, credential changes,
 deployment, or public activation.
 

@@ -29,6 +29,17 @@ test('reading mode reuses original frog with project context and a safe unavaila
   await expect(page.locator('#frog-trigger')).toBeFocused();
 });
 
+test('hosted model status uses provider-accurate disclosure in the reading guide', async ({page}) => {
+  await page.route('**/api/guide/status', route => route.fulfill({json:{available:true,mode:'model-api',provider:'azure-openai'}}));
+  await page.goto('/read/just-play/');
+  await page.locator('#frog-trigger').click();
+  await expect(page.locator('#guide-send')).toBeEnabled();
+  await expect(page.locator('#guide-connection')).toHaveText('Azure OpenAI · privacy');
+  await page.locator('.guide-privacy summary').click();
+  await expect(page.locator('#guide-privacy')).toContainText('abuse monitoring');
+  await expect(page.locator('#guide-privacy')).not.toContainText('local CLI');
+});
+
 test('reading search is local, handles hostile input, and keeps keyboard links usable', async ({ page }) => {
   await page.goto('/read/');
   const search=page.getByRole('searchbox', { name: 'Find a project' });

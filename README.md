@@ -32,7 +32,7 @@ CI runs the general browser and cross-engine responsive suites on Ubuntu and a r
 
 ## Content and interactions
 
-- `src/projects.ts` is the curated project catalog, ordered by repository update date at review time (September 12, 2026). Update descriptions against the public source READMEs before publishing. No private repositories, private saved items, or confidential project details are included.
+- `src/project-catalog.json` is the shared eleven-project catalog, exposed by `src/projects.ts` and reviewed November13,2026 against approved public sources. Static `/read/` pages provide a separate documentation reading mode, direct links/refresh and no-JavaScript project browsing. Update descriptions against the public source READMEs before publishing. No private repositories, private saved items, or confidential project details are included.
 - Project cards use original ink illustrations. The project flipbooks combine authored diagrams, source-backed copy, and actual captures for Lineage and RepoQuest. Capture sources: `web-context-graph/site/assets/product-knowledge-tree-desktop.webp` and `repoquest/docs/screenshot.jpg` in Jorge's public repositories.
 - The main menu leads to View Projects and Meet Joji. Both displays change in place: there are no scrolling website sections or project-detail modals. The persistent status strip holds the local date and clock, sound control, and paged help. Date and time stack together in narrow layouts.
 - Home and About share a compact row of GitHub and LinkedIn logo links to the confirmed profiles. X is intentionally omitted until its profile URL is supplied; no handle or contact address is guessed. The two SVG logos come from [Bootstrap Icons](https://github.com/twbs/icons), with the MIT license retained in `public/icons/LICENSE.txt`.
@@ -69,8 +69,7 @@ The frog's live answers use the installed, authenticated **GitHub Copilot CLI**.
 No model key or CLI connection is bundled into the browser. The agreed
 [production deployment plan](docs/frog-production.md) keeps GitHub Pages and
 adds a disabled-by-default YAML selection between hosted Copilot CLI and a
-direct model API. Those adapters and switches are not implemented; resource,
-provider, spending, and public-access decisions remain gated.
+direct model API. The direct adapter, strict YAML switch, Cosmos conditional reservation, global limits and public-endpoint wiring are now implemented but disabled; see [current runbook](docs/hosted-frog-runbook.md). Actual host quota, hosted identity/provider verification and original release gates remain unresolved. The local CLI is never a public fallback.
 
 ```sh
 npm run guide:sources   # Explicitly refresh approved public README snapshots

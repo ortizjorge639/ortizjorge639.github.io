@@ -100,6 +100,9 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
   const invitation = find<HTMLElement>('.frog-invitation');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+  const configuredApi = (import.meta as ImportMeta & { env?: Record<string,string> }).env?.VITE_GUIDE_API ?? '';
+  const publicApi = /^https:\/\/[a-z0-9-]+\.azurewebsites\.net$/.test(configuredApi) ? configuredApi : '';
+  const api = publicApi;
   const transcript: Message[] = [];
   let current: Screen = { kind: 'home' };
   let contextProjectId: string | null = null;
@@ -207,7 +210,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
     health?.abort();
     available = false;
     send.disabled = true;
-    if (!local) {
+    if ((!local && !publicApi) || (configuredApi && !publicApi)) {
       find('#guide-connection').textContent = 'Local rehearsal · privacy';
       feedbackMessage('Live answers are being rehearsed locally. Browse the projects and sources below; no public AI service is connected yet.');
       return;
@@ -216,13 +219,16 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
     health = controller;
     const timeout = setTimeout(() => controller.abort(), 5000);
     try {
-      const response = await fetch('/api/guide/status', { signal: controller.signal, credentials: 'omit' });
+      const response = await fetch(`${api}/api/guide/status`, { signal: controller.signal, credentials: 'omit' });
       const data: unknown = response.ok ? await response.json() : null;
-      if (!isRecord(data) || data.available !== true || data.mode !== 'copilot-cli') throw new Error('The local Copilot bridge is not running. Start npm run dev:guide, then reconnect.');
+      if (!isRecord(data) || data.available !== true || !['copilot-cli','model-api'].includes(String(data.mode)) || (publicApi && (data.mode !== 'model-api' || data.provider !== 'azure-openai'))) throw new Error('The local Copilot bridge is not running. Start npm run dev:guide, then reconnect.');
       available = true;
       send.disabled = !!request;
       feedbackMessage('');
-      find('#guide-connection').textContent = 'Local Copilot CLI · privacy';
+      if (data.mode === 'model-api' && data.provider === 'azure-openai') {
+        find('#guide-connection').textContent = 'Azure OpenAI · privacy';
+        find('#guide-privacy').textContent = 'Questions, up to six recent messages and relevant public project excerpts are sent to Azure OpenAI. This site stores no chat transcripts. Microsoft may process flagged content for abuse monitoring and human review; Global Standard may process outside the resource region. Do not send sensitive information. This is AI, not Jorge; citations identify supplied notes, not a guarantee of factual correctness. Chat stays in tab memory and resets on page changes or reload. The service has a small global budget and may be unavailable.';
+      } else find('#guide-connection').textContent = 'Local Copilot CLI · privacy';
     } catch (error) {
       if (health !== controller) return;
       const message = controller.signal.aborted ? 'The local bridge did not respond. Start npm run dev:guide, then reconnect.'
@@ -298,7 +304,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
     }
     const timeout = setTimeout(() => controller.abort('timeout'), 95000);
     try {
-      const response = await fetch('/api/guide/chat', {
+      const response = await fetch(`${api}/api/guide/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'omit',
         signal: controller.signal, body: JSON.stringify(question),
       });
