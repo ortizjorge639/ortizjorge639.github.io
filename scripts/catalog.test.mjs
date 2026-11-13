@@ -49,7 +49,11 @@ test('every project has public dated sources and explicit problem, implementatio
       assert.equal(s.reviewed, '2026-11-13');
       const u = new URL(s.url);
       assert.equal(u.protocol,'https:');
-      assert.ok(['github.com','v0-just-play-app.vercel.app','firstmind.app','getflowlog.lovable.app'].includes(u.hostname),s.url);
+      if (p.sourceType === 'curated-case-study') {
+        assert.equal(p.id, 'inventory-data-assistant');
+        assert.equal(p.repo, '');
+        assert.equal(s.url, 'https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md');
+      } else assert.ok(['github.com','v0-just-play-app.vercel.app','firstmind.app','getflowlog.lovable.app'].includes(u.hostname),s.url);
     }
   }
 });

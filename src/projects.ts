@@ -18,6 +18,7 @@ export interface Project {
   imageAlt?: string;
   site?: string;
   repo?: string;
+  sourceType?: 'curated-case-study';
   problem?: string;
   how?: string;
   contribution?: string;

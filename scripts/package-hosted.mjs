@@ -9,6 +9,7 @@ export const HOST_FILES=Object.freeze([
  'scripts/hosted-server.mjs','scripts/hosted-guide.mjs','scripts/guide-input.mjs','scripts/guide-sources.mjs',
  'src/projects.ts','src/project-catalog.json','src/stories.ts','src/current-stories.ts','src/screens.ts',
  'data/guide-sources.json','README.md',
+ 'scripts/source-policy.mjs','src/inventory-story.ts','public/case-studies/inventory-data-assistant.md',
 ]);
 const root=fileURLToPath(new URL('../',import.meta.url));
 export async function writeHostDirectory(target,{configText}={}) {

@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { projects } from '../src/projects.ts';
 import { projectStories } from '../src/stories.ts';
+import { approvedRepository, validateCuratedProject } from './source-policy.mjs';
 
 export class GuideError extends Error {
   constructor(code, message, status = 400, reason) {
@@ -41,11 +42,11 @@ export function splitSections(text, projectId) {
   return sections;
 }
 
-export async function loadSources() {
+export async function loadSources(providedSnapshot) {
   try {
     const raw = await readFile(new URL('../data/guide-sources.json', import.meta.url), 'utf8');
     if (raw.length > 2_500_000) throw new Error('Oversized snapshot');
-    const snapshot = JSON.parse(raw);
+    const snapshot = providedSnapshot ?? JSON.parse(raw);
     if (snapshot.version !== 1 || snapshot.sources.length !== projects.length || !Number.isFinite(Date.parse(snapshot.retrievedAt))) throw new Error('Invalid snapshot');
     const ids = new Set();
     const chunks = [];
@@ -55,22 +56,29 @@ export async function loadSources() {
           !/^[a-f0-9]{40}$/.test(source.sha) || typeof source.text !== 'string' ||
           Buffer.byteLength(source.text) > 131_072 || !Number.isFinite(Date.parse(source.retrievedAt))) throw new Error('Invalid provenance');
       const publicPage = source.sourceType === 'public-page';
-      if (publicPage) {
+      const curated = source.sourceType === 'curated-case-study';
+      if (source.sourceType !== undefined && !['public-page', 'curated-case-study'].includes(source.sourceType)) throw new Error('Unknown source type');
+      if (curated) {
+        const approved = validateCuratedProject(project, source.url);
+        if (['repo', 'commit', 'path'].some(key => Object.hasOwn(source, key)) || source.provenance !== 'author-written-sanitized-narrative') throw new Error('Invalid curated provenance');
+        const narrative = await readFile(new URL(`../${approved.file}`, import.meta.url), 'utf8');
+        if (source.text !== narrative) throw new Error('Curated narrative differs from public artifact');
+      } else if (publicPage) {
         // Exact user-approved landing pages only. No arbitrary URL ingestion or private app data.
         const approved = ['https://v0-just-play-app.vercel.app/about', 'https://firstmind.app', 'https://getflowlog.lovable.app'];
         if (!approved.includes(source.url) || source.url !== project.site || !project.sources?.some(s => s.url === source.url)) throw new Error('Unapproved public page');
       } else {
-        const repo = project.repo?.replace('https://github.com/', '') ?? `ortizjorge639/${project.id}`;
+        const repo = approvedRepository(project);
         if (source.repo !== repo || !/^[a-f0-9]{40}$/.test(source.commit) || typeof source.path !== 'string' ||
             !source.path || source.path.split('/').some(part => !part || part === '..' || part === '.')) throw new Error('Invalid repository provenance');
       }
       ids.add(project.id);
       const sha = createHash('sha1').update(`blob ${Buffer.byteLength(source.text)}\0`).update(source.text).digest('hex');
       if (sha !== source.sha || JSON.stringify(splitSections(source.text, project.id)) !== JSON.stringify(source.sections)) throw new Error('Source integrity failure');
-      const url = publicPage ? source.url : `https://github.com/${source.repo}/blob/${source.commit}/${source.path.split('/').map(encodeURIComponent).join('/')}`;
+      const url = publicPage || curated ? source.url : `https://github.com/${source.repo}/blob/${source.commit}/${source.path.split('/').map(encodeURIComponent).join('/')}`;
       chunks.push(...source.sections.map(section => ({
         ...section, title: `${project.title} — ${section.title}`, projectId: project.id,
-        url: publicPage ? url : `${url}${section.anchor ? `#${encodeURIComponent(section.anchor)}` : ''}`,
+        url: publicPage || curated ? url : `${url}${section.anchor ? `#${encodeURIComponent(section.anchor)}` : ''}`,
       })));
     }
     const summaries = projects.map(project => ({

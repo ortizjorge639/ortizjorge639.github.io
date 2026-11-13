@@ -1,6 +1,7 @@
 import { readFile, mkdir, writeFile, copyFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
+import { CURATED_CASE_STUDIES, validateCuratedProject } from './source-policy.mjs';
 
 export const escapeHTML = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const e = escapeHTML;
@@ -25,6 +26,10 @@ export function validateCatalog(catalog) {
       if (typeof p[key] !== 'string' || !p[key].trim() || p[key].length > 5000) throw new Error(`Missing or oversized ${key}`);
     }
     if (!p.sources?.length) throw new Error('Missing public evidence');
+    if (p.sourceType !== undefined || Object.hasOwn(CURATED_CASE_STUDIES, p.id)) {
+      if (p.sourceType !== 'curated-case-study') throw new Error('Unknown source type');
+      validateCuratedProject(p, p.sources[0].url);
+    }
     for (const source of p.sources) safeURL(source.url);
     for (const value of [p.repo,p.site].filter(Boolean)) safeURL(value);
   }
@@ -44,12 +49,12 @@ export function renderPage(catalog, project, assets = '') {
     <section id="contribution"><h2>Joji’s contribution</h2><p>${e(project.contribution ?? 'This project is in Jorge’s public repository collection. This overview does not establish sole authorship; consult the linked history for individual changes.')}</p></section>
     <section id="status"><h2>Current status</h2><p>${e(project.note)}</p></section>
     <section id="sources"><h2>Sources and links</h2><ul class="source-list">${sourceList(project).map(s=>`<li>${link(s.url,s.label)}<small>Reviewed ${e(s.reviewed)}</small></li>`).join('')}</ul>
-    <div class="project-links">${project.repo !== '' ? link(repository(project),'Public repository') : ''}${project.site?link(project.site,'Public landing page'):''}</div>
-    <p class="source-disclosure">Descriptions summarize the linked public sources, not a production audit. Features described by a landing page are not a verified account workflow.</p></section>
+    <div class="project-links">${project.repo !== '' ? link(repository(project),'Public repository') : ''}${project.site?link(project.site,project.sourceType === 'curated-case-study' ? 'Case-study narrative' : 'Public landing page'):''}</div>
+    <p class="source-disclosure">${project.sourceType === 'curated-case-study' ? 'This author-written sanitized narrative is not a public code inspection. The underlying code is private and not independently inspectable here. No fresh application execution or production approval is established; individual authorship and redistribution permission remain unresolved.' : 'Descriptions summarize the linked public sources, not a production audit. Features described by a landing page are not a verified account workflow.'}</p></section>
     <div class="article-end">${link('/read/','All projects')}${link('/#projects','Back to the sketchbook')}</div>` : `
     <p class="kicker">Joji’s project notebook</p><h1>${title}</h1>
     <p class="lede">The ideas, the moving parts, and the honest edges. A quieter way to explore what I’m making.</p>
-    <p>These are public-source project notes, not a claim that every experiment is a finished service. Pick a project to see what it does, how it fits together, and what is still in progress.</p>
+    <p>These notes cite public sources or explicitly disclosed sanitized case-study narratives, not proof that every experiment is a finished service. Pick a project to see what it does, how it fits together, and what is still in progress.</p>
     <form class="project-search" role="search"><label for="project-search">Find a project</label><div><input id="project-search" type="search" placeholder="Try games, AI, or notes" autocomplete="off"><button type="reset">Clear search</button></div><p id="search-status" role="status" aria-live="polite"></p></form><div class="project-index">${catalog.map(p=>`<article data-search-item><p class="kicker">${e(p.categories.join(' / '))} · ${e(p.status)}</p><h2>${link(readingUrl(p),p.title)}</h2><p>${e(p.subtitle)}</p><p>${e(p.description)}</p></article>`).join('')}</div>`;
   const toc = project ? `<aside class="on-this-page" aria-label="On this page"><p>On this page</p>${sections.map((s,i)=>i===1&&!project.problem?'':link(`#${anchors[i]}`,s)).join('')}</aside>` : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${e(project?.description ?? 'Public project notes by Jorge: context, implementation, limitations and sources.')}"><meta name="theme-color" content="#fffdf8"><title>${e(title)} — Joji’s project notes</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/read/reading.css">${assets}</head><body class="reading-app" data-project="${e(project?.id ?? '')}">

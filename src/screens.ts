@@ -84,7 +84,7 @@ export function renderScreen(screen: Screen): RenderedScreen {
         ? `<div class="detail-status"><span>${project.categories.join(' / ')}</span><span>${project.status}</span></div><p class="detail-description">${project.description}</p>`
         : screen.page === 'inside'
           ? `<ul class="capabilities">${project.capabilities.map((capability) => `<li>${capability}</li>`).join('')}</ul><div class="stack-tags" aria-label="Technology stack">${project.stack.map((stack) => `<span>${stack}</span>`).join('')}</div>`
-          : `<p class="project-note">${project.note}</p><div class="detail-links">${repoUrl(project) ? external(repoUrl(project), 'View repository', 'primary-button') : ''}${project.site ? external(project.site, 'Public landing page') : ''}</div>${external(project.sources![0].url, `Source: ${project.sources![0].label} · reviewed ${project.sources![0].reviewed}`, 'source-note')}`;
+          : `<p class="project-note">${project.note}</p><div class="detail-links">${repoUrl(project) ? external(repoUrl(project), 'View repository', 'primary-button') : ''}${project.site ? external(project.site, project.sourceType === 'curated-case-study' ? 'Case-study narrative' : 'Public landing page') : ''}</div>${external(project.sources![0].url, `Source: ${project.sources![0].label} · reviewed ${project.sources![0].reviewed}`, 'source-note')}`;
       return {
         label: 'PROJECT DETAILS',
         title: `${project.title} — ${titles[index]}`,

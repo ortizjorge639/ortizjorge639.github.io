@@ -47,7 +47,11 @@ test('snapshots: all catalog public sources pinned or exact-approved pages with 
   assert.equal(snapshot.sources.length, projects.length);
   for (const source of snapshot.sources) {
     assert.equal(source.visibility, 'public');
-    if (source.sourceType === 'public-page') {
+    if (source.sourceType === 'curated-case-study') {
+      assert.equal(source.projectId, 'inventory-data-assistant');
+      assert.equal(source.url, 'https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md');
+      assert.equal(source.repo, undefined);
+    } else if (source.sourceType === 'public-page') {
       assert.equal(source.url, projects.find(p => p.id === source.projectId).site);
       assert.ok(['https://firstmind.app','https://getflowlog.lovable.app'].includes(source.url));
     } else {
@@ -259,7 +263,7 @@ test('HTTP fake executor: honest health, valid response, proxy Host, nullable po
   assert.equal(status.available, true);
   assert.equal(status.authVerified, false);
   const snapshot = JSON.parse(await readFile(new URL('../data/guide-sources.json', import.meta.url)));
-  const uniqueDocuments = new Set(snapshot.sources.map(s => s.sourceType === 'public-page' ? s.url : `https://github.com/${s.repo}/blob/${s.commit}/${s.path}`));
+  const uniqueDocuments = new Set(snapshot.sources.map(s => ['public-page', 'curated-case-study'].includes(s.sourceType) ? s.url : `https://github.com/${s.repo}/blob/${s.commit}/${s.path}`));
   uniqueDocuments.add('https://ortizjorge639.github.io/');
   assert.equal(status.sourceCount, uniqueDocuments.size);
   const response = await app.chat();

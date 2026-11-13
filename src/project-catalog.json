@@ -404,5 +404,44 @@
         "reviewed": "2026-11-13"
       }
     ]
+  },
+  {
+    "id": "inventory-data-assistant",
+    "title": "Inventory Data Assistant Template",
+    "subtitle": "A reusable inventory workflow, with its evidence boundaries visible.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "illustration": "bot",
+    "color": "blue",
+    "repo": "",
+    "site": "https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md",
+    "sourceType": "curated-case-study",
+    "description": "A reusable template adapting an existing inventory and obsolescence assistant, with domain rules and data tools rather than arbitrary SQL. This sanitized narrative is not public code inspection.",
+    "capabilities": [
+      "Inventory, scrap eligibility, open sales order and invoice workflows",
+      "Domain filters, counts, grouping, exports and charts",
+      "Configuration and fictional fixtures, plus an optional offline deterministic non-LLM adapter"
+    ],
+    "stack": [
+      "Python / pandas",
+      "Microsoft Agent Framework",
+      "Azure OpenAI",
+      "Excel / SQL Server"
+    ],
+    "status": "Private-code template · sanitized narrative",
+    "note": "Source inspection only; no fresh application execution. Historical scoped synthetic-data/HTTP and Windows setup records are not current live SQL/model, App Service auth/deployment, on-premises connectivity, pipeline or Teams proof. Hosted integrations remain subject to acceptance. Security, scale and production approval are not given. Code remains private; redistribution permission is unresolved.",
+    "problem": "Inventory and obsolescence questions depend on table roles and domain rules. A reusable setup must preserve those constraints rather than promise an unconstrained SQL agent.",
+    "how": "Excel or schema-compatible SQL Server feeds a pandas loader and expected table roles, then domain rules and data tools. The normal Microsoft Agent Framework/Azure OpenAI terminal runtime includes deterministic routes. A separate optional offline adapter uses fictional Excel in a loopback terminal/browser with no application model or Azure calls; it is not Teams proof.",
+    "contribution": "Individual role unverified: authorship is not independently established. The domain engine is inherited, not claimed newly authored. The template layer adds configuration, fictional fixtures, Windows PowerShell/Python helpers, Copilot onboarding and local CI. This author-written sanitized portfolio narrative is not a public code inspection or a claim that Jorge solely built the application.",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code inspection)",
+        "url": "https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
   }
 ]

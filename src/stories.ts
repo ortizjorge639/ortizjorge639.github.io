@@ -1,5 +1,6 @@
 import { projects } from './projects.ts';
 import { currentStories } from './current-stories.ts';
+import { inventoryStory } from './inventory-story.ts';
 import type { ProjectStory } from './story-types';
 
 // Authored from the curated catalog and the pinned public README snapshots.
@@ -499,6 +500,7 @@ export const projectStories: Record<string, ProjectStory> = {
     ],
   },
   ...currentStories,
+  'inventory-data-assistant': inventoryStory,
 };
 
 // Keep original authored scenes, but cite the newly reviewed README revisions.

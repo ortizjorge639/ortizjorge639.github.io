@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { projects } from '../src/projects.ts';
 import { projectStories } from '../src/stories.ts';
+import { CURATED_CASE_STUDIES, validateCuratedProject } from './source-policy.mjs';
 
 const beats = ['need', 'approach', 'flow', 'build', 'details', 'use'];
 const beatVisuals = {
@@ -71,14 +72,16 @@ export function validateStories(stories, catalog) {
 
   if (!Array.isArray(catalog)) return ['projects: must be an array'];
   const approvedRepos = new Set();
+  const catalogIds = new Set();
   for (const [index, project] of catalog.entries()) {
     if (!isRecord(project)) {
       error(`projects[${index}]`, 'must be a project object');
       continue;
     }
     if (!id(project.id, `projects[${index}].id`)) continue;
-    if (approvedRepos.has(project.id)) error(`projects[${index}].id`, 'duplicate catalog ID');
-    approvedRepos.add(project.id);
+    if (catalogIds.has(project.id)) error(`projects[${index}].id`, 'duplicate catalog ID');
+    catalogIds.add(project.id);
+    if (project.repo !== '' && !project.sourceType) approvedRepos.add(project.id);
     if (project.repo) { const match = /^https:\/\/github.com\/ortizjorge639\/([a-z0-9-]+)$/.exec(project.repo); if (match) approvedRepos.add(match[1]); }
   }
   if (!isRecord(stories)) return [...errors, 'stories: must be a project-keyed object'];
@@ -160,17 +163,23 @@ export function validateStories(stories, catalog) {
   }
 
   for (const [key, story] of Object.entries(stories)) {
-    if (!approvedRepos.has(key)) error(key, 'unmatched story: no approved catalog project');
+    if (!catalogIds.has(key)) error(key, 'unmatched story: no approved catalog project');
     if (!object(story, key, ['projectId', 'sources', 'scenes'])) continue;
     if (story.projectId !== key) error(`${key}.projectId`, 'must match its catalog key');
     id(story.projectId, `${key}.projectId`);
     const sourceIds = new Set();
+    const project = catalog.find(p => p.id === key);
     if (array(story.sources, `${key}.sources`, 1, 8)) story.sources.forEach((source, index) => {
       const sourcePath = `${key}.sources[${index}]`;
       if (!object(source, sourcePath, ['id', 'title', 'url'])) return;
       uniqueId(source.id, `${sourcePath}.id`, sourceIds);
       text(source.title, `${sourcePath}.title`, 120);
-      if (text(source.url, `${sourcePath}.url`, 2048) && !isSourceUrl(source.url, approvedRepos)) {
+      let curated = false;
+      if (project?.sourceType === 'curated-case-study' || Object.hasOwn(CURATED_CASE_STUDIES, key)) {
+        try { validateCuratedProject(project, source.url); curated = true; }
+        catch { error(`${sourcePath}.url`, 'must be the exact approved curated narrative with no repository'); }
+      }
+      if (text(source.url, `${sourcePath}.url`, 2048) && !curated && !isSourceUrl(source.url, approvedRepos)) {
         error(`${sourcePath}.url`, 'must be a pinned 40-SHA GitHub blob in an approved repo, one of the three exact approved landing URLs, or the canonical portfolio URL');
       }
     });

@@ -30,7 +30,7 @@ test('frog evidence and prompt carry unverified individual role and curator limi
   assert.match(prompt,/curated catalog limitations take precedence/i);
 });
 
-test('all eleven canonical projects have six valid original-feature story beats', () => {
+test('all canonical projects have six valid original-feature story beats', () => {
   assert.deepEqual(validateStories(projectStories,projects),[]);
   assert.equal(Object.keys(projectStories).length,projects.length);
 });
