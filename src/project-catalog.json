@@ -1,0 +1,403 @@
+[
+  {
+    "id": "weekend-batch",
+    "title": "The Batch",
+    "subtitle": "Save it. Revisit it. Make it count.",
+    "categories": [
+      "Tech",
+      "Media"
+    ],
+    "updated": "2026-11-13",
+    "illustration": "inbox",
+    "color": "red",
+    "description": "A phone-friendly weekly feed that brings starred Gmail and X bookmarks into one place, with item state and discussion threads that carry over from week to week.",
+    "capabilities": [
+      "Saturday refresh through GitHub Actions",
+      "Persistent new, seen, sparred, acted, and dismissed states",
+      "Portable JSON context store shared by the feed and a desktop client"
+    ],
+    "stack": [
+      "JavaScript",
+      "GitHub Actions",
+      "Static HTML"
+    ],
+    "status": "Personal tool",
+    "note": "Write-back is asynchronous: browser changes are exported manually and folded into the next scheduled batch. No private saved items are reproduced here.",
+    "problem": "Saved links are easy to collect and hard to return to. A weekly feed makes revisiting them intentional instead of another endless inbox.",
+    "how": "A scheduled GitHub Actions job builds a static feed from a JSON context store. Phone changes are queued locally and exported manually; the next batch folds them back into the store.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The published artifact connects a static phone-friendly feed, a portable context store, and an asynchronous write-back workflow. Private saved items and account configuration are not part of this portfolio.",
+    "sources": [
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/weekend-batch/blob/008e26c7a32924de2d01f5ef0b447c3bbb9ed903/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "web-context-graph",
+    "title": "Lineage",
+    "subtitle": "Give your conversations room to branch.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "illustration": "tree",
+    "color": "blue",
+    "description": "A local-first workspace that turns GitHub Copilot CLI conversations into a branching knowledge tree. Explore a new direction without losing where an idea came from.",
+    "capabilities": [
+      "Branch from addressable Markdown blocks",
+      "Keep parent context without leaking sibling conversations",
+      "Own an inspectable, Git-backed vault of Markdown and metadata"
+    ],
+    "stack": [
+      "React",
+      "FastAPI",
+      "Copilot CLI"
+    ],
+    "status": "Local-first app",
+    "note": "The application runs on localhost. The project site is a walkthrough, not a hosted multi-user app.",
+    "image": "/images/lineage.webp",
+    "imageAlt": "Lineage application showing a conversation alongside its branching knowledge tree",
+    "site": "https://ortizjorge639.github.io/web-context-graph/",
+    "problem": "A linear agent conversation makes it hard to try another direction without losing the source of an idea or dragging in unrelated branches.",
+    "how": "FastAPI serves a React interface on localhost. Copilot CLI responses become addressable Markdown blocks; a new branch carries its root-to-fork lineage but excludes sibling branches. Git-backed files keep the tree inspectable.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The public project combines a branching conversation interface with an inspectable Markdown-and-metadata knowledge model. Copilot CLI supplies the underlying agent capability; the walkthrough is not a hosted multi-user service.",
+    "sources": [
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/web-context-graph/blob/259037c89becdb88b2b9c69002c6efe5a6e9167b/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "bot-meetings-dotnet",
+    "title": "After the meeting",
+    "subtitle": "Less transcript digging. More answers.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "illustration": "bot",
+    "color": "blue",
+    "description": "A Microsoft Teams sample that retrieves meeting transcripts through Microsoft Graph and answers post-meeting questions with speaker- and timestamp-aware citations.",
+    "capabilities": [
+      "Handle Teams meeting and participant events",
+      "Retrieve transcripts through Microsoft Graph",
+      "Answer transcript questions with speaker and timestamp citations"
+    ],
+    "stack": [
+      ".NET 10",
+      "Microsoft Graph",
+      "Azure OpenAI"
+    ],
+    "status": "Preview sample",
+    "note": "Preview, not production-ready. Transcript jobs and documents use JSON files on one App Service instance. Distributed leases, legal hold, user deletion, and multi-instance consistency remain production gaps. Use non-sensitive test meetings only.",
+    "problem": "Finding a specific answer in a completed meeting should not require manually searching an entire transcript.",
+    "how": "Teams meeting events trigger transcript retrieval through Graph. The .NET sample uses Microsoft Agent Framework and Azure OpenAI to answer questions from the retrieved transcript with citations.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. This is an adaptation of a Microsoft Teams sample with a documented transcript-question-answering workflow and deployment configuration. Microsoft services and the original sample are dependencies, not original components claimed by this portfolio.",
+    "sources": [
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/bot-meetings-dotnet/blob/3326539385fa9f9c6412e8f1943302b0e4f17616/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "mcreator-workspace-harness",
+    "title": "Modding, with guardrails",
+    "subtitle": "A better co-op partner for Minecraft tools.",
+    "categories": [
+      "Gaming",
+      "AI"
+    ],
+    "updated": "2026-11-13",
+    "illustration": "blocks",
+    "color": "red",
+    "description": "An agent skill for working safely inside MCreator: editing procedures, coordinating Blockly and generated Java, and tracing what happens in a live Minecraft session.",
+    "capabilities": [
+      "Regeneration-aware workspace editing guidance",
+      "Blockly procedure and Java coordination",
+      "Real-time Minecraft log tracing with PowerShell helpers"
+    ],
+    "stack": [
+      "Agent skills",
+      "PowerShell",
+      "MCreator"
+    ],
+    "status": "Developer toolkit",
+    "note": "Not an official MCreator automation API. The skill documents where regeneration can overwrite external edits.",
+    "problem": "An edit can compile yet disappear when MCreator regenerates Java, or never reach the running game. Several representations need to stay consistent.",
+    "how": "The skill guides agents through workspace inspection, closing the editor, coordinating Blockly and generated Java, compilation, and real-time Minecraft tracing. Runtime state must be verified separately from compilation.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The public toolkit packages a safety-focused agent skill, PowerShell inspection helpers, a user quick start, and a documented right-click conversion example. It is an independent field guide, not an official MCreator API.",
+    "sources": [
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/mcreator-workspace-harness/blob/547eaf435bed89ca7eadaa56407723a556a48ebb/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "reset-canvas",
+    "title": "Grand Reset",
+    "subtitle": "A little space to see the bigger picture.",
+    "categories": [
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "illustration": "canvas",
+    "color": "blue",
+    "description": "A calm, local-first canvas for mapping a physical and digital declutter. Switch perspectives, organize the loose ends, and review agent proposals before accepting them.",
+    "capabilities": [
+      "Canvas, grid, and flow views",
+      "Search, filter, and edit across lifecycle spaces",
+      "Browser-local snapshots and an agent proposal inbox"
+    ],
+    "stack": [
+      "JavaScript",
+      "JSON Schema",
+      "localStorage"
+    ],
+    "status": "Browser-local tool",
+    "note": "There is no remote backend. Saved state belongs to the browser origin rather than a synced account.",
+    "problem": "Physical and digital loose ends can feel like one undifferentiated pile. Seeing them spatially can offer perspective without turning them into a deadline-driven task list.",
+    "how": "A static browser application stores the canonical snapshot in localStorage. Canvas, Grid, and Flow are views of the same data. Agent proposals enter a visible inbox and require human approval.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The public application explores a local-first life-map model, multiple views, and an explicit human-review boundary for agent proposals. No personal canvas contents are reproduced here.",
+    "sources": [
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/reset-canvas/blob/24a5cd964306ba740bb9c94610e61e670265ec04/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "just-play",
+    "title": "Just Play",
+    "subtitle": "One good choice. Then settle in.",
+    "categories": [
+      "Gaming"
+    ],
+    "updated": "2026-07-10",
+    "illustration": "game",
+    "color": "red",
+    "description": "A gaming companion that helps you find up to three games from a curated catalog to fit your mood, energy, and time, then keep the session in view with StandBy.",
+    "capabilities": [
+      "Mood, energy, and time produce a shortlist of up to three games",
+      "Session goals and notes help you pick up where you left off",
+      "StandBy shows game art, a timer, and session controls"
+    ],
+    "stack": [
+      "Next.js",
+      "Supabase",
+      "IGDB"
+    ],
+    "status": "V2 in progress · public landing",
+    "note": "V2 is in progress. The public landing and reel are available; an authenticated player workflow was not tested for this portfolio. Steam library sync and launching games are not promised. Canopy relationships and account-backed world growth remain future work.",
+    "site": "https://v0-just-play-app.vercel.app/about",
+    "problem": "A large backlog can turn a free evening into more scrolling. The aim is to make a small deliberate choice and keep the game, not the companion, at the center.",
+    "how": "The public landing describes a curated-catalog recommendation flow and a quiet StandBy companion. The repository uses Next.js, Supabase, and IGDB; its staged public screenshots are demos, not evidence of live account behavior.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The public project brings together a game-discovery flow, a StandBy session companion, and a public landing with a silent-first product reel. The source distinguishes implemented foundations from future Canopy direction.",
+    "sources": [
+      {
+        "label": "Public landing / onboarding",
+        "url": "https://v0-just-play-app.vercel.app/about",
+        "reviewed": "2026-11-13"
+      },
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/just-play/blob/73e88ee9eed69e71be2b8041fa94d247ac934d34/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "repoquest",
+    "title": "RepoQuest",
+    "subtitle": "Every repository has an opening scene.",
+    "categories": [
+      "Media",
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "illustration": "film",
+    "color": "blue",
+    "description": "A TypeScript CLI that turns a GitHub repository into a cinematic setup guide: from README and package details to an animated, self-contained HTML tutorial.",
+    "capabilities": [
+      "Read repository setup signals and environment examples",
+      "Generate a ten-scene animated HTML guide",
+      "Support video rendering through HyperFrames"
+    ],
+    "stack": [
+      "TypeScript",
+      "Node.js",
+      "HyperFrames"
+    ],
+    "status": "CLI tool",
+    "note": "Produces a tutorial artifact, not a running copy of the source application. Available as npx repoquest.",
+    "image": "/images/repoquest.jpg",
+    "imageAlt": "RepoQuest cinematic repository setup guide example",
+    "problem": "A repository can have good setup information and still feel hard to begin. A short visual walkthrough can make the opening steps more approachable.",
+    "how": "The TypeScript CLI reads setup signals from repository files and produces a self-contained HTML guide. Optional HyperFrames support renders a video; generating a guide does not install or run the source project.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The public CLI packages repository inspection and an animated tutorial output format. Its example capture is public project imagery; this overview does not repeat the README’s unverified production-grade or accessibility certification claims. The README references upstream qwibitai/repoquest; the available evidence does not resolve Jorge’s individual contribution or authorship.",
+    "sources": [
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/repoquest/blob/eb712c1fa34690d2f772f06afd81c82d73482553/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "firstmind",
+    "title": "FirstMind",
+    "subtitle": "Keep the thought. Let the clutter go.",
+    "categories": [
+      "Tech"
+    ],
+    "description": "A cognitive-wellness prototype centered on ephemeral notes, memory exercises, and a small collection of essential insights.",
+    "capabilities": [
+      "Ephemeral notes designed to fade",
+      "Memory exercises and reflection prompts",
+      "A deliberately small collection of essential insights"
+    ],
+    "stack": [
+      "Web prototype"
+    ],
+    "status": "Public prototype",
+    "note": "The anonymous onboarding is publicly available. This is not a medical treatment or a clinically validated intervention; no health efficacy is claimed. Notes, user data, and exercise outcomes were not accessed or tested.",
+    "problem": "Keeping every thought can make a notes system feel like another thing to manage. FirstMind explores keeping less and practicing intentional release.",
+    "how": "The public onboarding introduces ephemeral notes, memory exercises, and essential insights. This portfolio describes that public surface only; it does not infer a storage architecture or a validated cognitive outcome.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The public artifact presents a product concept around impermanence and mindful information keeping. This note uses only the approved public app surface; no private repository, personal notes, or private implementation details are published.",
+    "repo": "",
+    "site": "https://firstmind.app",
+    "illustration": "memory",
+    "color": "blue",
+    "updated": "2026-11-13",
+    "sources": [
+      {
+        "label": "Public landing / onboarding",
+        "url": "https://firstmind.app",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "flowlog",
+    "title": "Flowlog",
+    "subtitle": "From a Steam library to something you want to play.",
+    "categories": [
+      "Gaming",
+      "Tech"
+    ],
+    "description": "A public gaming-backlog concept for importing a Steam library, organizing games into decks, and deciding what to play next.",
+    "capabilities": [
+      "The landing describes Steam library import",
+      "Custom decks organize games by genre, mood, or play style",
+      "A card-based flow sorts what to play, save, or pass on"
+    ],
+    "stack": [
+      "React",
+      "TypeScript",
+      "Lovable"
+    ],
+    "status": "Public landing · MVP links",
+    "note": "The landing is live, not proof of a functioning Steam import. Its main MVP link at flowlog-gg.vercel.app returned a Flowlog page; the different footer link at flowlog.lovable.app returned HTTP 403 to a direct check on November 13, 2026. Neither account workflow was verified. Use the linked landing for current entry points.",
+    "problem": "A large Steam library can be hard to navigate when deciding what to play. Decks and deliberate sorting offer a more manageable view.",
+    "how": "The public landing describes importing games, grouping them into themed decks, and sorting cards. It links to two different MVP origins. This portfolio does not equate marketing copy or an HTTP response with verified account functionality.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The public project packages a Steam-backlog product concept and a landing page around decks and a card-sorting flow. This overview withholds claims about live Steam integration or real user results.",
+    "repo": "https://github.com/ortizjorge639/getflowlog",
+    "site": "https://getflowlog.lovable.app",
+    "illustration": "decks",
+    "color": "red",
+    "updated": "2026-11-13",
+    "sources": [
+      {
+        "label": "Public landing / onboarding",
+        "url": "https://getflowlog.lovable.app",
+        "reviewed": "2026-11-13"
+      },
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/getflowlog/blob/eb8db3527abe26858f211f3224fc1b1f9fe7b5cf/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "apim-credential-broker-poc",
+    "title": "A token stays with the broker",
+    "subtitle": "An agent can use a tool without holding the user’s token.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "description": "A proof of concept that puts OAuth credential handling in Azure API Management so a Foundry agent can call a narrow Microsoft Graph tool without receiving the user’s access token.",
+    "capabilities": [
+      "APIM validates a managed-identity caller before tool use",
+      "Credential Manager owns the consent, token cache, and refresh",
+      "A public explainer and template document the bounded integration"
+    ],
+    "stack": [
+      "Azure API Management",
+      "Bicep",
+      "Microsoft Graph"
+    ],
+    "status": "Proof of concept",
+    "note": "The README reports runtime and negative-path checks for one bounded approach. Per-user isolation / per-user OAuth passthrough is not proven. This portfolio did not redeploy the infrastructure or independently repeat those provider checks. No tenant screenshots or identifiers are reproduced.",
+    "problem": "Giving an agent a user’s token expands the consequences of a leak. A narrow broker can keep the credential boundary separate from the model.",
+    "how": "The Foundry agent authenticates to APIM with a managed identity. APIM validates the caller, obtains a token from Credential Manager, calls Graph, and returns the tool result rather than the credential.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The public artifact includes an architectural walkthrough, an interactive diagram, APIM integration work, and a reusable Bicep template. It documents both the chosen approach and the limits of what its reported checks establish.",
+    "illustration": "broker",
+    "color": "blue",
+    "updated": "2026-10-06",
+    "sources": [
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/apim-credential-broker-poc/blob/e786b03a8d61756542be5b3823ae12f893c22b63/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "oneshottober",
+    "title": "OneShotTober",
+    "subtitle": "One prompt, one shot, shown out loud.",
+    "categories": [
+      "Media",
+      "Tech"
+    ],
+    "description": "A static site for a 31-day creative prompting challenge, including an embedded generative-canvas one-shot example.",
+    "capabilities": [
+      "A public home for the 31-day prompt challenge",
+      "An embedded generative-canvas example",
+      "A dependency-free HTML and CSS site"
+    ],
+    "stack": [
+      "HTML",
+      "CSS",
+      "Canvas"
+    ],
+    "status": "Public challenge site",
+    "note": "The public site and repository are available. This is a creative challenge and example, not a claim of participation numbers, a hosted AI backend, or a finished collection of 31 generated results.",
+    "problem": "A small constraint can be more useful than an open-ended brief. One prompt and one attempt make a creative exercise easy to start and share.",
+    "how": "Plain HTML and CSS form the site, with an embedded generative-canvas example. The repository has no dependency install or build step and documents a static Vercel deployment.",
+    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. The public artifact brings together the challenge format, static site, visual mark, social-card source, and an embedded example. No generated result or audience metric is invented here.",
+    "site": "https://oneshottober.vercel.app/",
+    "illustration": "prompt",
+    "color": "red",
+    "updated": "2026-09-26",
+    "sources": [
+      {
+        "label": "Public README at reviewed revision",
+        "url": "https://github.com/ortizjorge639/oneshottober/blob/cea17c65551512f38bff00ea3c7791a0bd0f34b7/README.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  }
+]

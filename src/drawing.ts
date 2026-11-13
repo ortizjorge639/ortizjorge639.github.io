@@ -3,7 +3,7 @@ import { icon } from './art';
 import { StudioAudio } from './audio';
 import { paintSegment, replayInk, type InkAction, type InkPoint, type InkStroke, type InkTool } from './ink-renderer';
 
-const excluded = 'a,button,input,select,textarea,label,summary,[contenteditable],[role="button"],[data-ink-ui],dialog';
+const excluded = 'a,button,input,select,textarea,label,summary,[contenteditable],[role="button"],[data-ink-ui],[data-guide-ui],dialog';
 const toolNames: Record<InkTool, string> = { pen: 'Pen', paint: 'Paint', eraser: 'Eraser' };
 const toolIcons = { pen: 'pen', paint: 'brush', eraser: 'eraser' } as const;
 const colors = [
@@ -12,20 +12,26 @@ const colors = [
   { name: 'Black', value: '#292b30' },
 ];
 
-export function setupPageInk(audio: StudioAudio) {
-  const app = document.querySelector<HTMLElement>('#app')!;
-  const canvas = document.createElement('canvas');
-  canvas.id = 'page-ink-canvas';
-  canvas.className = 'page-ink-canvas';
-  canvas.setAttribute('aria-hidden', 'true');
-  document.body.append(canvas);
+type Pane = 'upper' | 'lower';
+type SurfaceAction = { id: number; action: InkAction };
+type Surface = { root: HTMLElement; canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; width: number; height: number; scale: number };
+
+export interface PageInkController {
+  setSurface(key: string, surfaces: { upper: HTMLElement; lower: HTMLElement }, upperKey?: string): void;
+  suspend(): void;
+  handleEscape(): boolean;
+  isEnabled(): boolean;
+  onEnabled(listener: (enabled: boolean) => void): () => void;
+}
+
+export function setupPageInk(audio: StudioAudio, mount: HTMLElement): PageInkController {
   const widget = document.createElement('aside');
   widget.className = 'ink-widget';
   widget.dataset.inkUi = '';
   widget.setAttribute('aria-label', 'Page ink');
   widget.innerHTML = `
     <div id="ink-panel" class="ink-panel" aria-label="Ink options" hidden>
-      <div class="ink-panel-heading"><span>YOUR POCKET STUDIO</span><button id="ink-close-panel" aria-label="Close ink tools">×</button></div>
+      <div class="ink-panel-heading"><span>Ink tools</span><button id="ink-close-panel" aria-label="Close ink tools">×</button></div>
       <div class="ink-tool-choices" role="group" aria-label="Drawing tool">
         ${(['pen', 'paint', 'eraser'] as const).map((tool) => `<button data-ink-tool="${tool}" aria-pressed="${tool === 'pen'}">${icon(toolIcons[tool])}<span>${toolNames[tool]}</span></button>`).join('')}
       </div>
@@ -46,7 +52,7 @@ export function setupPageInk(audio: StudioAudio) {
       </div>
     </div>
     <p id="ink-status" class="ink-status" role="status" aria-live="polite"></p>`;
-  document.body.append(widget);
+  mount.append(widget);
 
   function element<T extends HTMLElement>(selector: string) {
     return widget.querySelector<T>(selector)!;
@@ -61,24 +67,19 @@ export function setupPageInk(audio: StudioAudio) {
   const clear = element<HTMLButtonElement>('#ink-clear');
   const status = element<HTMLElement>('#ink-status');
   const hoverInput = element<HTMLInputElement>('#ink-hover');
-  const context = canvas.getContext('2d');
-  if (!context) {
-    toggle.disabled = true;
-    status.textContent = 'Page ink is unavailable in this browser.';
-    console.warn('Page ink could not create a 2D canvas context');
-    return;
-  }
-  const ctx = context;
-  const history: InkAction[] = [];
-  let active: { stroke: InkStroke; pointerId: number } | undefined;
+  const histories = new Map<string, SurfaceAction[]>();
+  let paneHistory: Record<Pane, SurfaceAction[]> = { upper: [], lower: [] };
+  let nextAction = 0;
+  const enabledListeners = new Set<(enabled: boolean) => void>();
+  let surfaces: Partial<Record<Pane, Surface>> = {};
+  let listeners: AbortController | undefined;
+  let observer: ResizeObserver | undefined;
+  let active: { stroke: InkStroke; pointerId: number; pane: Pane } | undefined;
   let pressedPointer: number | undefined;
   let enabled = false;
   let tool: InkTool = 'pen';
   let color = colors[0];
   let size = 1;
-  let width = 0;
-  let height = 0;
-  let scale = 1;
   let resizeFrame = 0;
   let statusTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -89,46 +90,63 @@ export function setupPageInk(audio: StudioAudio) {
     statusTimer = setTimeout(() => status.classList.remove('is-visible'), 6500);
   }
   function syncHistory() {
+    const history = [...new Map(Object.values(paneHistory).flat().map(item => [item.id, item])).values()];
     undo.disabled = history.length === 0;
     let visibleInk = false;
-    for (const action of history) {
-      if (action.kind === 'clear') visibleInk = false;
-      else if (action.tool !== 'eraser') visibleInk = true;
+    for (const pane of ['upper', 'lower'] as const) {
+      let visible = false;
+      for (const { action } of paneHistory[pane]) {
+        if (action.kind === 'clear') visible = false;
+        else if (action.tool !== 'eraser') visible = true;
+      }
+      visibleInk ||= visible;
     }
     clear.disabled = !visibleInk;
     save.disabled = !visibleInk;
-    canvas.dataset.actionCount = String(history.length);
+    for (const surface of Object.values(surfaces)) surface.canvas.dataset.actionCount = String(history.length);
   }
   function replay() {
-    replayInk(ctx, history, width, height);
-    if (active) replayInkStroke(active.stroke);
+    for (const pane of ['upper', 'lower'] as const) {
+      const surface = surfaces[pane];
+      if (!surface) continue;
+      const actions = paneHistory[pane].map(item => item.action);
+      replayInk(surface.ctx, actions, surface.width, surface.height);
+      if (active?.pane === pane) replayInkStroke(surface, active.stroke);
+    }
   }
-  function replayInkStroke(stroke: InkStroke) {
-    stroke.points.forEach((point, index) => paintSegment(ctx, stroke, stroke.points[Math.max(0, index - 1)], point));
+  function replayInkStroke(surface: Surface, stroke: InkStroke) {
+    stroke.points.forEach((point, index) => paintSegment(surface.ctx, stroke, stroke.points[Math.max(0, index - 1)], point));
   }
   function resize() {
     resizeFrame = 0;
-    const nextWidth = document.documentElement.clientWidth;
-    const nextHeight = Math.ceil(Math.max(window.innerHeight, app.getBoundingClientRect().bottom + window.scrollY));
-    if (nextWidth === width && nextHeight === height) return;
-    width = nextWidth;
-    height = nextHeight;
-    // One backing pixel per CSS pixel keeps the nib crisp and the full-page layer bounded.
-    scale = Math.min(1, 16000 / width, 16000 / height, Math.sqrt(16_000_000 / (width * height)));
-    canvas.width = Math.max(1, Math.round(width * scale));
-    canvas.height = Math.max(1, Math.round(height * scale));
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-    ctx.setTransform(scale, 0, 0, scale, 0, 0);
-    ctx.imageSmoothingEnabled = false;
+    for (const surface of Object.values(surfaces)) {
+      const { root, canvas, ctx } = surface;
+      // Exclude the previous canvas extent when measuring reflowed content.
+      canvas.hidden = true;
+      const width = Math.max(1, root.clientWidth);
+      const height = Math.max(1, root.scrollHeight, root.clientHeight);
+      canvas.hidden = false;
+      if (width === surface.width && height === surface.height) continue;
+      interruptStroke();
+      surface.width = width;
+      surface.height = height;
+      surface.scale = Math.min(1, 16000 / width, 16000 / height, Math.sqrt(8_000_000 / (width * height)));
+      canvas.width = Math.max(1, Math.round(width * surface.scale));
+      canvas.height = Math.max(1, Math.round(height * surface.scale));
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(surface.scale, 0, 0, surface.scale, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+    }
     replay();
+    positionTray();
   }
   function requestResize() {
     if (!resizeFrame) resizeFrame = requestAnimationFrame(resize);
   }
   function finishStroke() {
     if (!active) return;
-    history.push(active.stroke);
+    paneHistory[active.pane].push({ id: ++nextAction, action: active.stroke });
     active = undefined;
     syncHistory();
   }
@@ -141,16 +159,17 @@ export function setupPageInk(audio: StudioAudio) {
     panel.hidden = !open;
     toolsToggle.setAttribute('aria-expanded', String(open));
     toolsToggle.setAttribute('aria-label', open ? 'Close ink tools' : 'Open ink tools');
+    if (open) positionTray();
     if (focus) (open ? element<HTMLButtonElement>('[data-ink-tool]') : toolsToggle).focus();
   }
   function setEnabled(value: boolean) {
     interruptStroke();
     enabled = value;
+    enabledListeners.forEach(listener => listener(enabled));
     toggle.setAttribute('aria-pressed', String(enabled));
     toggle.setAttribute('aria-label', enabled ? 'Disable page ink' : 'Enable page ink');
     actions.hidden = !enabled;
-    document.body.classList.toggle('ink-enabled', enabled);
-    canvas.dataset.enabled = String(enabled);
+    syncEnabled();
     if (enabled) {
       resize();
       announce(matchMedia('(pointer: coarse)').matches
@@ -161,85 +180,83 @@ export function setupPageInk(audio: StudioAudio) {
       setPanel(false);
       announce('Ink off. Your marks stay until you clear them.');
     }
-    audio.playUI();
   }
-  function eligible(event: PointerEvent) {
-    if (!enabled || !event.isPrimary || document.querySelector('dialog[open]')) return false;
+  function syncEnabled() {
+    for (const surface of Object.values(surfaces)) {
+      surface.root.classList.toggle('ink-enabled', enabled);
+      surface.canvas.dataset.enabled = String(enabled);
+      surface.canvas.dataset.tool = tool;
+    }
+  }
+  function eligible(event: PointerEvent): Pane | undefined {
+    if (!enabled || !event.isPrimary || document.querySelector('dialog[open]')) return;
     const target = document.elementFromPoint(event.clientX, event.clientY);
-    return target !== null && !target.closest(excluded);
+    if (!target || target.closest(excluded)) return;
+    for (const pane of ['upper', 'lower'] as const) {
+      if (surfaces[pane]?.root.contains(target)) return pane;
+    }
   }
-  function point(event: PointerEvent): InkPoint {
+  function point(event: PointerEvent, surface: Surface): InkPoint {
+    const bounds = surface.canvas.getBoundingClientRect();
     return {
-      x: Math.round(event.clientX + window.scrollX),
-      y: Math.round(event.clientY + window.scrollY),
+      // Content-local CSS pixels are retained across resize, clipping, and scrolling.
+      x: Math.round(event.clientX - bounds.left),
+      y: Math.round(event.clientY - bounds.top),
       pressure: event.pointerType === 'pen' ? Math.max(0.1, event.pressure) : event.buttons & 1 ? 0.8 : 0.3,
     };
   }
-  function draw(event: PointerEvent) {
-    const next = point(event);
-    if (!active || active.pointerId !== event.pointerId) {
+  function draw(event: PointerEvent, pane: Pane) {
+    const surface = surfaces[pane]!;
+    const next = point(event, surface);
+    if (!active || active.pointerId !== event.pointerId || active.pane !== pane) {
       finishStroke();
-      active = { pointerId: event.pointerId, stroke: { kind: 'stroke', tool, color: color.value, size, points: [next] } };
-      paintSegment(ctx, active.stroke, next);
+      active = { pane, pointerId: event.pointerId, stroke: { kind: 'stroke', tool, color: color.value, size, points: [next] } };
+      paintSegment(surface.ctx, active.stroke, next);
     } else {
       const previous = active.stroke.points[active.stroke.points.length - 1];
       if (Math.hypot(next.x - previous.x, next.y - previous.y) < 1) return;
       active.stroke.points.push(next);
-      paintSegment(ctx, active.stroke, previous, next);
+      paintSegment(surface.ctx, active.stroke, previous, next);
     }
     audio.draw(tool, next.pressure);
   }
-  document.addEventListener('pointerdown', (event) => {
+  function pointerDown(event: PointerEvent) {
     if (!enabled) return;
     interruptStroke();
-    if (event.button !== 0 || !eligible(event)) return;
+    const pane = eligible(event);
+    if (event.button !== 0 || !pane) return;
     if (!panel.hidden) setPanel(false);
     pressedPointer = event.pointerId;
-    event.preventDefault();
-    draw(event);
-  }, { capture: true });
-  document.addEventListener('pointermove', (event) => {
-    if (!eligible(event)) { finishStroke(); return; }
+    if (event.pointerType !== 'touch') event.preventDefault();
+    draw(event, pane);
+  }
+  function pointerMove(event: PointerEvent) {
+    const pane = eligible(event);
+    if (!pane || (active && active.pane !== pane)) { interruptStroke(); return; }
     const dragging = pressedPointer === event.pointerId && (event.buttons & 1) !== 0;
     const hovering = hoverInput.checked && event.pointerType === 'mouse' && event.buttons === 0;
     if (!dragging && !hovering) { finishStroke(); return; }
-    draw(event);
-  }, { passive: true });
-  document.addEventListener('pointerup', (event) => {
-    if (event.pointerId === pressedPointer) interruptStroke();
-  });
-  document.addEventListener('pointercancel', interruptStroke);
-  document.addEventListener('pointerout', (event) => { if (event.relatedTarget === null) interruptStroke(); });
-  window.addEventListener('blur', interruptStroke);
-  window.addEventListener('scroll', interruptStroke, { passive: true });
-  document.addEventListener('visibilitychange', interruptStroke);
-  document.addEventListener('pointerover', (event) => {
-    if (!enabled || !(event.target instanceof Element)) return;
-    const control = event.target.closest('button,a');
-    const previous = event.relatedTarget instanceof Element ? event.relatedTarget.closest('button,a') : null;
-    if (control && control !== previous) audio.playUI(true);
-  });
-  document.addEventListener('click', (event) => {
-    if (enabled && event.target instanceof Element && event.target.closest('button,a')) audio.playUI();
-  });
-  document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || document.querySelector('dialog[open]')) return;
+    draw(event, pane);
+  }
+  function handleEscape() {
     if (!panel.hidden) {
-      event.preventDefault();
       setPanel(false, true);
+      return true;
     } else if (enabled) {
-      event.preventDefault();
       setEnabled(false);
       toggle.focus();
+      return true;
     }
-  });
-  document.addEventListener('pointerdown', (event) => {
-    if (!panel.hidden && event.target instanceof Node && !widget.contains(event.target)) setPanel(false);
-  });
+    return false;
+  }
   toggle.addEventListener('click', () => setEnabled(!enabled));
   toolsToggle.addEventListener('click', (event) => setPanel(panel.hidden, event.detail === 0));
   element<HTMLButtonElement>('#ink-close-panel').addEventListener('click', () => setPanel(false, true));
   soundToggle.addEventListener('click', () => audio.toggle());
+  widget.addEventListener('click', (event) => {
+    const button = event.target instanceof Element ? event.target.closest('button') : null;
+    if (button && button !== soundToggle && !button.disabled) audio.playUI();
+  });
   audio.subscribe((state) => {
     soundToggle.innerHTML = icon(state.enabled ? 'sound' : 'mute');
     soundToggle.setAttribute('aria-label', state.enabled ? 'Mute drawing sounds' : 'Enable drawing sounds');
@@ -251,7 +268,7 @@ export function setupPageInk(audio: StudioAudio) {
     tool = button.dataset.inkTool as InkTool;
     widget.querySelectorAll('[data-ink-tool]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
     toolsToggle.innerHTML = `${icon(toolIcons[tool])}<i class="ink-color-dot"></i>`;
-    canvas.dataset.tool = tool;
+    syncEnabled();
     announce(`${toolNames[tool]} selected.`);
   }));
   widget.querySelectorAll<HTMLButtonElement>('[data-ink-color]').forEach((button) => button.addEventListener('click', () => {
@@ -272,21 +289,28 @@ export function setupPageInk(audio: StudioAudio) {
   });
   undo.addEventListener('click', () => {
     finishStroke();
-    history.pop();
+    const latest = Math.max(0, ...Object.values(paneHistory).map(history => history.at(-1)?.id ?? 0));
+    for (const history of Object.values(paneHistory)) if (history.at(-1)?.id === latest) history.pop();
     replay();
     syncHistory();
     announce('Last ink action undone.');
   });
   clear.addEventListener('click', () => {
     finishStroke();
-    history.push({ kind: 'clear' });
+    const clearAction: SurfaceAction = { id: ++nextAction, action: { kind: 'clear' } };
+    paneHistory.upper.push(clearAction);
+    paneHistory.lower.push(clearAction);
     replay();
     syncHistory();
     announce('Ink cleared. Undo brings it back.');
   });
   element<HTMLButtonElement>('#ink-stamp').addEventListener('click', () => {
     finishStroke();
-    const center = { x: window.innerWidth / 2, y: window.scrollY + window.innerHeight / 2 };
+    const surface = surfaces.upper;
+    if (!surface) return;
+    const bounds = surface.canvas.getBoundingClientRect();
+    const viewport = surface.root.parentElement!.getBoundingClientRect();
+    const center = { x: surface.width / 2, y: (Math.max(bounds.top, viewport.top) + Math.min(bounds.bottom, viewport.bottom)) / 2 - bounds.top };
     const points: InkPoint[] = [];
     for (let i = 0; i <= 10; i++) {
       const angle = i * Math.PI / 5 - Math.PI / 2;
@@ -294,13 +318,28 @@ export function setupPageInk(audio: StudioAudio) {
       points.push({ x: center.x + Math.cos(angle) * radius, y: center.y + Math.sin(angle) * radius, pressure: 0.8 });
     }
     const stroke: InkStroke = { kind: 'stroke', tool: 'pen', color: color.value, size: 1, points };
-    history.push(stroke);
-    replayInkStroke(stroke);
+    paneHistory.upper.push({ id: ++nextAction, action: stroke });
+    replayInkStroke(surface, stroke);
     syncHistory();
-    announce('Star stamped in the center of the visible page.');
+    announce('Star stamped in the visible upper screen.');
   });
   save.addEventListener('click', () => {
     finishStroke();
+    const upper = surfaces.upper;
+    const lower = surfaces.lower;
+    if (!upper || !lower) return;
+    const canvas = document.createElement('canvas');
+    const width = Math.max(upper.width, lower.width);
+    const height = upper.height + lower.height;
+    const scale = Math.min(1, 16000 / width, 16000 / height, Math.sqrt(16_000_000 / (width * height)));
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) { announce('Could not export your ink. Please try again.'); return; }
+    ctx.scale(scale, scale);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(upper.canvas, 0, 0, upper.width, upper.height);
+    ctx.drawImage(lower.canvas, 0, upper.height, lower.width, lower.height);
     canvas.toBlob((blob) => {
       if (!blob) { announce('Could not export your ink. Please try again.'); return; }
       const url = URL.createObjectURL(blob);
@@ -312,10 +351,82 @@ export function setupPageInk(audio: StudioAudio) {
       announce('Ink saved as a transparent PNG. Page content is not included.');
     }, 'image/png');
   });
-  new ResizeObserver(requestResize).observe(app);
-  window.addEventListener('resize', () => { interruptStroke(); requestResize(); });
-  resize();
+  function positionTray() {
+    const viewport = window.visualViewport;
+    const left = viewport?.offsetLeft ?? 0;
+    const top = viewport?.offsetTop ?? 0;
+    const width = viewport?.width ?? window.innerWidth;
+    const height = viewport?.height ?? window.innerHeight;
+    const dock = widget.getBoundingClientRect();
+    const bottom = Math.max(top + 8, Math.min(dock.top - 8, top + height - 8));
+    for (const tray of [panel, status]) {
+      tray.style.width = `${Math.max(0, Math.min(310, width - 16))}px`;
+      tray.style.left = `${Math.max(left + 8, Math.min(dock.right - Math.min(310, width - 16), left + width - Math.min(310, width - 16) - 8))}px`;
+      tray.style.bottom = `${Math.max(8, window.innerHeight - bottom)}px`;
+      tray.style.maxHeight = `${Math.max(0, bottom - top - 8)}px`;
+    }
+  }
+  function suspend() {
+    interruptStroke();
+    setPanel(false);
+    listeners?.abort();
+    observer?.disconnect();
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = 0;
+    for (const surface of Object.values(surfaces)) {
+      surface.root.classList.remove('ink-enabled');
+      surface.canvas.remove();
+    }
+    surfaces = {};
+  }
+  function setSurface(key: string, roots: { upper: HTMLElement; lower: HTMLElement }, upperKey = key) {
+    suspend();
+    for (const pane of ['upper', 'lower'] as const) {
+      const historyKey = `${pane}:${pane === 'upper' ? upperKey : key}`;
+      paneHistory[pane] = histories.get(historyKey) ?? [];
+      histories.set(historyKey, paneHistory[pane]);
+      const root = roots[pane];
+      const canvas = document.createElement('canvas');
+      canvas.className = 'screen-ink-canvas';
+      canvas.dataset.pane = pane;
+      canvas.dataset.surfaceKey = pane === 'upper' ? upperKey : key;
+      canvas.setAttribute('aria-hidden', 'true');
+      root.append(canvas);
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        canvas.remove();
+        announce('Page ink is unavailable in this browser.');
+        continue;
+      }
+      surfaces[pane] = { root, canvas, ctx, width: 0, height: 0, scale: 1 };
+    }
+    toggle.disabled = Object.keys(surfaces).length !== 2;
+    listeners = new AbortController();
+    const { signal } = listeners;
+    document.addEventListener('pointerdown', (event) => {
+      if (!panel.hidden && event.target instanceof Node && !widget.contains(event.target)) setPanel(false);
+      pointerDown(event);
+    }, { capture: true, signal });
+    document.addEventListener('pointermove', pointerMove, { passive: true, signal });
+    document.addEventListener('pointerup', interruptStroke, { signal });
+    document.addEventListener('pointercancel', interruptStroke, { signal });
+    document.addEventListener('pointerout', (event) => { if (event.relatedTarget === null) interruptStroke(); }, { signal });
+    document.addEventListener('scroll', interruptStroke, { capture: true, passive: true, signal });
+    document.addEventListener('visibilitychange', interruptStroke, { signal });
+    window.addEventListener('blur', interruptStroke, { signal });
+    window.addEventListener('resize', () => { interruptStroke(); requestResize(); }, { signal });
+    window.visualViewport?.addEventListener('resize', positionTray, { signal });
+    window.visualViewport?.addEventListener('scroll', positionTray, { signal });
+    observer = new ResizeObserver(requestResize);
+    Object.values(surfaces).forEach(({ root }) => {
+      observer!.observe(root);
+      if (root.parentElement) observer!.observe(root.parentElement);
+    });
+    syncEnabled();
+    resize();
+    syncHistory();
+  }
   syncHistory();
-  canvas.dataset.enabled = 'false';
-  canvas.dataset.tool = 'pen';
+  return { setSurface, suspend, handleEscape, isEnabled: () => enabled,
+    onEnabled(listener) { enabledListeners.add(listener); return () => { enabledListeners.delete(listener); }; } };
 }
