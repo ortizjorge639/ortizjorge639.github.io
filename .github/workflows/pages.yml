@@ -26,6 +26,15 @@ jobs:
       - run: npm run test:unit
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm test -- --grep-invert "touch drag paints"
+      - name: Preserve architecture review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reading-architecture-review
+          path: |
+            test-results/**/broker-architecture-desktop.png
+            test-results/**/document-architecture-phone.png
+          retention-days: 7
       - run: npm run test:responsive
       - name: Preserve browser failure evidence
         if: failure()

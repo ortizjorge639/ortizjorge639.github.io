@@ -1,5 +1,29 @@
 // Exact approved author-written narratives, never arbitrary URL/repository ingestion paths.
 export const CURATED_CASE_STUDIES = Object.freeze({
+  'gesture-conversation-lab': Object.freeze({
+    url: 'https://ortizjorge639.github.io/case-studies/gesture-conversation-lab.md',
+    file: 'public/case-studies/gesture-conversation-lab.md',
+  }),
+  'coding-session-dj': Object.freeze({
+    url: 'https://ortizjorge639.github.io/case-studies/coding-session-dj.md',
+    file: 'public/case-studies/coding-session-dj.md',
+  }),
+  'recurrence-gated-knowledge': Object.freeze({
+    url: 'https://ortizjorge639.github.io/case-studies/recurrence-gated-knowledge.md',
+    file: 'public/case-studies/recurrence-gated-knowledge.md',
+  }),
+  'retrieval-practice-harness': Object.freeze({
+    url: 'https://ortizjorge639.github.io/case-studies/retrieval-practice-harness.md',
+    file: 'public/case-studies/retrieval-practice-harness.md',
+  }),
+  'synthetic-migration-pilot': Object.freeze({
+    url: 'https://ortizjorge639.github.io/case-studies/synthetic-migration-pilot.md',
+    file: 'public/case-studies/synthetic-migration-pilot.md',
+  }),
+  'source-grounded-connections': Object.freeze({
+    url: 'https://ortizjorge639.github.io/case-studies/source-grounded-connections.md',
+    file: 'public/case-studies/source-grounded-connections.md',
+  }),
   'document-evidence-pipeline': Object.freeze({
     url: 'https://ortizjorge639.github.io/case-studies/document-evidence-pipeline.md',
     file: 'public/case-studies/document-evidence-pipeline.md',

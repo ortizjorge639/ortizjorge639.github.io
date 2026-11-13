@@ -1,3 +1,4 @@
+import { CURATED_CASE_STUDIES } from './source-policy.mjs';
 import nodeTest from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -9,7 +10,7 @@ import { renderPage, validateCatalog } from './build-reading.mjs';
 import { validateStories } from './validate-stories.mjs';
 
 const snapshot = () => readFile(new URL('../data/guide-sources.json', import.meta.url), 'utf8').then(JSON.parse);
-for (const id of ['inventory-data-assistant', 'document-evidence-pipeline', 'custom-model-auth-diagnostics']) {
+for (const id of Object.keys(CURATED_CASE_STUDIES)) {
 const test = (name, fn) => nodeTest(`${id}: ${name}`, fn);
 const url = `https://ortizjorge639.github.io/case-studies/${id}.md`;
 
@@ -30,12 +31,12 @@ test('curated inventory narrative is public evidence without repository eligibil
   assert.ok(chunks.every(c => !c.url.includes('github.com/')));
   const html = renderPage(projects, p);
   assert.match(html, /sanitized narrative/i);
-  assert.match(html, /not.*public code inspection/i);
+  assert.match(html, /not.*public code inspection|not public code or app proof|not publicly inspectable/i);
   assert.doesNotMatch(html, />Public repository</);
   const story = projectStories[id];
   assert.equal(story.scenes.reduce((n, s) => n + s.duration, 0), 50);
   assert.equal(story.scenes[2].visual.type, 'flow');
-  assert.match(JSON.stringify(story), /fictional/i);
+  assert.match(JSON.stringify(story), /fictional|hypothetical/i);
   assert.match(source.text, /not.*measured|not fresh|not.*freshly/i);
 });
 

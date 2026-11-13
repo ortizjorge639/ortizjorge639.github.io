@@ -1,3 +1,4 @@
+import { CURATED_CASE_STUDIES } from './source-policy.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,mkdtemp,rm} from 'node:fs/promises';
@@ -25,7 +26,7 @@ test('minimal host package has an explicit public-only allowlist and no CLI or p
   const {loadSources}=await import(path.join(target,'scripts/guide-sources.mjs'));
   const corpus = await loadSources();
   assert.ok(corpus.sourceCount>0,'package independently loads the real public corpus');
-  for (const id of ['inventory-data-assistant', 'document-evidence-pipeline', 'custom-model-auth-diagnostics']) {
+  for (const id of Object.keys(CURATED_CASE_STUDIES)) {
    const narrative = corpus.chunks.filter(c => c.projectId === id);
    assert.ok(narrative.some(c => c.url === `https://ortizjorge639.github.io/case-studies/${id}.md`));
    assert.ok(narrative.every(c => !c.url.includes('github.com/') && !c.url.includes('gist.')));

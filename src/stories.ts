@@ -1,3 +1,4 @@
+import { expandedCaseStories } from './expanded-case-stories.ts';
 import { projects } from './projects.ts';
 import { currentStories } from './current-stories.ts';
 import { inventoryStory } from './inventory-story.ts';
@@ -6,6 +7,7 @@ import type { ProjectStory } from './story-types';
 
 // Authored from the curated catalog and the pinned public README snapshots.
 export const projectStories: Record<string, ProjectStory> = {
+  ...expandedCaseStories,
   'document-evidence-pipeline': documentEvidenceStory,
   'custom-model-auth-diagnostics': customModelAuthStory,
   repoquest: {

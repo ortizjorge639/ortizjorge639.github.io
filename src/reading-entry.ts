@@ -20,7 +20,14 @@ if (search) {
   update();
 }
 const browse = document.querySelector<HTMLDetailsElement>('.project-nav details');
-if (browse && matchMedia('(max-width: 740px)').matches) browse.open = false;
+// Static HTML starts collapsed, so no-script phone readers reach the article.
+// This also adapts when a desktop viewport becomes a phone-sized viewport.
+const compact = matchMedia('(max-width: 740px)');
+if (browse) {
+  const adaptBrowse = () => { browse.open = !compact.matches; };
+  adaptBrowse();
+  compact.addEventListener('change', adaptBrowse);
+}
 
 const host = document.querySelector<HTMLElement>('#reading-guide-host');
 if (host) {

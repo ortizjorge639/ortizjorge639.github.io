@@ -1,0 +1,1857 @@
+{
+  "weekend-batch": {
+    "orientation": {
+      "question": "What makes a saved link worth returning to?",
+      "answer": "A periodic feed gives saved items a second encounter, while a portable context store carries their state into the next batch."
+    },
+    "architecture": {
+      "scope": "A scheduled collection path and a deliberately asynchronous write-back path—not a live synchronized application.",
+      "nodes": [
+        {
+          "id": "sources",
+          "label": "Saved items",
+          "detail": "Starred email and bookmarks supply items; their private contents are not shown here."
+        },
+        {
+          "id": "batch",
+          "label": "Scheduled builder",
+          "detail": "Reads prior state before producing the next weekly feed."
+        },
+        {
+          "id": "store",
+          "label": "Context store",
+          "detail": "Repository JSON keeps item states and discussion/action threads."
+        },
+        {
+          "id": "phone",
+          "label": "Phone feed",
+          "detail": "Static HTML reads the batch; seen/dismissed marks queue locally for manual export. Discussion/action authoring is a separate desktop-client path, not this phone example."
+        }
+      ],
+      "edges": [
+        {
+          "to": "batch",
+          "label": "Collect eligible saved items",
+          "from": "sources"
+        },
+        {
+          "to": "batch",
+          "label": "Read prior item state",
+          "from": "store"
+        },
+        {
+          "to": "phone",
+          "label": "Publish static weekly feed",
+          "from": "batch"
+        },
+        {
+          "to": "store",
+          "label": "Manually export updates; fold them in next batch",
+          "from": "phone"
+        }
+      ],
+      "boundary": "The browser cannot directly update the repository store. Local marks do not become synchronized state until the manual handoff and later fold.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Separate memory from the viewing client",
+        "why": "Portable JSON preserves state beyond one rendered feed.",
+        "tradeoff": "A repository-backed store is not a concurrent multi-user database."
+      },
+      {
+        "choice": "Batch the return visit",
+        "why": "A scheduled refresh makes revisiting deliberate instead of another continuous inbox.",
+        "tradeoff": "Freshness is bounded by the schedule, and write-back adds manual effort."
+      }
+    ],
+    "walkthrough": {
+      "input": "A fictional saved article about sound design.",
+      "steps": [
+        "The builder includes the article while retaining its prior state.",
+        "On the phone, mark the item seen or dismissed; the browser queues that local update.",
+        "Copy the queued updates manually into the repository handoff; a later batch folds them into the store."
+      ],
+      "output": "A future feed that reflects the recorded state rather than treating the article as new.",
+      "caveat": "Illustrative only. No private saved items were opened, and the collection or write-back workflow was not rerun."
+    },
+    "evidence": {
+      "established": [
+        "The reviewed public README describes a shared JSON store, static client and scheduled builder.",
+        "The asynchronous/manual write-back constraint is explicitly documented."
+      ],
+      "notEstablished": [
+        "A live two-way synchronized account workflow.",
+        "Successful collection from real accounts during this portfolio review."
+      ]
+    }
+  },
+  "web-context-graph": {
+    "orientation": {
+      "question": "Can a conversation branch without losing where it came from?",
+      "answer": "Each child thread keeps the root-to-fork path while excluding sibling branches; durable Markdown and metadata remain inspectable outside the UI."
+    },
+    "architecture": {
+      "scope": "Trusted single-user workspace: local interface and files, with agent inference crossing a separate provider boundary.",
+      "nodes": [
+        {
+          "id": "ui",
+          "label": "React workspace",
+          "detail": "Select a whole response block or list item as a fork point."
+        },
+        {
+          "id": "api",
+          "label": "Local FastAPI host",
+          "detail": "Coordinates threads and invokes the authenticated agent CLI."
+        },
+        {
+          "id": "cli",
+          "label": "Copilot CLI",
+          "detail": "Receives the selected lineage and supplies an agent response."
+        },
+        {
+          "id": "vault",
+          "label": "Git-backed vault",
+          "detail": "Markdown stores content; YAML owns relationships and Git records mutations."
+        }
+      ],
+      "edges": [
+        {
+          "to": "api",
+          "label": "Request a branch at a recorded block",
+          "from": "ui"
+        },
+        {
+          "to": "cli",
+          "label": "Pass root-to-fork context, excluding siblings",
+          "from": "api"
+        },
+        {
+          "to": "api",
+          "label": "Return the response for block addressing",
+          "from": "cli"
+        },
+        {
+          "to": "vault",
+          "label": "Write content and structural metadata",
+          "from": "api"
+        }
+      ],
+      "boundary": "Keep this on trusted localhost; do not expose the backend publicly. Copilot currently has broad local tool access: lineage filtering is a prompt-construction contract, not filesystem or tool isolation. Local-first storage is not offline inference, and the provider receives selected conversation context.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Make metadata authoritative",
+        "why": "Explicit relationships let the interface reconstruct lineage instead of inferring it from a visual layout.",
+        "tradeoff": "Metadata and message mutations must stay consistent; layout is only presentation state."
+      },
+      {
+        "choice": "Branch whole addressable blocks",
+        "why": "A recorded block gives the fork a stable, inspectable boundary.",
+        "tradeoff": "Arbitrary highlighted-text branching is not implemented."
+      }
+    ],
+    "walkthrough": {
+      "input": "A hypothetical thread exploring two alternative interface designs.",
+      "steps": [
+        "Choose a complete response block as the fork point.",
+        "Start a child request with its ancestors through that block.",
+        "Inspect the child and files to verify sibling discussions are excluded."
+      ],
+      "output": "An independently continuing child thread with a traceable origin.",
+      "caveat": "Not a live Copilot execution. The diagram describes the reviewed implementation contract, not a new provider acceptance test."
+    },
+    "evidence": {
+      "established": [
+        "The public README documents block-level forks, sibling exclusion and the Markdown/YAML/Git model.",
+        "The launcher binds the app to localhost; the public product site is a walkthrough."
+      ],
+      "notEstablished": [
+        "A hosted multi-user application or arbitrary span branching.",
+        "Independent repetition of provider calls or data-isolation tests in this review."
+      ]
+    }
+  },
+  "bot-meetings-dotnet": {
+    "orientation": {
+      "question": "How does an answer stay connected to what was actually said?",
+      "answer": "During an active meeting, answers prefer that session’s captured final captions, with completed transcripts as fallback. After meeting end, they prefer that occurrence’s completed transcript, otherwise recent scoped ended-session captions. Speaker/time references preserve the source boundary."
+    },
+    "architecture": {
+      "scope": "A preview meeting assistant with optional capture and summary paths; not every path is enabled by default.",
+      "nodes": [
+        {
+          "id": "meeting",
+          "label": "Meeting signals",
+          "detail": "An optional ACS participant captures finalized live captions."
+        },
+        {
+          "id": "graph",
+          "label": "Graph transcript",
+          "detail": "Completed transcript for the meeting occurrence; preferred after the session ends, not over active-session captions."
+        },
+        {
+          "id": "context",
+          "label": "Scoped context",
+          "detail": "Active: current-session final captions first, transcript fallback. Ended: completed occurrence transcript first, recent scoped ended captions fallback."
+        },
+        {
+          "id": "model",
+          "label": "Answer / summary",
+          "detail": "Chat mentions invoke answers; summaries require explicit pilot activation."
+        },
+        {
+          "id": "teams",
+          "label": "Teams chat",
+          "detail": "Returns cited answers or opt-in summary messages."
+        }
+      ],
+      "edges": [
+        {
+          "to": "context",
+          "label": "Provide session-scoped finalized captions",
+          "from": "meeting"
+        },
+        {
+          "to": "context",
+          "label": "Active-session fallback; preferred for the matching ended occurrence",
+          "from": "graph"
+        },
+        {
+          "to": "model",
+          "label": "Supply grounded context to the requested mode",
+          "from": "context"
+        },
+        {
+          "to": "teams",
+          "label": "Post answers or enabled summary updates",
+          "from": "model"
+        }
+      ],
+      "boundary": "The model does not certify completeness. The summary pilot is off by default; single-instance JSON storage is not a production meeting-data control.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Select context by session lifecycle, not global availability",
+        "why": "Current-session captions keep an active question grounded in the right live call. After the call, a completed transcript for that occurrence is preferred, with recent scoped ended captions bridging the gap.",
+        "tradeoff": "Caption completeness and final-transcript availability differ; old or unrelated meeting material must not become an accidental fallback."
+      },
+      {
+        "choice": "Keep summaries opt-in",
+        "why": "Explicit activation separates the pilot from the ordinary question-answering path.",
+        "tradeoff": "An accepted small pilot is not long-meeting or correction-retention accuracy proof."
+      }
+    ],
+    "walkthrough": {
+      "input": "A fictional non-sensitive test meeting with an action assigned near its end.",
+      "steps": [
+        "Ask a chat question against the scoped captured material.",
+        "Check the cited speaker/time rather than assuming the action was captured.",
+        "When the transcript arrives, use that preferred source and compare any summary separately."
+      ],
+      "output": "A source-linked response whose scope can be inspected.",
+      "caveat": "No real meeting content is reproduced. The documented later omission of a corrected value remains a limitation, not an issue this portfolio claims to fix."
+    },
+    "evidence": {
+      "established": [
+        "Public documentation describes caption/transcript selection and citation-bearing answers.",
+        "A two-meeting pilot was accepted; a later summary omitted a corrected value, limiting the claim."
+      ],
+      "notEstablished": [
+        "Production approval, broad summary completeness, long-meeting or restart accuracy.",
+        "A fresh live Teams or Graph run during portfolio preparation."
+      ]
+    }
+  },
+  "mcreator-workspace-harness": {
+    "orientation": {
+      "question": "Why can a mod compile but still do the wrong thing?",
+      "answer": "Workspace definitions, generated Java, triggers and the running game are different layers. The harness checks the whole chain rather than equating a build with behavior."
+    },
+    "architecture": {
+      "scope": "An independent agent field guide spanning authoring and runtime verification—not an official automation API.",
+      "nodes": [
+        {
+          "id": "skill",
+          "label": "Agent field guide",
+          "detail": "Inspect the installed version and back up the workspace; close the editor before writes."
+        },
+        {
+          "id": "workspace",
+          "label": "Workspace / Blockly",
+          "detail": "Definitions and procedures must remain discoverable in the editor."
+        },
+        {
+          "id": "java",
+          "label": "Generated Java",
+          "detail": "Coordinate regeneration or deliberately code-lock the chosen element."
+        },
+        {
+          "id": "runtime",
+          "label": "Minecraft runtime",
+          "detail": "Exercise the exact trigger; inspect live logs and registry state."
+        }
+      ],
+      "edges": [
+        {
+          "to": "workspace",
+          "label": "Inspect and coordinate related authoring representations",
+          "from": "skill"
+        },
+        {
+          "to": "java",
+          "label": "Generate or maintain compatible code",
+          "from": "workspace"
+        },
+        {
+          "to": "runtime",
+          "label": "Compile, reopen and run the actual trigger",
+          "from": "java"
+        }
+      ],
+      "boundary": "An open editor can overwrite external changes. Compilation verifies a build path, not whether the intended item state or trigger runs.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Treat representations as one system",
+        "why": "Blockly, element definitions and generated Java can disagree even when one file looks correct.",
+        "tradeoff": "Agents must inspect the installed generator and coordinate more than a single edit."
+      },
+      {
+        "choice": "Verify registry-level runtime state",
+        "why": "Names and textures can look identical even after a legitimate state change.",
+        "tradeoff": "A human game action and runtime evidence remain necessary beyond compilation."
+      }
+    ],
+    "walkthrough": {
+      "input": "A hypothetical tool that changes item type after repeated accepted uses.",
+      "steps": [
+        "Back up and close the editor, then align the procedure and trigger.",
+        "Validate and compile before reopening the workspace.",
+        "Exercise the tool in-game and inspect its registry identity and logs."
+      ],
+      "output": "Evidence linking a specific interaction to the resulting item state.",
+      "caveat": "This is a hypothetical variation, not a replay of a new game session. The source documents a scoped Windows field test, not universal compatibility."
+    },
+    "evidence": {
+      "established": [
+        "The public field guide names authoring layers, overwrite risks and an inspect-to-runtime workflow.",
+        "Its example documents a particular MCreator/generator/host combination."
+      ],
+      "notEstablished": [
+        "Compatibility with every editor/generator version.",
+        "Runtime correctness from a successful compile alone."
+      ]
+    }
+  },
+  "reset-canvas": {
+    "orientation": {
+      "question": "Can several perspectives share one calm map?",
+      "answer": "Canvas, Grid and Flow render the same browser-owned snapshot, so changing perspective does not create another copy of the thoughts."
+    },
+    "architecture": {
+      "scope": "Browser-local application state with explicit human review for agent proposals; no remote backend is implied.",
+      "nodes": [
+        {
+          "id": "views",
+          "label": "Canvas / Grid / Flow",
+          "detail": "Different views read and edit the same life-map model."
+        },
+        {
+          "id": "snapshot",
+          "label": "Canonical snapshot",
+          "detail": "Cards, lifecycle history and preferences belong to one browser origin."
+        },
+        {
+          "id": "storage",
+          "label": "localStorage",
+          "detail": "Persists the latest snapshot, not an independent server event log."
+        },
+        {
+          "id": "inbox",
+          "label": "Agent proposal inbox",
+          "detail": "Proposals are visible and await a human acceptance decision."
+        }
+      ],
+      "edges": [
+        {
+          "to": "snapshot",
+          "label": "Read or commit the shared state",
+          "from": "views"
+        },
+        {
+          "to": "storage",
+          "label": "Persist the latest browser-local snapshot",
+          "from": "snapshot"
+        },
+        {
+          "to": "snapshot",
+          "label": "Apply only accepted proposals",
+          "from": "inbox"
+        }
+      ],
+      "boundary": "The static HTTP server serves files, not a state database. A different browser origin does not automatically share this snapshot.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Keep one model behind several views",
+        "why": "Changing perspective should not fork the underlying card content.",
+        "tradeoff": "State consistency still depends on the application commit path, not independent view storage."
+      },
+      {
+        "choice": "Separate agent proposals from accepted state",
+        "why": "The visible inbox preserves a human decision before agent-authored changes become canonical.",
+        "tradeoff": "Agent involvement adds a review step and does not create a durable external audit log automatically."
+      }
+    ],
+    "walkthrough": {
+      "input": "A fictional idea that is interesting but not for this month.",
+      "steps": [
+        "Place the card in a later-life-cycle space.",
+        "Switch from Canvas to Grid and inspect the same card.",
+        "Review an agent wording proposal before accepting or rejecting it."
+      ],
+      "output": "One updated browser snapshot, viewed through different layouts.",
+      "caveat": "No personal canvas is reproduced, and this portfolio does not claim cloud sync or a new live interaction test."
+    },
+    "evidence": {
+      "established": [
+        "The public source describes a single snapshot, three views and human-approved agent proposals.",
+        "It distinguishes persisted state from transient subscription events."
+      ],
+      "notEstablished": [
+        "Remote account sync or a server-side application change log.",
+        "Availability of the same state on another origin, browser or device."
+      ]
+    }
+  },
+  "just-play": {
+    "orientation": {
+      "question": "Can a game companion help you stop choosing and start playing?",
+      "answer": "A small shortlist narrows the decision; the StandBy concept keeps the chosen session visible rather than turning the companion into another backlog."
+    },
+    "architecture": {
+      "scope": "Public product-flow map. The landing and repository identify components, but authenticated behavior was not verified for this portfolio.",
+      "nodes": [
+        {
+          "id": "intent",
+          "label": "Session intent",
+          "detail": "Mood, energy and available time describe the desired session."
+        },
+        {
+          "id": "shortlist",
+          "label": "Small shortlist",
+          "detail": "The described flow returns up to three curated-catalog choices."
+        },
+        {
+          "id": "session",
+          "label": "Session / StandBy",
+          "detail": "The public surface shows goals, notes, artwork, timer and controls."
+        },
+        {
+          "id": "services",
+          "label": "Named dependencies",
+          "detail": "Next.js, Supabase and IGDB are identified; this is not a verified data-flow trace."
+        }
+      ],
+      "edges": [
+        {
+          "to": "shortlist",
+          "label": "Describe a suitable session rather than browse endlessly",
+          "from": "intent"
+        },
+        {
+          "to": "session",
+          "label": "Choose one game and keep the session in view",
+          "from": "shortlist"
+        },
+        {
+          "to": "session",
+          "label": "Repository-listed stack; account integration not exercised",
+          "from": "services"
+        }
+      ],
+      "boundary": "This map distinguishes a public landing/demo from a verified player account. Steam sync, launching games and future world growth are not established.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Constrain the shortlist",
+        "why": "A small selection keeps decision support bounded.",
+        "tradeoff": "It may omit a preferred game and is not an exhaustive library browser."
+      },
+      {
+        "choice": "Separate public product direction from accepted behavior",
+        "why": "The landing can explain a coherent session loop without claiming every account path works.",
+        "tradeoff": "The richer world/Canopy direction remains future work, not a current capability."
+      }
+    ],
+    "walkthrough": {
+      "input": "A fictional evening with low energy and forty minutes free.",
+      "steps": [
+        "Use the public product explanation to understand the mood/energy/time inputs.",
+        "Consider a small hypothetical shortlist and choose one session.",
+        "Inspect the StandBy concept as a companion, not proof it launches or synchronizes a game."
+      ],
+      "output": "An understandable choose-then-settle-in flow.",
+      "caveat": "No signed-in recommendation, account data or game-launch behavior was tested here."
+    },
+    "evidence": {
+      "established": [
+        "The public landing/repository describe curated shortlists and a StandBy companion.",
+        "Available imagery is staged demo material, not account evidence."
+      ],
+      "notEstablished": [
+        "Steam sync, game launching or verified recommendation quality.",
+        "Live authenticated player workflows or future world growth."
+      ]
+    },
+    "decisionHeading": "Product framing and review scope",
+    "decisionNote": "These are interpretations of the public product surface and limits of this review, not verified internal design decisions."
+  },
+  "repoquest": {
+    "orientation": {
+      "question": "Can repository setup become a short, inspectable walkthrough?",
+      "answer": "A parser turns setup signals into structured data, then a theme renders a self-contained tutorial artifact. Generating the guide does not execute the setup."
+    },
+    "architecture": {
+      "scope": "Three-stage generation pipeline, with optional video rendering kept separate from the source application.",
+      "nodes": [
+        {
+          "id": "repo",
+          "label": "Repository signals",
+          "detail": "README, package metadata, environment examples and a file tree supply inputs."
+        },
+        {
+          "id": "parser",
+          "label": "Parser / RepoData",
+          "detail": "Extracts setup information into a shared structured representation."
+        },
+        {
+          "id": "theme",
+          "label": "Theme generator",
+          "detail": "Renders the chosen scene sequence and player controls."
+        },
+        {
+          "id": "artifact",
+          "label": "HTML / optional video",
+          "detail": "Outputs a guide artifact; HyperFrames can support rendering a video."
+        }
+      ],
+      "edges": [
+        {
+          "to": "parser",
+          "label": "Parse available setup signals",
+          "from": "repo"
+        },
+        {
+          "to": "theme",
+          "label": "Pass structured RepoData",
+          "from": "parser"
+        },
+        {
+          "to": "artifact",
+          "label": "Generate the tutorial, not the running app",
+          "from": "theme"
+        }
+      ],
+      "boundary": "Inferred setup and system design still require inspection. A generated guide is not successful installation, runtime acceptance or accessibility certification.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Separate parsing from presentation",
+        "why": "A shared data shape lets themes vary without reparsing the repository.",
+        "tradeoff": "Missing or ambiguous source setup details still limit the generated explanation."
+      },
+      {
+        "choice": "Publish a portable artifact",
+        "why": "A self-contained guide is easy to review and host independently.",
+        "tradeoff": "Portability does not make inferred commands current or prove that those commands succeed."
+      }
+    ],
+    "walkthrough": {
+      "input": "A hypothetical small repository with a README and package scripts.",
+      "steps": [
+        "Extract the declared prerequisites and start command.",
+        "Inspect a themed tutorial for gaps or misleading inference.",
+        "Run source setup separately if actual application acceptance is needed."
+      ],
+      "output": "A tutorial artifact explaining proposed setup steps.",
+      "caveat": "The illustration is not a new RepoQuest execution. Upstream attribution and individual-contribution uncertainty remain disclosed."
+    },
+    "evidence": {
+      "established": [
+        "The public README describes parse-to-data-to-theme generation and optional video rendering.",
+        "The upstream project reference is retained in the contribution discussion."
+      ],
+      "notEstablished": [
+        "Independent accessibility certification or production-grade guarantees.",
+        "That a generated guide successfully installs or runs its subject repository."
+      ]
+    }
+  },
+  "firstmind": {
+    "orientation": {
+      "question": "What if a note system deliberately kept less?",
+      "answer": "The public prototype explores ephemeral notes, memory exercises and a small set of essential insights. Its visible product concept is not a clinical outcome."
+    },
+    "architecture": {
+      "scope": "Public-surface map only: no private implementation or storage architecture is inferred from onboarding.",
+      "nodes": [
+        {
+          "id": "visitor",
+          "label": "Visitor",
+          "detail": "Reads the anonymous onboarding without opening personal notes."
+        },
+        {
+          "id": "onboarding",
+          "label": "Public onboarding",
+          "detail": "Introduces impermanence, exercises and selected insights."
+        },
+        {
+          "id": "concept",
+          "label": "Product concepts",
+          "detail": "These are the described interaction ideas, not verified account behavior."
+        }
+      ],
+      "edges": [
+        {
+          "to": "onboarding",
+          "label": "Explore the public introduction",
+          "from": "visitor"
+        },
+        {
+          "to": "concept",
+          "label": "Learn the intended interaction model",
+          "from": "onboarding"
+        }
+      ],
+      "boundary": "Private code and user data were not inspected for this entry. No health efficacy or persistence model is asserted.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Make impermanence part of the concept",
+        "why": "The public surface frames retention as a deliberate choice rather than an unlimited archive.",
+        "tradeoff": "That intention does not establish how deletion or storage actually behaves."
+      },
+      {
+        "choice": "Limit this explanation to observable scope",
+        "why": "A surface map communicates the idea without inventing a database or model pipeline.",
+        "tradeoff": "Technical implementation depth is intentionally limited by the available public evidence."
+      }
+    ],
+    "walkthrough": {
+      "input": "A hypothetical thought a visitor might choose not to retain indefinitely.",
+      "steps": [
+        "Read how the onboarding frames ephemeral notes.",
+        "Compare that intention with the idea of keeping a small essential set.",
+        "Treat exercises as prototype features rather than evidence of improved memory."
+      ],
+      "output": "A clear understanding of the prototype proposition.",
+      "caveat": "This is not a tested note/deletion flow, medical recommendation or validated cognitive intervention."
+    },
+    "evidence": {
+      "established": [
+        "The public onboarding describes ephemeral notes, exercises and essential insights."
+      ],
+      "notEstablished": [
+        "Private storage/deletion behavior, notes or exercise results.",
+        "Clinical benefit, health efficacy or a verified account workflow."
+      ]
+    },
+    "decisionHeading": "Product framing and review scope",
+    "decisionNote": "These are interpretations of the public product surface and limits of this review, not verified internal design decisions."
+  },
+  "flowlog": {
+    "orientation": {
+      "question": "How could a large game library become easier to browse?",
+      "answer": "The public concept groups games into decks and offers a play/save/pass flow. The landing explains the intention; it does not prove a working import."
+    },
+    "architecture": {
+      "scope": "Public entry-point and intended user-flow map, not an inferred backend architecture.",
+      "nodes": [
+        {
+          "id": "landing",
+          "label": "Public landing",
+          "detail": "Explains Steam import, decks and card-based decisions."
+        },
+        {
+          "id": "decks",
+          "label": "Deck concept",
+          "detail": "Groups games by mood, genre or play style."
+        },
+        {
+          "id": "cards",
+          "label": "Card-sorting concept",
+          "detail": "A described play/save/pass decision flow."
+        },
+        {
+          "id": "mvp",
+          "label": "Linked MVP origins",
+          "detail": "Distinct links exist; neither authenticated workflow was accepted here."
+        }
+      ],
+      "edges": [
+        {
+          "to": "decks",
+          "label": "Describe organizing a backlog",
+          "from": "landing"
+        },
+        {
+          "to": "cards",
+          "label": "Offer a smaller decision surface",
+          "from": "decks"
+        },
+        {
+          "to": "mvp",
+          "label": "Navigate to a separate MVP origin",
+          "from": "landing"
+        }
+      ],
+      "boundary": "An HTTP response or marketing description is not proof of Steam authorization, library import or account persistence.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Use decks as a decision lens",
+        "why": "A smaller contextual group can make the product concept understandable.",
+        "tradeoff": "Deck usefulness and import correctness need real account evaluation."
+      },
+      {
+        "choice": "Distinguish landing from application origins",
+        "why": "Different entry links have different acceptance states.",
+        "tradeoff": "Public availability cannot substitute for end-to-end account testing."
+      }
+    ],
+    "walkthrough": {
+      "input": "A fictional player with a large library who wants a short puzzle game.",
+      "steps": [
+        "Read the deck and card-sorting proposition on the landing.",
+        "Imagine grouping a small puzzle selection rather than browsing everything.",
+        "Follow an MVP link only as a separate application entry, not proof of import."
+      ],
+      "output": "An understandable browse-and-decide concept.",
+      "caveat": "No Steam account, imported library or user sorting state was accessed."
+    },
+    "evidence": {
+      "established": [
+        "The public landing presents decks, import and card sorting as the product concept.",
+        "Separate MVP links and their scoped response observations are documented."
+      ],
+      "notEstablished": [
+        "Working authenticated Steam import, persisted decks or recommendation outcomes.",
+        "Equivalence between distinct MVP origins."
+      ]
+    },
+    "decisionHeading": "Product framing and review scope",
+    "decisionNote": "These are interpretations of the public product surface and limits of this review, not verified internal design decisions."
+  },
+  "apim-credential-broker-poc": {
+    "orientation": {
+      "question": "Can an agent use a user-authorized tool without receiving the user token?",
+      "answer": "The caller authenticates to a narrow gateway; Credential Manager owns consent and refresh, and only the tool result returns to the agent."
+    },
+    "architecture": {
+      "scope": "Credential custody and caller identity are separate concerns. This map shows the documented bounded broker approach, not per-user OAuth passthrough.",
+      "nodes": [
+        {
+          "id": "agent",
+          "label": "Foundry agent",
+          "detail": "Authenticates as a managed-identity caller, not by holding the user token."
+        },
+        {
+          "id": "gateway",
+          "label": "APIM gateway",
+          "detail": "Checks the caller and exposes a narrow Graph tool."
+        },
+        {
+          "id": "credentials",
+          "label": "Credential Manager",
+          "detail": "Owns the consented connection, token cache and refresh."
+        },
+        {
+          "id": "graph",
+          "label": "Microsoft Graph",
+          "detail": "Receives the broker-injected user token and returns the permitted result."
+        }
+      ],
+      "edges": [
+        {
+          "to": "gateway",
+          "label": "Call the permitted tool with caller identity",
+          "from": "agent"
+        },
+        {
+          "to": "credentials",
+          "label": "Obtain authorization context for the configured connection",
+          "from": "gateway"
+        },
+        {
+          "to": "gateway",
+          "label": "Return token inside the broker boundary",
+          "from": "credentials"
+        },
+        {
+          "to": "graph",
+          "label": "Inject credential for the narrow downstream request",
+          "from": "gateway"
+        },
+        {
+          "from": "graph",
+          "to": "gateway",
+          "label": "Return the downstream result to the broker"
+        },
+        {
+          "from": "gateway",
+          "to": "agent",
+          "label": "Return the permitted result, not the user access token"
+        }
+      ],
+      "boundary": "The consented connection is broker-owned. Keeping its token out of the model does not establish per-user isolation for several callers.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Separate caller validation from downstream credentials",
+        "why": "A managed-identity gate decides who may invoke the broker; Credential Manager handles the downstream user credential.",
+        "tradeoff": "Both boundaries need correct scope and connection configuration; one does not replace the other."
+      },
+      {
+        "choice": "Return the result rather than the credential",
+        "why": "A narrow tool avoids giving the model custody of the user access token.",
+        "tradeoff": "Tool results can still contain sensitive data, and shared-connection isolation is not solved by token custody alone."
+      }
+    ],
+    "walkthrough": {
+      "input": "A fictional request for a minimal profile field through an authorized tool.",
+      "steps": [
+        "Authenticate the caller to the gateway and reject an unapproved identity.",
+        "Resolve the configured consented connection inside the broker.",
+        "Make the narrow Graph request and return only the permitted result."
+      ],
+      "output": "A tool response with the user credential retained at the broker boundary.",
+      "caveat": "Not a new Azure deployment or OAuth test. Failure behavior in the source is reported historical evidence, not fresh acceptance."
+    },
+    "evidence": {
+      "established": [
+        "The public README describes the runtime path and reported negative-path, refresh and consent checks.",
+        "It explicitly excludes per-user isolation/passthrough from proven scope."
+      ],
+      "notEstablished": [
+        "Per-user isolation, arbitrary tool authorization or general production approval.",
+        "Independent redeployment or repetition of provider checks during portfolio work."
+      ]
+    }
+  },
+  "oneshottober": {
+    "orientation": {
+      "question": "What does one prompt and one attempt make possible?",
+      "answer": "A bounded creative challenge is easy to start and show. The site gives that constraint a public home and an embedded example."
+    },
+    "architecture": {
+      "scope": "Static publication map; there is no evidence for a hosted generation backend or automatic challenge execution.",
+      "nodes": [
+        {
+          "id": "prompt",
+          "label": "Prompt constraint",
+          "detail": "One prompt and one attempt define the creative exercise."
+        },
+        {
+          "id": "site",
+          "label": "Static challenge site",
+          "detail": "Plain HTML and CSS present the 31-day format."
+        },
+        {
+          "id": "example",
+          "label": "Canvas example",
+          "detail": "An embedded one-shot example makes the format tangible."
+        }
+      ],
+      "edges": [
+        {
+          "to": "site",
+          "label": "Publish the challenge framing",
+          "from": "prompt"
+        },
+        {
+          "to": "example",
+          "label": "Embed an illustrative creative artifact",
+          "from": "site"
+        }
+      ],
+      "boundary": "The 31-day format is not evidence that 31 results were completed or that participants used a hosted AI service.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Use a small creative constraint",
+        "why": "A single attempt makes an open-ended task more approachable and shareable.",
+        "tradeoff": "The constraint is a creative choice, not a quality guarantee."
+      },
+      {
+        "choice": "Keep publication static",
+        "why": "The explanation and example do not require a separate application backend.",
+        "tradeoff": "The site does not provide inference, participant accounts or automatic challenge tracking."
+      }
+    ],
+    "walkthrough": {
+      "input": "A hypothetical participant responding to one day’s creative prompt.",
+      "steps": [
+        "Read the one-prompt/one-attempt rule.",
+        "Explore the embedded canvas example as one artifact.",
+        "Create and share an attempt separately from the static site."
+      ],
+      "output": "A bounded creative artifact and an understandable challenge format.",
+      "caveat": "No participant counts, generation results or completed 31-day collection are asserted."
+    },
+    "evidence": {
+      "established": [
+        "The public README identifies static HTML/CSS and an embedded generative-canvas example."
+      ],
+      "notEstablished": [
+        "Participation metrics, 31 completed results or a hosted AI backend."
+      ]
+    }
+  },
+  "inventory-data-assistant": {
+    "orientation": {
+      "question": "How do conversational inventory questions stay inside domain rules?",
+      "answer": "Data loads into expected table roles, then domain filters and tools handle the question. Template packaging makes that bounded workflow reusable without claiming a new domain engine."
+    },
+    "architecture": {
+      "scope": "Conceptual domain-tool architecture. The optional deterministic offline adapter is distinct from the normal model runtime.",
+      "nodes": [
+        {
+          "id": "data",
+          "label": "Excel / SQL Server",
+          "detail": "Excel or schema-compatible SQL Server supplies expected inventory table roles."
+        },
+        {
+          "id": "loader",
+          "label": "pandas loader",
+          "detail": "Loads data into the domain’s expected structures."
+        },
+        {
+          "id": "domain",
+          "label": "Domain tools",
+          "detail": "Filters, counts, grouping and scrap rules constrain the supported work."
+        },
+        {
+          "id": "runtime",
+          "label": "Agent / offline adapter",
+          "detail": "Normal model-backed runtime and optional deterministic non-LLM adapter are distinct paths."
+        }
+      ],
+      "edges": [
+        {
+          "to": "loader",
+          "label": "Load data in supported roles",
+          "from": "data"
+        },
+        {
+          "to": "domain",
+          "label": "Supply structured tables",
+          "from": "loader"
+        },
+        {
+          "to": "domain",
+          "label": "Invoke supported domain operations",
+          "from": "runtime"
+        },
+        {
+          "to": "runtime",
+          "label": "Return a bounded answer or requested artifact",
+          "from": "domain"
+        }
+      ],
+      "boundary": "The optional offline route avoids application model/Azure calls, but it does not validate customer SQL or hosted Teams delivery. Inherited engine and template additions are distinct.",
+      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+    },
+    "decisions": [
+      {
+        "choice": "Reuse domain rules rather than promise arbitrary SQL",
+        "why": "Expected table roles preserve the constraints of the existing inventory workflow.",
+        "tradeoff": "A new schema or question outside those tools requires adaptation and acceptance."
+      },
+      {
+        "choice": "Separate offline onboarding from hosted acceptance",
+        "why": "Fictional data and deterministic operations support a bounded setup path.",
+        "tradeoff": "That path cannot prove model correctness, cloud authentication or customer connectivity."
+      }
+    ],
+    "walkthrough": {
+      "input": "Hypothetical inventory data containing placeholder DEMO-PART, not a verified supplied fixture.",
+      "steps": [
+        "Imagine loading the data into the expected table role.",
+        "Request a count and then a part filter without assuming a quantity.",
+        "Inspect any scrap eligibility result against the applicable rules."
+      ],
+      "output": "An inspectable domain-tool response, not an invented measured result.",
+      "caveat": "No application was freshly executed for this portfolio. The placeholder is not a tested command or verified bundled identifier."
+    },
+    "evidence": {
+      "established": [
+        "The sanitized narrative distinguishes the inherited domain engine from template configuration and onboarding.",
+        "Historical scoped local/Windows synthetic records are described as history only."
+      ],
+      "notEstablished": [
+        "Live customer SQL/model correctness, hosted Teams acceptance or production approval.",
+        "Source redistribution permission or independently verified individual authorship."
+      ]
+    }
+  },
+  "gesture-conversation-lab": {
+    "orientation": {
+      "question": "How can a drawing conversation preserve uncertainty instead of pretending it understood?",
+      "answer": "Keep the captured drawing, the model’s recorded reply intention and the person’s first reading as separate evidence. Reveal them in an order that permits comparison without rewriting the original."
+    },
+    "architecture": {
+      "scope": "Conceptual view of the documented experimental drawing path; not a runtime trace or a description of legacy geometry-only requests.",
+      "nodes": [
+        {
+          "id": "browser",
+          "label": "Browser drawing and consent",
+          "detail": "Captures local geometry and timing; explicit send consent authorizes storage and model processing."
+        },
+        {
+          "id": "archive",
+          "label": "Immutable evidence archive",
+          "detail": "Stores the exact source before inference and retains later corrections as additions."
+        },
+        {
+          "id": "model",
+          "label": "Two-stage reply",
+          "detail": "An intention is selected and recorded before a second model stage authors a reply drawing. The input combines a source-derived image with geometry and timing."
+        },
+        {
+          "id": "compare",
+          "label": "First reading and reveal",
+          "detail": "The person saves a first interpretation before seeing the earlier intention; comparison remains manual."
+        }
+      ],
+      "edges": [
+        {
+          "from": "browser",
+          "to": "archive",
+          "label": "Consent, then save original"
+        },
+        {
+          "from": "archive",
+          "to": "model",
+          "label": "Start bounded inference only after saving"
+        },
+        {
+          "from": "model",
+          "to": "archive",
+          "label": "Record intention before drawing; archive reply"
+        },
+        {
+          "from": "archive",
+          "to": "compare",
+          "label": "Show reply; reveal intention only after first reading"
+        }
+      ],
+      "boundary": "Server storage is readable by the server, not end-to-end encrypted. Page-memory conversation display is distinct from archived evidence. No symbol-to-action execution is implemented.",
+      "caption": "A documented evidence-and-consent sequence, not a measured exchange or certification of shared meaning."
+    },
+    "decisions": [
+      {
+        "choice": "Save the original before requesting a reply.",
+        "why": "A later interpretation or failed model request must not replace the source of the exchange.",
+        "tradeoff": "Saving adds a required step and does not by itself establish correct interpretation."
+      },
+      {
+        "choice": "Record intention before drawing, then store a human reading before reveal.",
+        "why": "Separate intended communication from the reader’s interpretation instead of grading a plausible-looking response.",
+        "tradeoff": "Two stages and manual comparison add friction; supporting diagnostics are not an independent blind reading of the original."
+      },
+      {
+        "choice": "Keep the visible thread in page memory, with a separate server archive.",
+        "why": "The interface can show a conversation without treating a refresh as an edit to immutable evidence.",
+        "tradeoff": "Refresh clears the visible thread; archive recovery is a separate explicit workflow, not automatic history restoration."
+      }
+    ],
+    "walkthrough": {
+      "input": "Hypothetical: an invented spiral drawn by a fictional participant; no bundled fixture or actual drawing is supplied.",
+      "steps": [
+        "Capture the invented marks locally.",
+        "Obtain explicit consent and save the original.",
+        "Record a reply intention before authoring a separate drawing.",
+        "Save the participant’s first reading, then reveal the intention for manual comparison."
+      ],
+      "output": "Illustratively, two drawings and a comparison record—not an assumed match or a correctness score.",
+      "caveat": "Not an executed test. No Apple Digital Touch compatibility, phone acceptance, accuracy, consistent speedup or shared-language outcome follows."
+    },
+    "evidence": {
+      "established": [
+        "Reviewed documentation specifies consent before saving and inference, plus append-only correction.",
+        "The experimental design records intent before reply drawing and a first reading before reveal.",
+        "Reply replay timing is synthetic; reloading existing evidence is separate from requesting new work."
+      ],
+      "notEstablished": [
+        "Fresh execution or current physical-phone acceptance.",
+        "Recognition accuracy, improved latency or a validated shared visual language.",
+        "Native messaging integration, end-to-end encryption or safe automatic actions."
+      ]
+    }
+  },
+  "coding-session-dj": {
+    "orientation": {
+      "question": "How can a coding session influence its soundtrack without making the player’s status misleading?",
+      "answer": "Send a small scene description into a deterministic selection policy, constrain when it may switch music, and show observed playback separately from requests and acknowledgements."
+    },
+    "architecture": {
+      "scope": "Conceptual Spotify-primary control path described by the reviewed local-player documentation; no Spotify calls were made.",
+      "nodes": [
+        {
+          "id": "scene",
+          "label": "Bounded session scene",
+          "detail": "An agent sends a label, tags and normalized numeric dimensions—not code, prompts, diffs or private reasoning."
+        },
+        {
+          "id": "policy",
+          "label": "Local selection policy",
+          "detail": "Curated crates, hard preference filters, hold time, cooldowns and track boundaries constrain deterministic choices."
+        },
+        {
+          "id": "spotify",
+          "label": "Spotify playback boundary",
+          "detail": "Official API and PKCE authorization control the active Connect device; Premium and configured crates are prerequisites."
+        },
+        {
+          "id": "surface",
+          "label": "Observed state and controls",
+          "detail": "A compact browser surface separates request receipt, acknowledgements, failures and fresh playback observations."
+        }
+      ],
+      "edges": [
+        {
+          "from": "scene",
+          "to": "policy",
+          "label": "Validate scene and select or defer"
+        },
+        {
+          "from": "policy",
+          "to": "spotify",
+          "label": "Request an eligible playback change"
+        },
+        {
+          "from": "spotify",
+          "to": "surface",
+          "label": "Read back observed playback and delivery outcome"
+        },
+        {
+          "from": "surface",
+          "to": "policy",
+          "label": "Hold, disable or tune adaptation"
+        }
+      ],
+      "boundary": "A loopback process, not a hosted endpoint. Permitted labels still need sanitization. A policy decision or preference acknowledgement is not proof of a new song.",
+      "caption": "Selection and control-state architecture—not a live playback demonstration or an audio-processing engine."
+    },
+    "decisions": [
+      {
+        "choice": "Use Spotify’s official API as the primary playback backend.",
+        "why": "Keep playback ownership with an existing player and use an explicit authorization boundary.",
+        "tradeoff": "Premium, an active Connect device and authorization are required; a secondary bridge is only an explicit compatibility option."
+      },
+      {
+        "choice": "Select curated crates deterministically rather than infer per-track musical structure.",
+        "why": "User-owned constraints and supplied energy/tempo metadata make policy inputs inspectable.",
+        "tradeoff": "Selection depends on the quality and coverage of the local crate configuration; it is not musical understanding."
+      },
+      {
+        "choice": "Keep uncertain delivery visible rather than automatically retrying it.",
+        "why": "A mutation may already have reached the player even when confirmation fails.",
+        "tradeoff": "The interface can remain unresolved until observation clarifies the state; instant success would be misleading."
+      },
+      {
+        "choice": "Separate Hold from Pause.",
+        "why": "A listener may want stable music while preventing scene-driven adaptation.",
+        "tradeoff": "Users must distinguish adaptation state from playback state. Adaptation starts enabled in the reviewed runtime."
+      }
+    ],
+    "walkthrough": {
+      "input": "Hypothetical: a sanitized recovery scene from a fictional coding session, with invented numeric dimensions and no real playlist.",
+      "steps": [
+        "Validate the scene without accepting source code or reasoning.",
+        "Apply hard constraints to configured crates.",
+        "Wait for a suitable boundary if policy defers switching.",
+        "Request a change, then use fresh observation to report success, failure or uncertainty."
+      ],
+      "output": "Illustratively, a policy decision and separately observed playback status—not a fabricated song switch.",
+      "caveat": "Not a bundled fixture or executed playback test. No listening history, productivity, mood benefit or physical-device outcome is supplied."
+    },
+    "evidence": {
+      "established": [
+        "Documentation specifies bounded scene inputs and deterministic crate policy with timing constraints.",
+        "The reviewed runtime initializes adaptation enabled and exposes hold/disable controls.",
+        "The documented mutation lifecycle separates queued controls from freshly verified playback."
+      ],
+      "notEstablished": [
+        "Current Spotify authorization, account capabilities or successful playback.",
+        "A physical-phone result or a fresh browser/regression run.",
+        "Audio effects, beatmatching, crossfade, emotion detection or productivity improvement."
+      ]
+    }
+  },
+  "recurrence-gated-knowledge": {
+    "orientation": {
+      "question": "What stops a captured idea from being mistaken for maintained knowledge?",
+      "answer": "Raw notes remain searchable, while independent recurrence only qualifies a candidate for assessment. A cited proposal and an explicit human decision stand between eligibility and promotion."
+    },
+    "architecture": {
+      "scope": "Conceptual file-and-script workflow described by the reviewed product and review contracts; no vault or generated context packet was read.",
+      "nodes": [
+        {
+          "id": "raw",
+          "label": "Raw source files",
+          "detail": "Capture is unrestricted; original notes remain evidence and can be searched without promotion."
+        },
+        {
+          "id": "recurrence",
+          "label": "Recurrence eligibility",
+          "detail": "At least two independent source units spaced three or more calendar days apart; repeated files from one event do not manufacture support."
+        },
+        {
+          "id": "review",
+          "label": "Cited human review",
+          "detail": "A proposal considers exact evidence and earlier decisions. Accept, correct, reject or defer with an explicit reason; recording is not promotion."
+        },
+        {
+          "id": "pages",
+          "label": "Maintained knowledge",
+          "detail": "Approved changes follow a separate promotion procedure into portable Markdown pages and links."
+        },
+        {
+          "id": "packet",
+          "label": "Bounded evidence packet",
+          "detail": "A deterministic read-only scan returns complete accepted-knowledge records and exact support under a context budget, without calling a model."
+        }
+      ],
+      "edges": [
+        {
+          "from": "raw",
+          "to": "recurrence",
+          "label": "Assess independent recurrence"
+        },
+        {
+          "from": "recurrence",
+          "to": "review",
+          "label": "Eligible candidate, not an approved truth"
+        },
+        {
+          "from": "review",
+          "to": "pages",
+          "label": "Human-approved change, separate promotion"
+        },
+        {
+          "from": "pages",
+          "to": "packet",
+          "label": "Retrieve accepted knowledge"
+        },
+        {
+          "from": "raw",
+          "to": "packet",
+          "label": "Resolve exact supporting evidence"
+        }
+      ],
+      "boundary": "Recurrence is eligibility, citations are inspectability, and confirmation is a caller assertion—not truth, semantic entailment or authentication. The packet builder does not generate an answer.",
+      "caption": "A knowledge-governance workflow, not autonomous promotion or evidence of improved cognition."
+    },
+    "decisions": [
+      {
+        "choice": "Allow raw capture while gating promotion on recurrence.",
+        "why": "A passing idea can be preserved without immediately presenting it as a durable conclusion.",
+        "tradeoff": "Useful one-off material may remain raw; recurring material can still be wrong."
+      },
+      {
+        "choice": "Deduplicate source events rather than count every file as independent.",
+        "why": "A recap and another representation of the same event must not inflate recurrence.",
+        "tradeoff": "Event identity and source routing remain important; file volume alone is not evidence strength."
+      },
+      {
+        "choice": "Keep review decisions separate from page promotion.",
+        "why": "A recorded outcome should retain its scope and reason without silently rewriting evidence or accepted pages.",
+        "tradeoff": "The approved change still needs the existing promotion procedure; recording a decision is not completion."
+      },
+      {
+        "choice": "Use bounded deterministic retrieval for accepted knowledge.",
+        "why": "Complete source records and a hard payload budget make the evidence supplied to an answering host inspectable.",
+        "tradeoff": "No match, budget exclusion and invalid evidence need separate handling; the host still has to interpret evidence correctly."
+      }
+    ],
+    "walkthrough": {
+      "input": "Hypothetical: an invented workshop-checklist idea in a fictional notebook, not a supplied vault fixture.",
+      "steps": [
+        "Capture the idea as raw material without treating it as knowledge.",
+        "Check whether independent evidence recurs after the required calendar spacing.",
+        "Ignore duplicate representations of the same event when counting support.",
+        "Present a focused cited proposal; retain the person’s decision and reason.",
+        "Only an approved change proceeds through the separate promotion procedure."
+      ],
+      "output": "Illustratively, a reviewable candidate or a decision to leave it raw—not an automatically accepted page.",
+      "caveat": "Not an executed recurrence or retrieval test. No real notes, decisions, packets or gains in answer quality are reproduced."
+    },
+    "evidence": {
+      "established": [
+        "The reviewed contracts distinguish capture, recurrence eligibility, review recording and promotion.",
+        "The review schema retains exact proposal scope, source references and explicit decision reasons.",
+        "The documented packet path validates complete source records and budgets output without a model call."
+      ],
+      "notEstablished": [
+        "Fresh regression results or measurements against a real vault.",
+        "Better answers, recall, cognition or downstream decisions.",
+        "Live API ingestion, autonomous preference learning or a custom graph engine."
+      ]
+    }
+  },
+  "retrieval-practice-harness": {
+    "orientation": {
+      "question": "How does a local recap become something concrete to revisit without claiming the tool measured learning?",
+      "answer": "Create a private card artifact, register it and schedule a small review queue. Treat elapsed-time urgency and review status as workflow metadata—not a measurement of memory or mastery."
+    },
+    "architecture": {
+      "scope": "Conceptual local-file card and review path based on the inspected CLI and narrow contracts; live meeting ingestion is excluded.",
+      "nodes": [
+        {
+          "id": "recap",
+          "label": "Supplied recap",
+          "detail": "An authorized local Markdown file is the working input. The Graph connector remains a stub, not a live input source."
+        },
+        {
+          "id": "drafts",
+          "label": "Question drafts",
+          "detail": "Normalized input supplies source references and anchored text to pattern-based prompts, including fallbacks."
+        },
+        {
+          "id": "cards",
+          "label": "Private HTML artifact",
+          "detail": "The CLI renders review cards. The documented twelve-card format is not twelve semantically verified questions."
+        },
+        {
+          "id": "registry",
+          "label": "Review registry",
+          "detail": "Tracks artifacts, review timestamps and archive state; marking reviewed resets the review clock."
+        },
+        {
+          "id": "queue",
+          "label": "Small review queue",
+          "detail": "Elapsed time and a documented decay heuristic rank artifacts; three is the default number surfaced."
+        }
+      ],
+      "edges": [
+        {
+          "from": "recap",
+          "to": "drafts",
+          "label": "Normalize and generate drafts"
+        },
+        {
+          "from": "drafts",
+          "to": "cards",
+          "label": "Render private review artifact"
+        },
+        {
+          "from": "cards",
+          "to": "registry",
+          "label": "Register artifact"
+        },
+        {
+          "from": "registry",
+          "to": "queue",
+          "label": "Rank by heuristic urgency"
+        },
+        {
+          "from": "queue",
+          "to": "registry",
+          "label": "Record review or archive explicitly"
+        }
+      ],
+      "boundary": "Private output is not cleared for sharing. Wiki compilation is an optional additional file-writing path; documented publish-readiness contracts do not prove every CLI path enforces every gate.",
+      "caption": "A local practice-and-scheduling loop, not a live Graph integration or measured retention outcome."
+    },
+    "decisions": [
+      {
+        "choice": "Make a supplied Markdown file the usable input path.",
+        "why": "Local recaps do not require a functioning live-service connector.",
+        "tradeoff": "An external agent or person must provide authorized material. Supplying a token does not complete the stubbed Graph integration."
+      },
+      {
+        "choice": "Generate anchored pattern prompts with explicit source references.",
+        "why": "The private drafts can point back to the material rather than appear as unsupported generic questions.",
+        "tradeoff": "Patterns and fallbacks still require semantic review; a source reference is not proof that a question or answer is correct."
+      },
+      {
+        "choice": "Surface a small queue using elapsed-time urgency.",
+        "why": "The learner needs a tractable next review action rather than the whole archive.",
+        "tradeoff": "The decay heuristic is not calibrated to the individual, and marking reviewed is not demonstrating mastery."
+      },
+      {
+        "choice": "Keep wiki compilation optional and sharing separately reviewable.",
+        "why": "Private card use should not require wiki writes or publication.",
+        "tradeoff": "Enabling the option can write files; governance contracts still need path-specific enforcement verification."
+      }
+    ],
+    "walkthrough": {
+      "input": "Hypothetical: an invented workshop-layout recap in a fictional local file, not meeting data or a bundled test.",
+      "steps": [
+        "Normalize the fictional recap into source-referenced material.",
+        "Draft a question about its imagined layout tradeoff.",
+        "Render a private card artifact and register it.",
+        "Later, surface the artifact using time-based urgency.",
+        "A person reviews or archives it without treating the status as a test score."
+      ],
+      "output": "Illustratively, a private artifact and review record—not an actual generated deck or evidence of improved recall.",
+      "caveat": "No ingestion, rendering, Graph access, model run or learning assessment was executed. No real recap, output bundle or wiki was read."
+    },
+    "evidence": {
+      "established": [
+        "Inspection identifies the local recap-to-question-to-card-to-registry command path.",
+        "The question generator uses anchored patterns and fallbacks; surfacing uses a time-based heuristic.",
+        "The Graph connector methods remain stubbed, and wiki compilation is an explicit optional write path."
+      ],
+      "notEstablished": [
+        "End-to-end acceptance, fresh historical test counts or effective live Graph access.",
+        "Semantic completeness, reliable question quality or verified enforcement of every documented governance check.",
+        "Better retention, clinical benefit, measured mastery or permission to publish private source material."
+      ]
+    }
+  },
+  "synthetic-migration-pilot": {
+    "orientation": {
+      "question": "What does a small migration rehearsal actually establish?",
+      "answer": "The documented pilot compares synthetic SQLite and DuckDB content and application behavior. It is not evidence for a production migration."
+    },
+    "architecture": {
+      "scope": "Documented synthetic runner; no code execution or independent implementation audit.",
+      "nodes": [
+        {
+          "id": "source",
+          "label": "Synthetic SQLite",
+          "detail": "Generated related tables, not production data."
+        },
+        {
+          "id": "move",
+          "label": "Transactional transfer",
+          "detail": "The usage documentation describes a move to DuckDB."
+        },
+        {
+          "id": "target",
+          "label": "Synthetic DuckDB",
+          "detail": "Target database for the same tiny fixture scope."
+        },
+        {
+          "id": "compare",
+          "label": "Parity checks",
+          "detail": "Canonical content, invariants, and seven application comparisons."
+        }
+      ],
+      "edges": [
+        {
+          "from": "source",
+          "to": "move",
+          "label": "Generated fixture input"
+        },
+        {
+          "from": "move",
+          "to": "target",
+          "label": "Documented transaction"
+        },
+        {
+          "from": "source",
+          "to": "compare",
+          "label": "Source expectations"
+        },
+        {
+          "from": "target",
+          "to": "compare",
+          "label": "Target observations"
+        }
+      ],
+      "boundary": "No production system or model was invoked; configured CI is not a fresh pass.",
+      "caption": "Conceptual view of the documented rehearsal, not a live system trace."
+    },
+    "decisions": [
+      {
+        "choice": "Generated fixtures instead of real migration data",
+        "why": "Keep the pilot small and repeatable without production data.",
+        "tradeoff": "Fixture coverage cannot establish enterprise compatibility or operational readiness."
+      },
+      {
+        "choice": "Compare application cases as well as data",
+        "why": "Matching rows alone does not establish matching application behavior.",
+        "tradeoff": "Seven documented comparisons remain a narrow behavioral surface."
+      },
+      {
+        "choice": "Separate CI validation from attended agent reasoning",
+        "why": "The workflow defines deterministic checks without a cloud inference credential.",
+        "tradeoff": "This does not demonstrate autonomous reasoning inside CI."
+      }
+    ],
+    "walkthrough": {
+      "input": "Hypothetical generated catalog and line items; no real records.",
+      "steps": [
+        "Create tiny related tables in a source database.",
+        "Transfer the generated records transactionally to the target.",
+        "Compare canonical records, invariants, and a selected total-returning application case.",
+        "If the hypothetical total differs, stop and investigate rather than infer success from counts."
+      ],
+      "output": "A hypothetical parity comparison to review; no result was produced for this example.",
+      "caveat": "Illustration only. No stored-procedure, CDC, performance, or cutover behavior is established."
+    },
+    "evidence": {
+      "established": [
+        "Usage documentation describes the tiny transfer and parity runner.",
+        "A reviewed workflow defines Linux and Windows validation and reconciliation artifact retention."
+      ],
+      "notEstablished": [
+        "A freshly passing application or CI run.",
+        "Any real-data migration, production performance, or cutover approval."
+      ]
+    }
+  },
+  "source-grounded-connections": {
+    "orientation": {
+      "question": "Can a connection be sourced without pretending it is already useful?",
+      "answer": "The specification separates exact quotation, contextual support, and human usefulness. Reviewed main establishes a design contract, not a runnable engine."
+    },
+    "architecture": {
+      "scope": "Proposed chat-first design only; every processing node is specified, not runtime-verified.",
+      "nodes": [
+        {
+          "id": "passages",
+          "label": "Explicitly allowed passages",
+          "detail": "Proposed read-only Markdown inputs with exact spans and hashes."
+        },
+        {
+          "id": "relation",
+          "label": "Proposed relation",
+          "detail": "Focus-driven complementary connection, not mere similarity."
+        },
+        {
+          "id": "checks",
+          "label": "Separate proposed checks",
+          "detail": "Exact source, contextual support, then a usefulness threshold."
+        },
+        {
+          "id": "answer",
+          "label": "Suggestion or abstention",
+          "detail": "At most one proposed output with uncertainty and human judgment."
+        }
+      ],
+      "edges": [
+        {
+          "from": "passages",
+          "to": "relation",
+          "label": "Bounded proposed retrieval"
+        },
+        {
+          "from": "relation",
+          "to": "checks",
+          "label": "Candidate and cited source context"
+        },
+        {
+          "from": "checks",
+          "to": "answer",
+          "label": "Fail closed or surface a tentative connection"
+        }
+      ],
+      "boundary": "No notes, feedback, model output, runnable engine, or city implementation was inspected or verified.",
+      "caption": "The specified decision boundary, not a diagram of delivered software."
+    },
+    "decisions": [
+      {
+        "choice": "Prove chat-first value before any spatial interface",
+        "why": "The same connections must be useful before a city can claim added value.",
+        "tradeoff": "No spatial experience is delivered or supported by evidence in this review."
+      },
+      {
+        "choice": "Keep quotation and contextual support as separate checks",
+        "why": "A quote can exist yet fail to support the proposed interpretation.",
+        "tradeoff": "The design adds verification work and still cannot replace human usefulness judgment."
+      },
+      {
+        "choice": "Keep derived state outside read-only source notes",
+        "why": "Preserve original material and separate interpretations from authored sources.",
+        "tradeoff": "The proposed engine must handle permission changes, staleness, and deletion explicitly."
+      }
+    ],
+    "walkthrough": {
+      "input": "Two invented note concepts: shorter experiments, and reducing evaluation effort.",
+      "steps": [
+        "Assume explicit permission for both synthetic passages and ask a focus question.",
+        "Propose a tentative complementary connection rather than a similarity label.",
+        "Check exact current spans separately from contextual support.",
+        "Return at most one suggestion or abstain when a required check fails.",
+        "Record any human response separately from truth or practical usefulness."
+      ],
+      "output": "A hypothetical tentative connection with source references, or abstention; not actual provider output.",
+      "caveat": "All steps are proposed. No private-note content, observed feedback, or longitudinal study outcome is represented."
+    },
+    "evidence": {
+      "established": [
+        "The reviewed main inventory contains a specification only.",
+        "The specification calls for a bounded chat-first slice and conditional later spatial work."
+      ],
+      "notEstablished": [
+        "Implemented retrieval, provider isolation, source invalidation, or CLI behavior.",
+        "Live inference, measured usefulness, user adoption, or a built city."
+      ]
+    }
+  },
+  "document-evidence-pipeline": {
+    "orientation": {
+      "question": "How can a document pipeline change text without losing the evidence for each change?",
+      "answer": "Keep original word identities and spans as the reference frame. Join each detected mark to that frame, resolve evidence under an explicit policy, and produce both transformed text and a reviewable account of what changed."
+    },
+    "architecture": {
+      "scope": "Conceptual architecture of the sanitized document-intelligence narrative: page-level routing, optional document-level cloud Layout, evidence-to-word alignment and deterministic resolution. This is not a public code inspection or a captured deployment.",
+      "nodes": [
+        {
+          "id": "routing",
+          "label": "PDF / page router",
+          "detail": "Classifies pages as native, scanned or hybrid using policy-controlled text and image signals. Page-local routing does not imply page-only cloud submission."
+        },
+        {
+          "id": "native",
+          "label": "Native words and mark evidence",
+          "detail": "PyMuPDF words provide original identities. Explicit strike annotations and vector geometry supply evidence; center-band, angle, thickness and coverage checks distinguish likely strikes from underlines or rules."
+        },
+        {
+          "id": "layout",
+          "label": "Optional Azure Layout / cache",
+          "detail": "A scanned or hybrid page can trigger a single document-level Azure Document Intelligence Layout request that may send the full PDF. The complete response is cached and reused, not streamed as page-local results."
+        },
+        {
+          "id": "alignment",
+          "label": "Original-word span joins",
+          "detail": "Normalize cloud word polygons into page fractions and join detector evidence by page, overlap and center distance. Preserve original spans, including within-word offsets for partial native strikes."
+        },
+        {
+          "id": "resolution",
+          "label": "Evidence and confirmation policy",
+          "detail": "Apply verifier, annotation, style, vector and scanned precedence, then separate confirmed deletion from needs-review. With fixed inputs, policy, package versions and cached Layout response, resolution is deterministic."
+        },
+        {
+          "id": "artifacts",
+          "label": "Text / provenance / human review",
+          "detail": "Shared spans drive enriched Markdown, clean text and deletion-preserving provenance. Sidecars retain offsets, geometry, evidence tiers and scores; ambiguity records, crops and overlays support review."
+        }
+      ],
+      "edges": [
+        {
+          "from": "routing",
+          "to": "native",
+          "label": "Extract native words and annotation/vector evidence where applicable"
+        },
+        {
+          "from": "routing",
+          "to": "layout",
+          "label": "Optionally request document-level Layout for scanned or hybrid content"
+        },
+        {
+          "from": "native",
+          "to": "alignment",
+          "label": "Supply original word identities and native mark geometry"
+        },
+        {
+          "from": "layout",
+          "to": "alignment",
+          "label": "Reuse cached words and polygons for scanned evidence alignment"
+        },
+        {
+          "from": "alignment",
+          "to": "resolution",
+          "label": "Pass occurrence-specific spans with their supporting evidence"
+        },
+        {
+          "from": "resolution",
+          "to": "artifacts",
+          "label": "Emit confirmed transformations, provenance and unresolved review items"
+        }
+      ],
+      "boundary": "Local page routing is not a local-only privacy guarantee: the optional Layout path may submit the whole document to Azure. Region, retention, networking, caches and review artifacts need separate handling review. An optional verifier receives a localized crop and evidence; no language model is mandatory. Deterministic resolution does not establish OCR accuracy, calibrated confidence or safe automatic deletion of ambiguous marks.",
+      "caption": "Conceptual system map authored from the sanitized case study. Components and labeled connections are the text equivalent, not private implementation excerpts or a live execution trace."
+    },
+    "decisions": [
+      {
+        "choice": "Route pages independently but cache Layout at document scope",
+        "why": "Native pages can use their text and geometry while scanned or hybrid content can reuse one complete Layout response instead of repeating OCR for each detector.",
+        "tradeoff": "One routed page can still cause full-document cloud disclosure. Cache handling and cloud service limits remain separate concerns; page routing alone neither guarantees privacy nor supplies a chunk-and-stitch provider."
+      },
+      {
+        "choice": "Join evidence to original words rather than replace matching phrases",
+        "why": "Repeated wording must remain distinguishable by page, word and span. Original identities allow the same decision to drive text edits and source-to-final provenance, including partial-word strikes.",
+        "tradeoff": "Geometry normalization and spatial matching introduce alignment uncertainty. Faint scans, glyph chains and table rules can produce competing evidence that cannot be resolved by a string match."
+      },
+      {
+        "choice": "Make confirmation policy explicit and preserve ambiguity",
+        "why": "Evidence precedence and a separate needs-review outcome prevent a detector score from silently becoming deletion authority. Retained spans, crops and overlays make uncertain decisions inspectable.",
+        "tradeoff": "Human review adds work, and a repeatable policy can repeat an incorrect decision. Reproducibility requires fixed inputs, policy, package versions and cached Layout response; it is not an accuracy guarantee."
+      },
+      {
+        "choice": "Generate clean and provenance-preserving artifacts from the same spans",
+        "why": "Readers can consume confirmed clean text while reviewers retain the removed content and offsets needed to understand each change.",
+        "tradeoff": "Provenance and review artifacts still contain potentially sensitive source material. A search-ingestion record and manifest describe a handoff, not acceptance by a live search service."
+      }
+    ],
+    "walkthrough": {
+      "input": "A fictional, untested technical note containing 'use the blue connector' twice: once on a native page with an apparent strike and once on a scanned page without a strike.",
+      "steps": [
+        "Conceptually route the pages by their native, scanned or hybrid signals; do not infer from those page labels that a cloud request contains only one page.",
+        "For the native occurrence, associate annotation or vector evidence with the original words. If Layout is selected for the scanned page, reuse its cached document-level response for word and evidence alignment.",
+        "Join the first mark to that occurrence's page, word identities and spans rather than searching for both copies of the phrase. The second occurrence is not removed merely because its text matches.",
+        "Apply the confirmation policy. If a nearby table rule leaves the first mark ambiguous, retain the text and emit a needs-review item instead of asserting a confirmed deletion.",
+        "Inspect the hypothetical clean text alongside provenance and sidecar offsets; use review crops or overlays to investigate the unresolved mark."
+      ],
+      "output": "The intended contract is occurrence-specific transformation for confirmed marks, with preserved evidence and an explicit review path for uncertainty. No generated document or measured output is supplied here.",
+      "caveat": "This walkthrough is fictional and explicitly untested, not a fixture, captured run or accuracy result. No document, detector, model, cloud or search service was executed for these reading-depth records."
+    },
+    "evidence": {
+      "established": [
+        "The author-written sanitized case study documents native/scanned/hybrid routing, a cached document-level Azure Layout path, original-word spatial joins and span-based output contracts.",
+        "The narrative describes evidence precedence, confirmation versus needs-review outcomes, provenance artifacts and an optional localized verifier without a mandatory language model.",
+        "The narrative reports a historical five-page generated mock demonstration using the real orchestrator with mocked cloud and detector responses. This establishes the scope of the documented demonstration, not independently reproduced behavior."
+      ],
+      "notEstablished": [
+        "Fresh live cloud, detector, model or search acceptance; this writing task did not rerun the documented demonstration or inspect private implementation code.",
+        "Benchmark accuracy, calibrated score probabilities, production safety, scale approval or reliable handling of handwritten, non-horizontal and other difficult cross-outs. Horizontal left-to-right text is the documented validation target.",
+        "Local-only processing whenever scanned or hybrid pages are present, deployment-specific cloud compliance or resolved PyMuPDF licensing obligations.",
+        "Independent individual authorship or permission to redistribute the private source, documents or implementation artifacts."
+      ]
+    }
+  },
+  "custom-model-auth-diagnostics": {
+    "orientation": {
+      "question": "Is authentication failing because the client sent no credential, or because the gateway expects a different contract?",
+      "answer": "Observe a controlled client attempt at an isolated, disposable diagnostic endpoint using only a dummy credential and allowlisted metadata. Treat that observation as a scoped hypothesis, then validate client authentication separately from backend managed identity."
+    },
+    "architecture": {
+      "scope": "Conceptual diagnostic-to-validation flow for a custom-model client and Azure API Management. The isolated observer and intended authenticated gateway are distinct stages, not an instruction to weaken a working production route.",
+      "nodes": [
+        {
+          "id": "client",
+          "label": "Sandbox custom-model client",
+          "detail": "Use only a disposable non-production dummy credential against the isolated diagnostic route. A blank configured key is a different input, not automatically a change in transport behavior."
+        },
+        {
+          "id": "diagnostic",
+          "label": "Isolated diagnostic endpoint",
+          "detail": "Bound its lifetime and access scope. Relevant model-list/completion route shapes return static mock responses; no model backend receives forwarded requests."
+        },
+        {
+          "id": "observation",
+          "label": "Allowlisted metadata / hypothesis",
+          "detail": "Retain candidate-header presence booleans and, if needed, a fixed scheme class such as Bearer, other or absent. Never retain credential values or arbitrary apparent header prefixes."
+        },
+        {
+          "id": "gateway",
+          "label": "Intended gateway validation",
+          "detail": "Validate the expected client credential using a secret-store-backed named value. Missing, incorrect and expected credential cases require separate acceptance; strip the incoming client credential before backend authentication."
+        },
+        {
+          "id": "backend",
+          "label": "Separate backend identity",
+          "detail": "A managed identity authenticates the backend call independently of the client's BYOK credential. Finding a client header is not proof of backend authorization."
+        },
+        {
+          "id": "cleanup",
+          "label": "Restore / remove diagnostics",
+          "detail": "Restore the intended client route, remove dummy configuration, stop tracing and remove the diagnostic endpoint or explicitly disable observation under an ownership, expiry and retention decision."
+        }
+      ],
+      "edges": [
+        {
+          "from": "client",
+          "to": "diagnostic",
+          "label": "Send a controlled request with a disposable dummy credential only"
+        },
+        {
+          "from": "diagnostic",
+          "to": "client",
+          "label": "Return a static mock response, never model output"
+        },
+        {
+          "from": "diagnostic",
+          "to": "observation",
+          "label": "Expose only allowlisted presence booleans and fixed scheme classes"
+        },
+        {
+          "from": "observation",
+          "to": "gateway",
+          "label": "Inform the contract to validate; metadata does not authorize requests"
+        },
+        {
+          "from": "gateway",
+          "to": "backend",
+          "label": "Strip client credential, then use separate managed identity"
+        },
+        {
+          "from": "diagnostic",
+          "to": "cleanup",
+          "label": "End observation and apply removal, access and retention decisions"
+        },
+        {
+          "from": "cleanup",
+          "to": "client",
+          "label": "Remove dummy configuration and restore the intended route"
+        }
+      ],
+      "boundary": "The diagnostic endpoint is a separate, bounded observation surface with no model backend and no real credentials. Never echo, log or forward credential values; inherited gateway policies and telemetry must also be considered. A malformed header can put a secret in the apparent first token, so arbitrary prefix capture is unsafe. The intended gateway's client-credential check and the backend's managed identity are different trust boundaries. A vendor-looking header does not authenticate origin, and an idle endpoint is not proof of safety.",
+      "caption": "Conceptual system map authored from the sanitized case study. Labeled connections separate observation, intended validation and cleanup; they are not a captured request sequence or deployed policy."
+    },
+    "decisions": [
+      {
+        "choice": "Observe on an isolated endpoint with a dummy credential",
+        "why": "A controlled diagnostic route separates uncertainty about what the client sends from enforcement on a working gateway. Static responses avoid involving a model backend just to investigate transport metadata.",
+        "tradeoff": "A separate surface still needs bounded access, ownership and expiry. The client may reject a mock response even when metadata is observed, so observation alone cannot establish end-to-end compatibility."
+      },
+      {
+        "choice": "Use a fixed metadata allowlist, not captured header substrings",
+        "why": "Presence booleans and known scheme classes answer a limited contract question without retaining credential values. Mapping unrecognized schemes to other avoids leaking a malformed header's secret-shaped first token.",
+        "tradeoff": "Deliberately sparse telemetry cannot explain every failure. Endpoint-local redaction is insufficient if inherited tracing, full-body capture or gateway policies retain sensitive traffic elsewhere."
+      },
+      {
+        "choice": "Separate client credential validation from backend managed identity",
+        "why": "The gateway decides whether the client may invoke the route, while managed identity supplies the backend identity. Stripping the incoming credential prevents the BYOK value from becoming backend authentication by accident.",
+        "tradeoff": "Each boundary needs its own authorized tests and operational controls. Header discovery does not solve secret rotation, policy inheritance, rate controls or backend permission scope."
+      },
+      {
+        "choice": "Treat diagnostic teardown as part of the deliverable",
+        "why": "Restoring the route, removing dummy configuration and ending observation prevent a temporary troubleshooting surface from becoming an unmanaged long-lived endpoint.",
+        "tradeoff": "Later investigations require another controlled setup. Retaining an inactive surface needs an explicit access and retention decision; a parked or idle response is not a security approval."
+      }
+    ],
+    "walkthrough": {
+      "input": "A fictional, untested sandbox client configured with a disposable dummy credential and pointed only at a separately scoped diagnostic endpoint.",
+      "steps": [
+        "Imagine a controlled attempt during a short diagnostic window. The endpoint returns a static mock response without forwarding to a model backend.",
+        "Describe the hypothetical observation only as candidate-header presence booleans and a fixed Bearer, other or absent classification. Do not copy any actual header value or arbitrary first token into the record.",
+        "Compare a separate empty-key attempt as a different input. Neither an imagined metadata observation nor a vendor-looking request header proves the sender's identity or current client compatibility.",
+        "Use the scoped hypothesis to define authorized missing, incorrect and expected credential checks at the intended gateway, plus a check that the client credential does not reach the backend. Keep backend managed-identity acceptance separate.",
+        "Restore the intended client route, remove the dummy configuration and diagnostic surface or explicitly disable observation, stop tracing and apply the metadata retention decision."
+      ],
+      "output": "An intended diagnostic conclusion would distinguish an absent input from a mismatched gateway expectation, with an explicit acceptance checklist and cleanup boundary. No request capture, test result or working integration is asserted.",
+      "caveat": "This walkthrough is fictional and explicitly untested. No client, HTTP, gateway-console, backend, model or API checks were run, and no gateway policy, resource or deployment was changed for these reading-depth records."
+    },
+    "evidence": {
+      "established": [
+        "The sanitized case study documents the isolated dummy-only observer, static mock responses, allowlisted metadata, separate gateway validation, backend managed identity and cleanup obligations.",
+        "The narrative reports a historical Authorization/Bearer observation and attributes an earlier missing-header observation to a blank configured key. These are bounded historical claims, not fresh measurements or universal client behavior.",
+        "The narrative reports historical gateway-console, HTTP and client retests while explicitly distinguishing them from the current writing-only portfolio work. The private implementation and guide remain unlinked and unavailable for independent public inspection."
+      ],
+      "notEstablished": [
+        "Fresh live acceptance of the actual client, gateway, backend managed identity or model path; none of the historical retests was repeated here.",
+        "Compatibility across current client versions, tenants and configurations, or a claim that current vendor documentation lacks the needed contract.",
+        "Production readiness, safe indefinite retention of diagnostic endpoints, complete telemetry isolation or sound secret-rotation and access controls merely from metadata observation.",
+        "Independent individual authorship or permission to publish private guides, policy extracts, real request traffic or implementation source."
+      ]
+    }
+  }
+}

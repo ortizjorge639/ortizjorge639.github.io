@@ -9,6 +9,13 @@ export const HOST_FILES=Object.freeze([
  'scripts/hosted-server.mjs','scripts/hosted-guide.mjs','scripts/guide-input.mjs','scripts/guide-sources.mjs',
  'src/projects.ts','src/project-catalog.json','src/stories.ts','src/current-stories.ts','src/screens.ts',
  'data/guide-sources.json','README.md',
+ 'src/expanded-case-stories.ts',
+ 'public/case-studies/gesture-conversation-lab.md',
+ 'public/case-studies/coding-session-dj.md',
+ 'public/case-studies/recurrence-gated-knowledge.md',
+ 'public/case-studies/retrieval-practice-harness.md',
+ 'public/case-studies/synthetic-migration-pilot.md',
+ 'public/case-studies/source-grounded-connections.md',
  'scripts/source-policy.mjs','src/inventory-story.ts','public/case-studies/inventory-data-assistant.md',
  'src/technical-case-stories.ts','public/case-studies/document-evidence-pipeline.md','public/case-studies/custom-model-auth-diagnostics.md',
 ]);

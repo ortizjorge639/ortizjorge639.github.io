@@ -15,7 +15,7 @@ const rejects = (mutate, expected) => {
 };
 
 test('all canonical catalog stories have six ordered beats and 45–60 second runtimes', () => {
-  assert.equal(projects.length, 14);
+  assert.equal(projects.length, 20);
   assert.deepEqual(validateStories(projectStories, projects), []);
   assert.deepEqual(Object.keys(projectStories).sort(), projects.map(project => project.id).sort());
   const scenes = Object.values(projectStories).flatMap(story => story.scenes);
