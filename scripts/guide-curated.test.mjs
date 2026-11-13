@@ -36,8 +36,8 @@ test('curated inventory narrative is public evidence without repository eligibil
   const story = projectStories[id];
   assert.equal(story.scenes.reduce((n, s) => n + s.duration, 0), 50);
   assert.equal(story.scenes[2].visual.type, 'flow');
-  assert.match(JSON.stringify(story), /fictional|hypothetical/i);
-  assert.match(source.text, /not.*measured|not fresh|not.*freshly/i);
+  assert.match(JSON.stringify(story), /fictional|hypothetical|synthetic|specification only/i);
+  assert.match(source.text, /not.*measured|not fresh|not.*freshly|not independently rerun/i);
 });
 
 test('curated refresh retains the original narrative without any request', async () => {

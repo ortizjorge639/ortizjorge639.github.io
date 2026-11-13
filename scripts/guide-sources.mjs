@@ -126,11 +126,18 @@ export function retrieveSources(sources, input) {
     const matches = [...terms].filter(term => content.has(term)).length;
     return { chunk, score: matches + (mentioned.includes(chunk.projectId) ? 10 : 0) + (chunk.projectId === input.projectId && input.projectId ? 6 : 0) };
   }).filter(item => item.score > 0).sort((a, b) => b.score - a.score);
-  const selected = [...sources.summaries];
+  // Keep every project discoverable without allowing catalog growth to crowd
+  // detailed evidence out of the fixed prompt budget. Preserve caveats and role.
+  const selected = sources.summaries.map(chunk => {
+    if (!chunk.projectId || mentioned.includes(chunk.projectId) || chunk.projectId === input.projectId) return chunk;
+    const { title, subtitle, status, note, contribution } = JSON.parse(chunk.text);
+    return { ...chunk, text: JSON.stringify({ title, subtitle, status, note, contribution }) };
+  });
   let length = selected.reduce((total, chunk) => total + chunk.text.length, 0);
   const counts = new Map();
   for (const { chunk } of ranked) {
-    if (selected.length >= sources.summaries.length + 9 || length + chunk.text.length > 25_000) break;
+    if (selected.length >= sources.summaries.length + 9) break;
+    if (length + chunk.text.length > 25_000) continue;
     if ((counts.get(chunk.projectId) || 0) >= 5) continue;
     selected.push(chunk);
     length += chunk.text.length;
