@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { validateInput, LIMITS } from './guide-server.mjs';
+import { LIMITS, validateInput } from './guide-input.mjs';
 import { loadSources, retrieveSources, buildPrompt, validateAnswer } from './guide-sources.mjs';
 import { parseConfig, reserve, completeReservation, cosmosStore, executeModel, MODEL_LIMITS } from './hosted-guide.mjs';
 
