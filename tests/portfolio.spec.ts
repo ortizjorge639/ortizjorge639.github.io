@@ -156,6 +156,9 @@ test('library selection, bounded pagination, and category filters cover the real
   await expect(page.locator('.project-tile')).toHaveCount(projects.length % 4 || 4);
   await expect(page.getByRole('button', { name: 'Next library page' })).toBeDisabled();
   await page.getByRole('link', { name: 'Previous library page' }).click();
+  for (let n = 0; n < Math.ceil(projects.length / 4) && !(await page.getByRole('button', { name: 'Preview RepoQuest', exact: true }).count()); n++) {
+    await page.getByRole('link', { name: 'Previous library page' }).click();
+  }
   await page.getByRole('button', { name: 'Preview RepoQuest', exact: true }).click();
   await expect(page.locator('.story-topline h2')).toHaveText('RepoQuest');
   await expect(page.getByRole('link', { name: 'Open RepoQuest', exact: true })).toBeVisible();
@@ -212,7 +215,7 @@ test('project pages retain every fact, capture, caveat and source', async ({ pag
     if (repoUrl(project)) await expect(page.getByRole('link', { name: 'View repository', exact: true })).toHaveAttribute('href', repoUrl(project));
     else await expect(page.getByRole('link', { name: 'View repository', exact: true })).toHaveCount(0);
     await expect(page.locator('.source-note')).toHaveAttribute('href', project.sources![0].url);
-    if (project.site) await expect(page.getByRole('link', { name: 'Public landing page' })).toHaveAttribute('href', project.site);
+    if (project.site) await expect(page.getByRole('link', { name: project.sourceType === 'curated-case-study' ? 'Case-study narrative' : 'Public landing page', exact: true })).toHaveAttribute('href', project.site);
     await expect(page.getByRole('button', { name: 'Next detail page' })).toBeDisabled();
   }
 });

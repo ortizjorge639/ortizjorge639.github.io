@@ -15,7 +15,7 @@ const rejects = (mutate, expected) => {
 };
 
 test('all canonical catalog stories have six ordered beats and 45–60 second runtimes', () => {
-  assert.equal(projects.length, 11);
+  assert.equal(projects.length, 20);
   assert.deepEqual(validateStories(projectStories, projects), []);
   assert.deepEqual(Object.keys(projectStories).sort(), projects.map(project => project.id).sort());
   const scenes = Object.values(projectStories).flatMap(story => story.scenes);
@@ -43,7 +43,7 @@ test('sources match the pinned public README snapshots', () => {
   for (const [projectId, story] of Object.entries(projectStories)) {
     const source = snapshot.sources.find(source => source.projectId === projectId);
     assert.equal(source.visibility, 'public');
-    assert.equal(story.sources[0].url, source.sourceType === 'public-page' ? source.url : `https://github.com/${source.repo}/blob/${source.commit}/${source.path}`);
+    assert.equal(story.sources[0].url, ['public-page', 'curated-case-study'].includes(source.sourceType) ? source.url : `https://github.com/${source.repo}/blob/${source.commit}/${source.path}`);
     assert.ok(story.scenes.every(scene => scene.sources.includes(story.sources[0].id)));
   }
 });

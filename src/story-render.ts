@@ -94,7 +94,7 @@ export function renderStoryScene(scene: StoryScene, project: Project) {
     <h3 id="story-heading">${escapeText(scene.headline)}</h3>
     <div class="story-visual">${visualMarkup(scene.visual, project)}</div>
     <p class="story-body">${escapeText(scene.body)}</p>
-    ${scene.beat === 'use' ? `<div class="story-links">${repoUrl(project) ? `<a href="${escapeText(repoUrl(project))}" target="_blank" rel="noopener noreferrer">Repository ${icon('external')}</a>` : ''}${project.site ? `<a href="${escapeText(project.site)}" target="_blank" rel="noopener noreferrer">Public landing page ${icon('external')}</a>` : ''}</div>` : ''}
+    ${scene.beat === 'use' ? `<div class="story-links">${repoUrl(project) ? `<a href="${escapeText(repoUrl(project))}" target="_blank" rel="noopener noreferrer">Repository ${icon('external')}</a>` : ''}${project.site ? `<a href="${escapeText(project.site)}" target="_blank" rel="noopener noreferrer">${project.sourceType === 'curated-case-study' ? 'Case-study narrative' : 'Public landing page'} ${icon('external')}</a>` : ''}</div>` : ''}
   </article>`;
 }
 

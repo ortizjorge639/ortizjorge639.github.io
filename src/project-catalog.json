@@ -404,5 +404,352 @@
         "reviewed": "2026-11-13"
       }
     ]
+  },
+  {
+    "id": "inventory-data-assistant",
+    "title": "Inventory Data Assistant Template",
+    "subtitle": "A reusable inventory workflow, with its evidence boundaries visible.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "illustration": "inventory",
+    "color": "blue",
+    "repo": "",
+    "site": "https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md",
+    "sourceType": "curated-case-study",
+    "description": "A reusable template adapting an existing inventory and obsolescence assistant, with domain rules and data tools rather than arbitrary SQL. This sanitized narrative is not public code inspection.",
+    "capabilities": [
+      "Inventory, scrap eligibility, open sales order and invoice workflows",
+      "Domain filters, counts, grouping, exports and charts",
+      "Configuration and fictional fixtures, plus an optional offline deterministic non-LLM adapter"
+    ],
+    "stack": [
+      "Python / pandas",
+      "Microsoft Agent Framework",
+      "Azure OpenAI",
+      "Excel / SQL Server"
+    ],
+    "status": "Private-code template · sanitized narrative",
+    "note": "Source inspection only; no fresh application execution. Historical scoped synthetic-data/HTTP and Windows setup records are not current live SQL/model, App Service auth/deployment, on-premises connectivity, pipeline or Teams proof. Hosted integrations remain subject to acceptance. Security, scale and production approval are not given. Code remains private; redistribution permission is unresolved.",
+    "problem": "Inventory and obsolescence questions depend on table roles and domain rules. A reusable setup must preserve those constraints rather than promise an unconstrained SQL agent.",
+    "how": "Excel or schema-compatible SQL Server feeds a pandas loader and expected table roles, then domain rules and data tools. The normal Microsoft Agent Framework/Azure OpenAI terminal runtime includes deterministic routes. A separate optional offline adapter uses fictional Excel in a loopback terminal/browser with no application model or Azure calls; it is not Teams proof.",
+    "contribution": "Individual role unverified: authorship is not independently established. The domain engine is inherited, not claimed newly authored. The template layer adds configuration, fictional fixtures, Windows PowerShell/Python helpers, Copilot onboarding and local CI. This author-written sanitized portfolio narrative is not a public code inspection or a claim that Jorge solely built the application.",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code inspection)",
+        "url": "https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "document-evidence-pipeline",
+    "title": "Evidence-preserving document intelligence",
+    "subtitle": "Keep the mark, its source and the decision together.",
+    "illustration": "evidence",
+    "description": "A PDF evidence pipeline routing native, scanned and hybrid pages into span-preserving decisions, review artifacts and a search-ingestion handoff. This sanitized narrative is not public code inspection.",
+    "capabilities": [
+      "Route native, scanned and hybrid pages; reuse optional document-level Azure Layout",
+      "Join native geometry and detector evidence to original word spans, with deterministic confirmation and review",
+      "Emit enriched, clean and provenance views plus sidecar, review queue and search-ingestion handoff"
+    ],
+    "stack": [
+      "Python / PyMuPDF",
+      "Azure Document Intelligence",
+      "Spatial joins / Markdown"
+    ],
+    "note": "Private implementation; no fresh execution. The documented demo uses the real orchestrator with mocked cloud and detector responses, not accuracy or cloud acceptance. The scanned path may send the full PDF to cloud; page-local processing is not Azure response streaming. Human review remains necessary; confidence is not calibrated probability by default. Redistribution requires separate review.",
+    "problem": "Flattening a PDF can erase whether a crossed-out phrase was confirmed or ambiguous, where it appeared, and why text was changed. Repeated phrases make global replacement unsafe.",
+    "how": "Route each page; collect native annotation/vector geometry evidence or reuse one optional document-level Azure Layout response for scanned detection. Normalize polygons, join original word spans spatially, resolve confirmed versus review decisions deterministically, then emit enriched/clean/provenance outputs, sidecar and search-ingestion records.",
+    "contribution": "Individual role unverified; this narrative does not establish sole authorship. The reviewed implementation combines page routing, evidence joins, deterministic resolution and inspectable artifacts. PyMuPDF, Azure Layout and optional detector dependencies are not claimed as original components. Only this separately authored sanitized narrative is public; code redistribution is a separate gate.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "color": "blue",
+    "repo": "",
+    "sourceType": "curated-case-study",
+    "status": "Private implementation · sanitized narrative",
+    "site": "https://ortizjorge639.github.io/case-studies/document-evidence-pipeline.md",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code inspection)",
+        "url": "https://ortizjorge639.github.io/case-studies/document-evidence-pipeline.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "custom-model-auth-diagnostics",
+    "title": "Diagnosing custom-model authentication",
+    "subtitle": "Observe the client contract before changing the gateway gate.",
+    "illustration": "auth-probe",
+    "description": "A BYOK integration diagnostic using an isolated endpoint to observe authentication metadata, then validate the contract at Azure API Management and clean up. This sanitized narrative is not public code inspection.",
+    "capabilities": [
+      "Use disposable dummy credentials and bounded metadata-only observation on an isolated endpoint",
+      "Validate the expected client contract at the gateway, strip incoming credentials and separate backend identity",
+      "Restore client routing, remove diagnostic configuration and explicitly review retention and access"
+    ],
+    "stack": [
+      "Azure API Management",
+      "GitHub Copilot custom models",
+      "Key Vault / managed identity"
+    ],
+    "note": "Historical guide claims, not fresh execution or current universal client behavior. No model calls, gateway changes or deployments were performed. Never echo, log or forward credential values. Disposable diagnostics need bounded access/lifetime; isolation or an idle response is not a production safety guarantee. Private source stays unlinked; redistribution requires separate review.",
+    "problem": "A blank configured key and a gateway expecting the wrong header can look like the same authentication failure. Guessing against a working route mixes discovery with enforcement.",
+    "how": "Use a separate disposable endpoint with dummy credentials, static mock responses and allowlisted presence/scheme metadata only. The historical guide reports Authorization/Bearer. Validate with a secret-store-backed gateway value before routing, strip the incoming credential before separate managed-identity backend authentication, then restore and clean up.",
+    "contribution": "Individual role unverified; the evidence does not establish sole authorship. This separately authored narrative explains a bounded diagnostic and gateway-validation method using existing platform capabilities. Historical gateway-console, HTTP and client retests are reported by the private guide, not independently rerun. No private guide, policies, screenshots or operational configuration are published.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "color": "blue",
+    "repo": "",
+    "sourceType": "curated-case-study",
+    "status": "Private implementation · sanitized narrative",
+    "site": "https://ortizjorge639.github.io/case-studies/custom-model-auth-diagnostics.md",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code inspection)",
+        "url": "https://ortizjorge639.github.io/case-studies/custom-model-auth-diagnostics.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "gesture-conversation-lab",
+    "title": "Drawing a conversation",
+    "subtitle": "Preserve the drawing. Keep its meaning open to question.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "illustration": "gestures",
+    "color": "blue",
+    "description": "A single-owner drawing-conversation prototype that separates exact captured marks, a tentative model-authored reply, and the human interpretation of that reply.",
+    "capabilities": [
+      "Capture and replay stroke geometry and timing without replacing archived originals",
+      "Require contextual consent before saving a drawing and requesting a model reply",
+      "Store a first reading before revealing the reply intention, then compare manually"
+    ],
+    "stack": [
+      "Python",
+      "SQLite",
+      "Browser Pointer Events",
+      "Model SDK"
+    ],
+    "note": "Private prototype, not a public app. Reply timing is synthetic; comparison is manual, not an accuracy score. No Apple Digital Touch compatibility, native messaging integration, shared-meaning certification or consistent speed improvement is claimed. Source inspection only; no fresh execution. Private source release is a separate permission gate.",
+    "problem": "A drawing can carry rhythm, hesitation and shape, yet still mean different things to its sender and receiver. A convincing reply is not evidence that both understood the same message.",
+    "how": "A browser captures strokes locally. Explicit consent saves the original before inference. The experimental path sends a rendered image with geometry and timing, records a reply intention before a second model stage draws, and withholds the intention until the person stores a first reading.",
+    "contribution": "Individual role unverified. The reviewed prototype connects immutable drawing evidence, a drawings-first conversation UI, bounded two-stage inference and a human comparison workflow. Existing browser, database and model capabilities are dependencies, not components claimed as newly invented.",
+    "updated": "2026-11-13",
+    "repo": "",
+    "sourceType": "curated-case-study",
+    "status": "Private implementation · sanitized narrative",
+    "site": "https://ortizjorge639.github.io/case-studies/gesture-conversation-lab.md",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code or app proof)",
+        "url": "https://ortizjorge639.github.io/case-studies/gesture-conversation-lab.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "coding-session-dj",
+    "title": "A soundtrack for the session",
+    "subtitle": "Let the session change the music without confusing intent with playback.",
+    "categories": [
+      "AI",
+      "Media"
+    ],
+    "illustration": "session-dj",
+    "color": "red",
+    "description": "A local Spotify-first control surface that turns bounded coding-session signals into deterministic playlist choices while keeping requests separate from observed playback.",
+    "capabilities": [
+      "Select curated music crates using scene dimensions and user-owned constraints",
+      "Hold or disable adaptation independently of pausing music",
+      "Distinguish queued controls, acknowledgements, failures and observed playback"
+    ],
+    "stack": [
+      "Python standard library",
+      "JavaScript",
+      "Spotify Web API",
+      "PKCE"
+    ],
+    "note": "Loopback application, not a hosted service. Spotify Premium, authorization, an active Connect device and configured crates are prerequisites. Adaptation starts enabled in the reviewed runtime; hold or disable it explicitly. An activity acknowledgement is not proof of a song switch. Source inspection only; no fresh execution. Private source release is a separate permission gate.",
+    "problem": "A coding session changes direction, but constant playlist switching can interrupt it. A second problem is trust: receiving a music-control command does not mean the requested playback happened.",
+    "how": "Bounded labels, tags and numeric scene dimensions reach a local policy. Curated crates and hard preference filters determine eligible choices. Hold times, cooldowns and track boundaries limit switching. Spotify is the default backend, and playback mutations are checked against fresh observations.",
+    "contribution": "Individual role unverified. The reviewed artifact combines a compact player, deterministic scene policy, Spotify authorization and explicit delivery-state handling. Spotify provides playback; the player is not an original audio engine or an official Spotify product.",
+    "updated": "2026-11-13",
+    "repo": "",
+    "sourceType": "curated-case-study",
+    "status": "Private implementation · sanitized narrative",
+    "site": "https://ortizjorge639.github.io/case-studies/coding-session-dj.md",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code or app proof)",
+        "url": "https://ortizjorge639.github.io/case-studies/coding-session-dj.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "recurrence-gated-knowledge",
+    "title": "Knowledge that earns its place",
+    "subtitle": "Capture freely. Promote carefully. Keep the evidence close.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "illustration": "recurrence",
+    "color": "blue",
+    "description": "A file-based knowledge workflow that leaves one-off notes searchable while requiring recurring evidence and human approval before treating an idea as maintained knowledge.",
+    "capabilities": [
+      "Separate unrestricted raw capture from recurrence-gated knowledge promotion",
+      "Build bounded read-only context packets with exact supporting evidence",
+      "Prepare reviewable proposals and record explicit decisions with their reasons"
+    ],
+    "stack": [
+      "Markdown",
+      "Python",
+      "Ruby compatibility helpers",
+      "Wikilinks"
+    ],
+    "note": "Private implementation, not a public notebook. Recurrence establishes eligibility, not truth. The packet builder does not call a model. Review recording does not itself promote a page, and no cognitive or retrieval-quality improvement is claimed. Source inspection only; no fresh execution. Private source release is a separate permission gate.",
+    "problem": "A note written once can become a polished page before anyone decides it is durable. Repetition of the same event across files can also masquerade as independent support.",
+    "how": "Raw notes remain discoverable without promotion. Candidate eligibility requires at least two independent source units spaced three or more calendar days apart, with event deduplication. An agent prepares evidence-backed changes for a human decision; a deterministic packet builder retrieves accepted knowledge with exact source evidence under a hard budget.",
+    "contribution": "Individual role unverified. The reviewed engine combines recurrence checks, event-aware source handling, evidence-bounded retrieval and explicit review records on a portable Markdown substrate. Existing editors render links; no custom graph engine or autonomous preference-learning result is claimed.",
+    "updated": "2026-11-13",
+    "repo": "",
+    "sourceType": "curated-case-study",
+    "status": "Private implementation · sanitized narrative",
+    "site": "https://ortizjorge639.github.io/case-studies/recurrence-gated-knowledge.md",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code or app proof)",
+        "url": "https://ortizjorge639.github.io/case-studies/recurrence-gated-knowledge.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "retrieval-practice-harness",
+    "title": "From notes to recall",
+    "subtitle": "Make a private review artifact, then decide what deserves another look.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "illustration": "recall",
+    "color": "red",
+    "description": "A local command-line workflow that turns supplied Markdown recaps into private review cards, tracks artifacts and surfaces a small queue using a time-based heuristic.",
+    "capabilities": [
+      "Generate private card artifacts with source-lineage references from local recap files",
+      "Track review and archive actions in an artifact registry",
+      "Surface a small review queue while keeping integration and publishing limits explicit"
+    ],
+    "stack": [
+      "Node.js",
+      "HTML cards",
+      "JSON registry",
+      "Markdown inputs"
+    ],
+    "note": "Private local prototype, not a live meeting service. The Graph connector is a stub even with a token. Wiki write-back is optional and can write files; do not equate it with a verified approval gate. Historical test claims were not rerun; no meeting data or generated output was read. Source inspection only; no fresh execution. Private source release is a separate permission gate.",
+    "problem": "Saving a recap does not provide a concrete opportunity to retrieve or explain its content later. A large archive also leaves the question of what to revisit unanswered.",
+    "how": "A local CLI normalizes a supplied recap, creates question drafts and an HTML card artifact, and registers it for later review. The surfacing command ranks artifacts using elapsed time and a configured decay heuristic. Source-lineage and publish-readiness contracts describe separate review boundaries.",
+    "contribution": "Individual role unverified. The reviewed artifact connects local recap ingestion, source-referenced question templates, private card rendering and a review registry. Time-based urgency is a scheduling heuristic, not a measurement of a person’s memory or proof of educational effectiveness.",
+    "updated": "2026-11-13",
+    "repo": "",
+    "sourceType": "curated-case-study",
+    "status": "Private implementation · sanitized narrative",
+    "site": "https://ortizjorge639.github.io/case-studies/retrieval-practice-harness.md",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code or app proof)",
+        "url": "https://ortizjorge639.github.io/case-studies/retrieval-practice-harness.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "synthetic-migration-pilot",
+    "title": "Prove the migration before the move",
+    "subtitle": "A small parity check, before a bigger migration claim.",
+    "categories": [
+      "Tech",
+      "AI"
+    ],
+    "description": "A tiny synthetic SQLite-to-DuckDB migration pilot that compares data invariants and application behavior before treating a move as successful.",
+    "capabilities": [
+      "Documented transactional migration of generated relational fixtures",
+      "Canonical content and invariant checks alongside seven application comparisons",
+      "Cross-platform validation workflow with retained reconciliation output"
+    ],
+    "stack": [
+      "Python",
+      "SQLite",
+      "DuckDB"
+    ],
+    "status": "Synthetic pilot; documentation reviewed",
+    "note": "Limited to tiny generated fixtures. CI is configured, not freshly run here. Attended local agent reasoning is separate from CI. No stored-procedure, CDC, performance, cutover, or enterprise-control proof. This is an independently authored, sanitized narrative about a private project. The implementation is not publicly inspectable. Documentation review is not fresh application, model, CI, or cloud verification. No source code or private data is released.",
+    "problem": "A migration can preserve row counts while changing what an application returns. A small rehearsal makes that distinction inspectable without moving real data.",
+    "how": "The documented runner generates small related tables, migrates them transactionally to DuckDB, and compares canonical content, invariants, and seven source/target application cases. A workflow defines checks on Linux and Windows; no run result was retrieved for this review.",
+    "contribution": "Individual contribution and authorship are unverified. This entry describes the documented artifact or proposal, not a claim of sole design, implementation, or measured impact.",
+    "illustration": "migration",
+    "color": "blue",
+    "updated": "2026-11-13",
+    "repo": "",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code or app proof)",
+        "url": "https://ortizjorge639.github.io/case-studies/synthetic-migration-pilot.md",
+        "reviewed": "2026-11-13"
+      }
+    ],
+    "sourceType": "curated-case-study",
+    "site": "https://ortizjorge639.github.io/case-studies/synthetic-migration-pilot.md"
+  },
+  {
+    "id": "source-grounded-connections",
+    "title": "Connections, with receipts",
+    "subtitle": "Test a useful connection before building a world around it.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "description": "A chat-first design for suggesting one source-grounded connection at a time between explicitly permitted Markdown passages, with abstention and user judgment kept separate.",
+    "capabilities": [
+      "Specified exact-span citations, content hashes, and source-change invalidation",
+      "Specified separate checks for quotation, contextual support, and usefulness",
+      "Chat-first evaluation plan; any spatial interface remains conditional"
+    ],
+    "stack": [
+      "Markdown",
+      "Python (proposed)",
+      "SQLite (proposed)"
+    ],
+    "status": "Specification on reviewed main; implementation unverified",
+    "note": "The reviewed main contains a specification, not an inspectable runnable engine. Provider calls, a live trial, usefulness rates, and a city interface were not verified. Targets are study criteria, not results. This is an independently authored, sanitized narrative about a private project. The implementation is not publicly inspectable. Documentation review is not fresh application, model, CI, or cloud verification. No source code or private data is released.",
+    "problem": "A plausible connection is not necessarily supported by its sources or useful to the reader. A visual map should not conceal those separate questions.",
+    "how": "The specification proposes read-only, allowlisted Markdown retrieval, a typed connection, exact quote and current-source checks, a separate contextual-support check, and a usefulness threshold. The output is at most one suggestion or abstention, with keep/dismiss feedback kept separate from truth.",
+    "contribution": "Individual contribution and authorship are unverified. This entry describes the documented artifact or proposal, not a claim of sole design, implementation, or measured impact.",
+    "illustration": "connections",
+    "color": "blue",
+    "updated": "2026-11-13",
+    "repo": "",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code or app proof)",
+        "url": "https://ortizjorge639.github.io/case-studies/source-grounded-connections.md",
+        "reviewed": "2026-11-13"
+      }
+    ],
+    "sourceType": "curated-case-study",
+    "site": "https://ortizjorge639.github.io/case-studies/source-grounded-connections.md"
   }
 ]

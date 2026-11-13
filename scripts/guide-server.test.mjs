@@ -47,7 +47,12 @@ test('snapshots: all catalog public sources pinned or exact-approved pages with 
   assert.equal(snapshot.sources.length, projects.length);
   for (const source of snapshot.sources) {
     assert.equal(source.visibility, 'public');
-    if (source.sourceType === 'public-page') {
+    if (source.sourceType === 'curated-case-study') {
+      const project = projects.find(p => p.id === source.projectId);
+      assert.equal(project.sourceType, 'curated-case-study');
+      assert.equal(source.url, `https://ortizjorge639.github.io/case-studies/${project.id}.md`);
+      assert.equal(source.repo, undefined);
+    } else if (source.sourceType === 'public-page') {
       assert.equal(source.url, projects.find(p => p.id === source.projectId).site);
       assert.ok(['https://firstmind.app','https://getflowlog.lovable.app'].includes(source.url));
     } else {
@@ -84,6 +89,46 @@ test('retrieval: all summaries, bounded README chunks, comparisons, injection st
   const sections = splitSections('# Repeat\none\n# Repeat\ntwo\n```\n# Not a heading\n```', 'a');
   assert.equal(sections[1].anchor, 'repeat-1');
   assert.equal(sections.length, 2);
+});
+
+test('expanded catalog reserves bounded detail evidence and preserves summary limitations', () => {
+  for (const project of projects) {
+    const selected = retrieveSources(sources, { ...input, projectId: project.id, question: `Explain ${project.title} architecture and limitations` });
+    assert.ok(selected.some(c => c.projectId === project.id && c.id.includes(':readme:')), project.id);
+    assert.ok(selected.reduce((n, c) => n + c.text.length, 0) <= 25_000, project.id);
+    assert.equal(selected.filter(c => c.id.endsWith(':portfolio')).length, projects.length);
+    for (const summary of selected.filter(c => c.id.endsWith(':portfolio'))) {
+      const original = JSON.parse(sources.summaries.find(c => c.id === summary.id).text);
+      const compact = JSON.parse(summary.text);
+      assert.equal(compact.note, original.note);
+      assert.equal(compact.contribution, original.contribution);
+    }
+  }
+  const oversized = { id: 'web-context-graph:readme:oversized', projectId: input.projectId, title: 'Lineage', text: 'Lineage '.repeat(4000) };
+  const selected = retrieveSources({ ...sources, chunks: [oversized, ...sources.chunks] }, { ...input, question: 'Lineage' });
+  assert.ok(!selected.some(c => c.id === oversized.id));
+  assert.ok(selected.some(c => c.id.startsWith('web-context-graph:readme:')));
+});
+
+test('mentioning the entire catalog cannot consume the detail reservation', () => {
+  const question = `Compare ${projects.map(project => project.title).join(', ')}`;
+  assert.ok(question.length <= 4000);
+  const selected = retrieveSources(sources, { ...input, question });
+  const summaries = selected.filter(chunk => chunk.id.endsWith(':portfolio'));
+  assert.equal(summaries.length, projects.length);
+  const summaryIds = new Set(sources.summaries.map(chunk => chunk.id));
+  assert.ok(selected.filter(chunk => summaryIds.has(chunk.id)).reduce((total, chunk) => total + chunk.text.length, 0) <= 18_000);
+  assert.ok(selected.reduce((total, chunk) => total + chunk.text.length, 0) <= 25_000);
+  assert.ok(selected.some(chunk => !summaryIds.has(chunk.id)));
+  assert.equal(selected.find(chunk => chunk.id === 'portfolio:about').text,
+    sources.summaries.find(chunk => chunk.id === 'portfolio:about').text);
+});
+
+test('oversized mandatory summaries fail closed rather than exceed the evidence budget', () => {
+  const oversized = { ...sources, summaries: sources.summaries.map(chunk => chunk.projectId ? ({
+    ...chunk, text: JSON.stringify({ ...JSON.parse(chunk.text), note: 'x'.repeat(18_001) }),
+  }) : chunk) };
+  assert.throws(() => retrieveSources(oversized, input), error => error.code === 'source_error');
 });
 
 test('citations: validated IDs only; metadata URLs; grounded and unsupported invariants', () => {
@@ -237,7 +282,11 @@ test('recorded live CLI response: fenced JSON, partial Lineage answer, unsupport
   };
   const output = `${JSON.stringify({ type: 'assistant.message', data: { content: `\`\`\`json\n${JSON.stringify(live)}\n\`\`\``, toolRequests: [] } })}\n${JSON.stringify({ type: 'result', exitCode: 0 })}\n`;
   const question = 'What is Lineage, how does branching preserve context, and is it a hosted multi-user app? Also, do these sources establish the exact current temperature on Mars?';
-  const response = validateAnswer(parseCliOutput(output), retrieveSources(sources, { ...input, question }), input.projectId);
+  // This is a captured protocol fixture, not a promise that later catalog
+  // growth keeps the exact historical retrieval ranking unchanged.
+  const recordedEvidence = [...sources.summaries, ...sources.chunks].filter(chunk => live.citationIds.includes(chunk.id));
+  assert.equal(recordedEvidence.length, live.citationIds.length);
+  const response = validateAnswer(parseCliOutput(output), recordedEvidence, input.projectId);
   assert.equal(response.citations.length, 4);
   assert.equal(response.grounded, false);
   assert.equal(response.contextProjectId, 'web-context-graph');
@@ -259,7 +308,7 @@ test('HTTP fake executor: honest health, valid response, proxy Host, nullable po
   assert.equal(status.available, true);
   assert.equal(status.authVerified, false);
   const snapshot = JSON.parse(await readFile(new URL('../data/guide-sources.json', import.meta.url)));
-  const uniqueDocuments = new Set(snapshot.sources.map(s => s.sourceType === 'public-page' ? s.url : `https://github.com/${s.repo}/blob/${s.commit}/${s.path}`));
+  const uniqueDocuments = new Set(snapshot.sources.map(s => ['public-page', 'curated-case-study'].includes(s.sourceType) ? s.url : `https://github.com/${s.repo}/blob/${s.commit}/${s.path}`));
   uniqueDocuments.add('https://ortizjorge639.github.io/');
   assert.equal(status.sourceCount, uniqueDocuments.size);
   const response = await app.chat();

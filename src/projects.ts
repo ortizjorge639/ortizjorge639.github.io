@@ -12,12 +12,13 @@ export interface Project {
   status: string;
   note: string;
   updated: string;
-  illustration: 'tree' | 'inbox' | 'bot' | 'blocks' | 'canvas' | 'film' | 'game' | 'memory' | 'decks' | 'broker' | 'prompt';
+  illustration: 'tree' | 'inbox' | 'bot' | 'blocks' | 'canvas' | 'film' | 'game' | 'memory' | 'decks' | 'broker' | 'prompt' | 'inventory' | 'evidence' | 'auth-probe' | 'gestures' | 'session-dj' | 'recurrence' | 'recall' | 'migration' | 'connections';
   color: 'blue' | 'red';
   image?: string;
   imageAlt?: string;
   site?: string;
   repo?: string;
+  sourceType?: 'curated-case-study';
   problem?: string;
   how?: string;
   contribution?: string;

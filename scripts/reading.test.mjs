@@ -22,8 +22,8 @@ test('generator rejects traversal, unsafe links, duplicate slugs and missing evi
 
 test('individual contribution remains explicitly unverified when source evidence establishes only the artifact',()=>{
   for(const p of catalog) {
-    assert.match(p.contribution,/individual role (?:is )?unverified/i,p.id);
-    assert.match(reading.renderPage(catalog,p),/individual role (?:is )?unverified/i,p.id);
+    assert.match(p.contribution,/individual (?:role (?:is )?unverified|contribution and authorship are unverified)/i,p.id);
+    assert.match(reading.renderPage(catalog,p),/individual (?:role (?:is )?unverified|contribution and authorship are unverified)/i,p.id);
   }
   assert.match(catalog.find(p=>p.id==='repoquest').contribution,/upstream.*qwibitai\/repoquest/i);
 });

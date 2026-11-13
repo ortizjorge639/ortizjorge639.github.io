@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "retrievedAt": "2026-11-13T03:49:50.293314+00:00",
+  "retrievedAt": "2026-11-13T17:53:04.847Z",
   "sources": [
     {
       "projectId": "weekend-batch",
@@ -867,6 +867,561 @@
           "title": "Deploy to Vercel",
           "anchor": "deploy-to-vercel",
           "text": "## Deploy to Vercel\n\nImport this repository as a new Vercel project named `oneshottober`.\n\n- Framework preset: **Other**\n- Build command: leave empty\n- Output directory: `.`\n\nThe intended production URL is\n<https://oneshottober.vercel.app/>."
+        }
+      ]
+    },
+    {
+      "projectId": "inventory-data-assistant",
+      "title": "Inventory Data Assistant Template",
+      "sourceType": "curated-case-study",
+      "visibility": "public",
+      "provenance": "author-written-sanitized-narrative",
+      "url": "https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md",
+      "sha": "d5d10afe7db69e3f38645eb28f8b0900f65f4845",
+      "retrievedAt": "2026-11-13T00:00:00.000Z",
+      "text": "# Inventory Data Assistant Template\n\nContent review: 2026-11-13. Source type: curated-case-study.\n\n## Evidence and publication boundary\n\nThis is an author-written, sanitized narrative for the portfolio, not a public code inspection or an independently reproducible application review. The underlying code remains private and is not independently inspectable here. No source code or source repository link is published. Redistribution permission is unresolved; removing customer names alone would not establish permission to redistribute the implementation. This narrative does not establish Jorge's individual authorship or sole contribution.\n\n## The reusable idea\n\nThe template adapts an existing inventory and obsolescence assistant. It is not a generic agent for arbitrary SQL. Its inherited domain engine works with inventory, scrap eligibility, open sales orders and invoices, using filters, counts, grouping, exports and charts. Domain rules and data tools constrain the work around those table roles.\n\nExcel or schema-compatible SQL Server data enters a pandas loader, which maps the expected table roles. Domain rules and tools operate on those tables. The normal model-backed runtime combines Microsoft Agent Framework and Azure OpenAI with deterministic domain routes. A local terminal process is supported. Retained hosted web, Bot and Teams integration code remains subject to acceptance; its presence is not live Teams proof.\n\n## Architecture, two distinct paths\n\n```text\nExcel / schema-compatible SQL Server\n                 |\n          pandas loader\n          expected table roles\n                 |\n       domain rules + data tools\n          /                   \\\nNormal runtime             Optional offline adapter\nMicrosoft Agent Framework  Deterministic, non-LLM\n+ Azure OpenAI             Fictional Excel only\n+ deterministic routes     Loopback terminal / browser\n```\n\nThe optional offline adapter makes no application model or Azure calls. It is a separate deterministic route through fictional data, not a substitute for validating the normal model-backed runtime, live SQL connectivity or Teams integration.\n\n## Template layer versus inherited engine\n\nThe template additions cover configuration, fictional fixtures, Windows PowerShell and Python helpers, Copilot onboarding and local CI. The domain engine is inherited and is not claimed as newly authored. Individual authorship has not been independently verified. Copilot onboarding is setup guidance, not the normal application model runtime.\n\n## Fictional walkthrough, not measured output\n\nThis is an illustrative sequence, not a recorded execution or a measured outcome. No returned quantities, timings or accuracy results are asserted.\n\n1. Imagine fictional Excel data for the optional offline adapter. DEMO-PART is a hypothetical placeholder, not a verified bundled fixture identifier or a tested command, and represents no real customer item.\n2. Ask to count inventory rows, then filter for DEMO-PART. Keep the requested table role and filter explicit; inspect the result rather than assuming a quantity.\n3. Narrow to scrap eligibility and inspect the applicable domain rules. Explore grouping or an export/chart request as a next step, checking the output separately.\n\nThis describes how one might explore the domain workflow. It does not report that these prompts were freshly executed for this portfolio.\n\n## Evidence limits and current status\n\nRepository documentation describes historical local synthetic-data/HTTP and native Windows setup tests at scoped earlier revisions. Those records are not fresh execution evidence. The portfolio review was source inspection only; the application was not freshly run.\n\nNo current live customer SQL or model correctness, App Service authentication/deployment, on-premises connectivity, pipelines or actual Teams behavior is established here. An offline loopback walkthrough does not prove any of those integrations. Security, scale and production approval have not been given. Treat this as a bounded template narrative, not a production-ready release or a public application demo.\n",
+      "sections": [
+        {
+          "id": "inventory-data-assistant:readme:1",
+          "title": "Inventory Data Assistant Template",
+          "anchor": "inventory-data-assistant-template",
+          "text": "# Inventory Data Assistant Template\n\nContent review: 2026-11-13. Source type: curated-case-study."
+        },
+        {
+          "id": "inventory-data-assistant:readme:2",
+          "title": "Evidence and publication boundary",
+          "anchor": "evidence-and-publication-boundary",
+          "text": "## Evidence and publication boundary\n\nThis is an author-written, sanitized narrative for the portfolio, not a public code inspection or an independently reproducible application review. The underlying code remains private and is not independently inspectable here. No source code or source repository link is published. Redistribution permission is unresolved; removing customer names alone would not establish permission to redistribute the implementation. This narrative does not establish Jorge's individual authorship or sole contribution."
+        },
+        {
+          "id": "inventory-data-assistant:readme:3",
+          "title": "The reusable idea",
+          "anchor": "the-reusable-idea",
+          "text": "## The reusable idea\n\nThe template adapts an existing inventory and obsolescence assistant. It is not a generic agent for arbitrary SQL. Its inherited domain engine works with inventory, scrap eligibility, open sales orders and invoices, using filters, counts, grouping, exports and charts. Domain rules and data tools constrain the work around those table roles.\n\nExcel or schema-compatible SQL Server data enters a pandas loader, which maps the expected table roles. Domain rules and tools operate on those tables. The normal model-backed runtime combines Microsoft Agent Framework and Azure OpenAI with deterministic domain routes. A local terminal process is supported. Retained hosted web, Bot and Teams integration code remains subject to acceptance; its presence is not live Teams proof."
+        },
+        {
+          "id": "inventory-data-assistant:readme:4",
+          "title": "Architecture, two distinct paths",
+          "anchor": "architecture-two-distinct-paths",
+          "text": "## Architecture, two distinct paths\n\n```text\nExcel / schema-compatible SQL Server\n                 |\n          pandas loader\n          expected table roles\n                 |\n       domain rules + data tools\n          /                   \\\nNormal runtime             Optional offline adapter\nMicrosoft Agent Framework  Deterministic, non-LLM\n+ Azure OpenAI             Fictional Excel only\n+ deterministic routes     Loopback terminal / browser\n```\n\nThe optional offline adapter makes no application model or Azure calls. It is a separate deterministic route through fictional data, not a substitute for validating the normal model-backed runtime, live SQL connectivity or Teams integration."
+        },
+        {
+          "id": "inventory-data-assistant:readme:5",
+          "title": "Template layer versus inherited engine",
+          "anchor": "template-layer-versus-inherited-engine",
+          "text": "## Template layer versus inherited engine\n\nThe template additions cover configuration, fictional fixtures, Windows PowerShell and Python helpers, Copilot onboarding and local CI. The domain engine is inherited and is not claimed as newly authored. Individual authorship has not been independently verified. Copilot onboarding is setup guidance, not the normal application model runtime."
+        },
+        {
+          "id": "inventory-data-assistant:readme:6",
+          "title": "Fictional walkthrough, not measured output",
+          "anchor": "fictional-walkthrough-not-measured-output",
+          "text": "## Fictional walkthrough, not measured output\n\nThis is an illustrative sequence, not a recorded execution or a measured outcome. No returned quantities, timings or accuracy results are asserted.\n\n1. Imagine fictional Excel data for the optional offline adapter. DEMO-PART is a hypothetical placeholder, not a verified bundled fixture identifier or a tested command, and represents no real customer item.\n2. Ask to count inventory rows, then filter for DEMO-PART. Keep the requested table role and filter explicit; inspect the result rather than assuming a quantity.\n3. Narrow to scrap eligibility and inspect the applicable domain rules. Explore grouping or an export/chart request as a next step, checking the output separately.\n\nThis describes how one might explore the domain workflow. It does not report that these prompts were freshly executed for this portfolio."
+        },
+        {
+          "id": "inventory-data-assistant:readme:7",
+          "title": "Evidence limits and current status",
+          "anchor": "evidence-limits-and-current-status",
+          "text": "## Evidence limits and current status\n\nRepository documentation describes historical local synthetic-data/HTTP and native Windows setup tests at scoped earlier revisions. Those records are not fresh execution evidence. The portfolio review was source inspection only; the application was not freshly run.\n\nNo current live customer SQL or model correctness, App Service authentication/deployment, on-premises connectivity, pipelines or actual Teams behavior is established here. An offline loopback walkthrough does not prove any of those integrations. Security, scale and production approval have not been given. Treat this as a bounded template narrative, not a production-ready release or a public application demo."
+        }
+      ]
+    },
+    {
+      "projectId": "document-evidence-pipeline",
+      "title": "Evidence-preserving document intelligence",
+      "sourceType": "curated-case-study",
+      "visibility": "public",
+      "provenance": "author-written-sanitized-narrative",
+      "url": "https://ortizjorge639.github.io/case-studies/document-evidence-pipeline.md",
+      "sha": "73852fac5f8531089ef1aeb6737dda142a391c0b",
+      "retrievedAt": "2026-11-13T00:00:00.000Z",
+      "text": "# Evidence-preserving document intelligence\n\nContent review: 2026-11-13. Source type: curated-case-study.\n\n## Evidence and publication boundary\n\nThis author-written sanitized narrative explains a document-processing architecture, not a public code inspection. The implementation remains private and cannot be independently inspected here. No private source, screenshots, document excerpts or implementation links are published. Individual authorship is unverified. Publication of this narrative does not establish permission to redistribute the implementation; source release is a separate review.\n\n## Preserve evidence before changing text\n\nA crossed-out phrase is not just text to remove. A processing pipeline needs to retain where it appeared, why it was marked, and whether the evidence is strong enough to act on. This design routes each PDF page as native, scanned or hybrid, then joins evidence to original word identities rather than searching and replacing repeated phrases across a document.\n\nNative extraction uses PyMuPDF words, explicit strike annotations and near-horizontal vector geometry. Center-band, angle, thickness and coverage checks help distinguish cross-outs from underlines; long form and table rules can remain ambiguous and go to review. Sparse text and image coverage inform scanned/hybrid routing; thresholds are policy-controlled.\n\n## Routing and the cloud boundary\n\n```text\nPDF -> page routing -> native annotations / vector geometry\n                  -> scanned or hybrid -> optional document-level Azure Layout\n                                              | cached response reused\n                                              v\noriginal words + spans <- spatial joins <- detector evidence\n           -> deterministic decisions -> artifacts + human review\n```\n\nA scanned or hybrid page can trigger a single document-level Azure Document Intelligence Layout request. The complete response is cached and reused by the scanned detector rather than repeating OCR. This path may send the full document to the cloud: it is not a local-only privacy guarantee. Service region, retention, networking and artifact handling require separate review. Page-local routing, rendering and evidence records do not mean Azure streams partial page results; the Layout response arrives after document analysis.\n\nAzure word polygons are normalized into page fractions. Evidence joins to original words by page, overlap and center distance, preserving original word spans. Partial native strikes use offsets within the matched word. This is not global text replacement. With fixed input, policy, package versions and cached Layout response, resolution is deterministic; input and policy hashes support reproducibility, not an accuracy guarantee.\n\n## Decisions and output contract\n\nEvidence precedence runs from verifier to annotation, style, vector and scanned evidence. Confirmation policy separates confirmed deletions from needs-review items. An optional verifier receives a localized crop and evidence; no language model is mandatory. Detector scores are evidence, not ground truth, and confidence is not a calibrated probability by default.\n\nThe same spans drive enriched Markdown, clean text with only confirmed deletions removed, and provenance text preserving deleted content. A sidecar carries source/final offsets, geometry, evidence tier and scores. Page records, normalized results and an ambiguity queue support inspection; review crops and overlays help a human resolve uncertain marks. A search-ingestion JSONL record and manifest define a handoff, not proof of acceptance by a live search service.\n\n## Fictional example, not tested output\n\nImagine a fictional technical note containing the phrase \"use the blue connector\" twice, with a line through only the first occurrence. This is a hypothetical illustration, not an actual document, fixture or measured result. The intended operation is to join the mark to that occurrence's page, word and span, retain its evidence in the sidecar, and leave the second occurrence unchanged. If a nearby table rule makes the mark ambiguous, keep the text visible and route it to human review rather than silently deleting it.\n\n## Validation and limitations\n\nThe reviewed documentation describes a five-page generated mock demo using the real orchestrator with mocked cloud and detector responses. That is a historical documented demonstration, not fresh execution in this portfolio update, field accuracy evidence or cloud acceptance. No model or cloud service was called for this narrative.\n\nFaint scans, ruled forms, glyph chains and handwritten or non-horizontal cross-outs remain difficult. Horizontal left-to-right text is the documented validation target. Human ambiguity review remains necessary; no benchmark accuracy, production safety or scale approval is claimed. Service limits may require a separate chunk-and-stitch provider. PyMuPDF's AGPL/commercial licensing also needs deployment-specific review. The public evidence is this narrative only, not a release of private code or data.\n",
+      "sections": [
+        {
+          "id": "document-evidence-pipeline:readme:1",
+          "title": "Evidence-preserving document intelligence",
+          "anchor": "evidence-preserving-document-intelligence",
+          "text": "# Evidence-preserving document intelligence\n\nContent review: 2026-11-13. Source type: curated-case-study."
+        },
+        {
+          "id": "document-evidence-pipeline:readme:2",
+          "title": "Evidence and publication boundary",
+          "anchor": "evidence-and-publication-boundary",
+          "text": "## Evidence and publication boundary\n\nThis author-written sanitized narrative explains a document-processing architecture, not a public code inspection. The implementation remains private and cannot be independently inspected here. No private source, screenshots, document excerpts or implementation links are published. Individual authorship is unverified. Publication of this narrative does not establish permission to redistribute the implementation; source release is a separate review."
+        },
+        {
+          "id": "document-evidence-pipeline:readme:3",
+          "title": "Preserve evidence before changing text",
+          "anchor": "preserve-evidence-before-changing-text",
+          "text": "## Preserve evidence before changing text\n\nA crossed-out phrase is not just text to remove. A processing pipeline needs to retain where it appeared, why it was marked, and whether the evidence is strong enough to act on. This design routes each PDF page as native, scanned or hybrid, then joins evidence to original word identities rather than searching and replacing repeated phrases across a document.\n\nNative extraction uses PyMuPDF words, explicit strike annotations and near-horizontal vector geometry. Center-band, angle, thickness and coverage checks help distinguish cross-outs from underlines; long form and table rules can remain ambiguous and go to review. Sparse text and image coverage inform scanned/hybrid routing; thresholds are policy-controlled."
+        },
+        {
+          "id": "document-evidence-pipeline:readme:4",
+          "title": "Routing and the cloud boundary",
+          "anchor": "routing-and-the-cloud-boundary",
+          "text": "## Routing and the cloud boundary\n\n```text\nPDF -> page routing -> native annotations / vector geometry\n                  -> scanned or hybrid -> optional document-level Azure Layout\n                                              | cached response reused\n                                              v\noriginal words + spans <- spatial joins <- detector evidence\n           -> deterministic decisions -> artifacts + human review\n```\n\nA scanned or hybrid page can trigger a single document-level Azure Document Intelligence Layout request. The complete response is cached and reused by the scanned detector rather than repeating OCR. This path may send the full document to the cloud: it is not a local-only privacy guarantee. Service region, retention, networking and artifact handling require separate review. Page-local routing, rendering and evidence records do not mean Azure streams partial page results; the Layout response arrives after document analysis.\n\nAzure word polygons are normalized into page fractions. Evidence joins to original words by page, overlap and center distance, preserving original word spans. Partial native strikes use offsets within the matched word. This is not global text replacement. With fixed input, policy, package versions and cached Layout response, resolution is deterministic; input and policy hashes support reproducibility, not an accuracy guarantee."
+        },
+        {
+          "id": "document-evidence-pipeline:readme:5",
+          "title": "Decisions and output contract",
+          "anchor": "decisions-and-output-contract",
+          "text": "## Decisions and output contract\n\nEvidence precedence runs from verifier to annotation, style, vector and scanned evidence. Confirmation policy separates confirmed deletions from needs-review items. An optional verifier receives a localized crop and evidence; no language model is mandatory. Detector scores are evidence, not ground truth, and confidence is not a calibrated probability by default.\n\nThe same spans drive enriched Markdown, clean text with only confirmed deletions removed, and provenance text preserving deleted content. A sidecar carries source/final offsets, geometry, evidence tier and scores. Page records, normalized results and an ambiguity queue support inspection; review crops and overlays help a human resolve uncertain marks. A search-ingestion JSONL record and manifest define a handoff, not proof of acceptance by a live search service."
+        },
+        {
+          "id": "document-evidence-pipeline:readme:6",
+          "title": "Fictional example, not tested output",
+          "anchor": "fictional-example-not-tested-output",
+          "text": "## Fictional example, not tested output\n\nImagine a fictional technical note containing the phrase \"use the blue connector\" twice, with a line through only the first occurrence. This is a hypothetical illustration, not an actual document, fixture or measured result. The intended operation is to join the mark to that occurrence's page, word and span, retain its evidence in the sidecar, and leave the second occurrence unchanged. If a nearby table rule makes the mark ambiguous, keep the text visible and route it to human review rather than silently deleting it."
+        },
+        {
+          "id": "document-evidence-pipeline:readme:7",
+          "title": "Validation and limitations",
+          "anchor": "validation-and-limitations",
+          "text": "## Validation and limitations\n\nThe reviewed documentation describes a five-page generated mock demo using the real orchestrator with mocked cloud and detector responses. That is a historical documented demonstration, not fresh execution in this portfolio update, field accuracy evidence or cloud acceptance. No model or cloud service was called for this narrative.\n\nFaint scans, ruled forms, glyph chains and handwritten or non-horizontal cross-outs remain difficult. Horizontal left-to-right text is the documented validation target. Human ambiguity review remains necessary; no benchmark accuracy, production safety or scale approval is claimed. Service limits may require a separate chunk-and-stitch provider. PyMuPDF's AGPL/commercial licensing also needs deployment-specific review. The public evidence is this narrative only, not a release of private code or data."
+        }
+      ]
+    },
+    {
+      "projectId": "custom-model-auth-diagnostics",
+      "title": "Diagnosing custom-model authentication",
+      "sourceType": "curated-case-study",
+      "visibility": "public",
+      "provenance": "author-written-sanitized-narrative",
+      "url": "https://ortizjorge639.github.io/case-studies/custom-model-auth-diagnostics.md",
+      "sha": "700fab080116970fbd76ab66f92c0e5bec3359a9",
+      "retrievedAt": "2026-11-13T00:00:00.000Z",
+      "text": "# Diagnosing custom-model authentication\n\nContent review: 2026-11-13. Source type: curated-case-study.\n\n## Evidence and publication boundary\n\nThis is an author-written sanitized narrative of a BYOK (bring your own key) integration diagnostic, not a public code inspection or a deployment guide verified today. The underlying implementation and historical guide remain private and unlinked. No screenshots, policy extracts, real credentials or operational identifiers are published. Individual authorship is unverified. Source redistribution requires a separate rights and security review; publishing this explanation does not authorize it.\n\n## Observe the contract before changing the gate\n\nA custom-model client and an API gateway can disagree about where a configured key belongs. A missing credential and a gateway expecting the wrong header can both appear as an authentication failure. Guessing against a working route confuses diagnosis with enforcement.\n\nThe reusable approach separates those questions: use a disposable, isolated diagnostic endpoint to observe the client authentication contract, then validate that contract at the gateway. The historical guide describes GitHub Copilot custom models behind Azure API Management, but its observations are not a universal claim about every current client, tenant or version. This narrative makes no claim that vendor documentation is currently absent.\n\n## Bounded diagnostic boundary\n\n```text\nClient configured with disposable dummy credential\n             -> isolated diagnostic endpoint\n             -> allowlisted metadata + static mock response\n             -> reviewed contract hypothesis\n             -> gateway validation -> separate backend identity\n             -> restore client route; remove diagnostics\n```\n\nUse a disposable non-production dummy credential and a separate endpoint with a bounded lifetime and access scope. There is no model backend to forward requests to. Observe only candidate-header presence booleans and, if needed, an allowlisted scheme classification such as Bearer / other / absent. Never echo, log or forward credential values. Do not copy an arbitrary first header token into telemetry: a malformed header can put a secret where a scheme was expected. Avoid full-header/body tracing and inspect inherited telemetry and gateway policies as well as endpoint-local settings.\n\nRoute shapes should resemble the relevant model-list and completion interfaces, but static diagnostic responses are not model output. A client may reject a mock response even when transport metadata is observed. Correlate controlled attempts within a short window; a vendor-looking request header alone does not authenticate origin. A diagnostic API being separate is not a zero-risk or production-safety guarantee.\n\n## From finding to validation\n\nThe historical guide reports an Authorization/Bearer observation and explains an earlier missing-header result as a blank configured key. These are historical claims, not fresh measurements or a promise of current behavior. A non-empty disposable dummy value distinguishes an empty-input test from an observed client contract without exposing a real secret.\n\nThe gateway design then validates the expected client credential using a secret-store-backed named value before routing. Strip the incoming client credential before backend authentication; a separate managed identity authenticates the backend call. Secret rotation, policy inheritance, rate controls and access review remain operational responsibilities, not solved by header discovery alone.\n\n## Fictional example, not a captured request\n\nImagine a sandbox client configured with a disposable dummy credential. One hypothetical diagnostic record contains only candidate-header presence booleans and an allowlisted Bearer classification. A second attempt with an empty key is a different input, not evidence that the first contract changed. This is an illustrative sequence, not captured traffic, a tested policy or a reported result.\n\nBefore accepting an integration, check missing, incorrect and expected credentials at the gateway, verify that client credentials do not reach the backend, and retest the actual client path under authorized conditions. The private guide reports historical gateway-console, HTTP and client retests. None were rerun for this portfolio update; there were no model calls, gateway changes or deployments here. Historical success does not establish current compatibility or production readiness.\n\n## Restore and clean up\n\nRestore the intended client route and remove the dummy configuration. Remove the diagnostic endpoint when no longer needed, or disable diagnostic behavior and observation under an explicit retention/access decision. An idle response alone does not prove a surface safe to retain indefinitely. Stop tracing, apply retention rules to diagnostic metadata, and record ownership and expiry. The deliverable here is a public narrative of the method, not a live endpoint or a security approval.\n",
+      "sections": [
+        {
+          "id": "custom-model-auth-diagnostics:readme:1",
+          "title": "Diagnosing custom-model authentication",
+          "anchor": "diagnosing-custom-model-authentication",
+          "text": "# Diagnosing custom-model authentication\n\nContent review: 2026-11-13. Source type: curated-case-study."
+        },
+        {
+          "id": "custom-model-auth-diagnostics:readme:2",
+          "title": "Evidence and publication boundary",
+          "anchor": "evidence-and-publication-boundary",
+          "text": "## Evidence and publication boundary\n\nThis is an author-written sanitized narrative of a BYOK (bring your own key) integration diagnostic, not a public code inspection or a deployment guide verified today. The underlying implementation and historical guide remain private and unlinked. No screenshots, policy extracts, real credentials or operational identifiers are published. Individual authorship is unverified. Source redistribution requires a separate rights and security review; publishing this explanation does not authorize it."
+        },
+        {
+          "id": "custom-model-auth-diagnostics:readme:3",
+          "title": "Observe the contract before changing the gate",
+          "anchor": "observe-the-contract-before-changing-the-gate",
+          "text": "## Observe the contract before changing the gate\n\nA custom-model client and an API gateway can disagree about where a configured key belongs. A missing credential and a gateway expecting the wrong header can both appear as an authentication failure. Guessing against a working route confuses diagnosis with enforcement.\n\nThe reusable approach separates those questions: use a disposable, isolated diagnostic endpoint to observe the client authentication contract, then validate that contract at the gateway. The historical guide describes GitHub Copilot custom models behind Azure API Management, but its observations are not a universal claim about every current client, tenant or version. This narrative makes no claim that vendor documentation is currently absent."
+        },
+        {
+          "id": "custom-model-auth-diagnostics:readme:4",
+          "title": "Bounded diagnostic boundary",
+          "anchor": "bounded-diagnostic-boundary",
+          "text": "## Bounded diagnostic boundary\n\n```text\nClient configured with disposable dummy credential\n             -> isolated diagnostic endpoint\n             -> allowlisted metadata + static mock response\n             -> reviewed contract hypothesis\n             -> gateway validation -> separate backend identity\n             -> restore client route; remove diagnostics\n```\n\nUse a disposable non-production dummy credential and a separate endpoint with a bounded lifetime and access scope. There is no model backend to forward requests to. Observe only candidate-header presence booleans and, if needed, an allowlisted scheme classification such as Bearer / other / absent. Never echo, log or forward credential values. Do not copy an arbitrary first header token into telemetry: a malformed header can put a secret where a scheme was expected. Avoid full-header/body tracing and inspect inherited telemetry and gateway policies as well as endpoint-local settings.\n\nRoute shapes should resemble the relevant model-list and completion interfaces, but static diagnostic responses are not model output. A client may reject a mock response even when transport metadata is observed. Correlate controlled attempts within a short window; a vendor-looking request header alone does not authenticate origin. A diagnostic API being separate is not a zero-risk or production-safety guarantee."
+        },
+        {
+          "id": "custom-model-auth-diagnostics:readme:5",
+          "title": "From finding to validation",
+          "anchor": "from-finding-to-validation",
+          "text": "## From finding to validation\n\nThe historical guide reports an Authorization/Bearer observation and explains an earlier missing-header result as a blank configured key. These are historical claims, not fresh measurements or a promise of current behavior. A non-empty disposable dummy value distinguishes an empty-input test from an observed client contract without exposing a real secret.\n\nThe gateway design then validates the expected client credential using a secret-store-backed named value before routing. Strip the incoming client credential before backend authentication; a separate managed identity authenticates the backend call. Secret rotation, policy inheritance, rate controls and access review remain operational responsibilities, not solved by header discovery alone."
+        },
+        {
+          "id": "custom-model-auth-diagnostics:readme:6",
+          "title": "Fictional example, not a captured request",
+          "anchor": "fictional-example-not-a-captured-request",
+          "text": "## Fictional example, not a captured request\n\nImagine a sandbox client configured with a disposable dummy credential. One hypothetical diagnostic record contains only candidate-header presence booleans and an allowlisted Bearer classification. A second attempt with an empty key is a different input, not evidence that the first contract changed. This is an illustrative sequence, not captured traffic, a tested policy or a reported result.\n\nBefore accepting an integration, check missing, incorrect and expected credentials at the gateway, verify that client credentials do not reach the backend, and retest the actual client path under authorized conditions. The private guide reports historical gateway-console, HTTP and client retests. None were rerun for this portfolio update; there were no model calls, gateway changes or deployments here. Historical success does not establish current compatibility or production readiness."
+        },
+        {
+          "id": "custom-model-auth-diagnostics:readme:7",
+          "title": "Restore and clean up",
+          "anchor": "restore-and-clean-up",
+          "text": "## Restore and clean up\n\nRestore the intended client route and remove the dummy configuration. Remove the diagnostic endpoint when no longer needed, or disable diagnostic behavior and observation under an explicit retention/access decision. An idle response alone does not prove a surface safe to retain indefinitely. Stop tracing, apply retention rules to diagnostic metadata, and record ownership and expiry. The deliverable here is a public narrative of the method, not a live endpoint or a security approval."
+        }
+      ]
+    },
+    {
+      "projectId": "coding-session-dj",
+      "title": "A soundtrack for the session",
+      "sourceType": "curated-case-study",
+      "visibility": "public",
+      "provenance": "author-written-sanitized-narrative",
+      "url": "https://ortizjorge639.github.io/case-studies/coding-session-dj.md",
+      "sha": "19514dc41805a33b76b846f5a452b74fabfa93a3",
+      "retrievedAt": "2026-11-13T17:48:19.753Z",
+      "text": "# A soundtrack for the session\n\nLet the session change the music without confusing intent with playback.\n\n> This separately authored narrative describes a private implementation. Readers cannot inspect its code here. Historical validation described in project documentation was not independently rerun for this case study. No application, model, playback, ingestion or deployment was exercised. Individual authorship has not been independently established; this is not a claim of sole authorship. Private source redistribution requires separate review and permission.\n\n## Two kinds of interruption\n\nA soundtrack director must avoid changing music every time the work changes slightly. It must also avoid misleading the listener when a request is queued but playback has not caught up. This project addresses those as separate problems: a local policy chooses whether to act, and a playback boundary reports what was actually observed.\n\n## A deliberately narrow input\n\nA coding agent supplies a bounded scene label, tags and numeric dimensions such as energy or tension. The accepted scene format excludes source code, diffs, prompts, paths and private reasoning. That is a data-minimization boundary, not a promise that an arbitrary free-text label is safe: the sender must still avoid placing private material in permitted fields. The activity pane is a compact account of received signals and control states, not a raw coding transcript.\n\nThe selector uses human-curated playlist or album crates. Preference constraints rule out unsuitable choices before scoring. Minimum hold periods, crate cooldowns, track-boundary preference and temporary manual overrides reduce switching. This is deterministic selection over configured metadata, not automatic musical analysis or a claim that the system can infer a person's emotions.\n\n## Playback and activation boundaries\n\nThe official Spotify Web API is the primary backend. A separately selected compatibility bridge is secondary, not the default playback engine. Playback requires Spotify Premium, user authorization, an active Connect device and usable crate configuration. Authorization uses PKCE without a client secret.\n\nIn the reviewed runtime, automatic adaptation starts enabled; the user can disable it or hold it. Holding adaptation does not pause music. A submitted control first enters a delivery lifecycle. The interface must distinguish receipt from an acknowledged result, and neither a preference acknowledgement nor a policy decision alone proves a new track is playing. Playback mutations are checked against fresh observations. Uncertain delivery must remain uncertain rather than invite an automatic duplicate request.\n\n## Hypothetical illustration — not a bundled test\n\nImagine an agent reporting a recovery scene after a frustrating task. The policy might wait for a track boundary instead of interrupting immediately. A later observation could confirm a new context, or expose a failure. No playlist, song sequence, listening history or actual playback result is supplied here. This invented example explains the wait-and-observe boundary, not a successful music session.\n\n## Evidence and limits\n\nDocumentation describes local HTTP/state regressions and browser checks, including fictional Spotify responses. Those historical tests do not establish current account access, physical-phone behavior or successful playback. No Spotify operation or application test was run for this narrative.\n\nThe application runs locally while its process is active. It is not a public music-control endpoint. The frontend does not generate audio, beatmatch, provide crossfade or add audio effects; visual text transitions should not be mistaken for audio mixing. Its contribution is a bounded session-to-selection workflow and honest state reporting, not proven productivity or mood improvement.\n\n## Contribution boundary\n\nIndividual role unverified. The reviewed artifact combines a compact player, deterministic scene policy, Spotify authorization and explicit delivery-state handling. Spotify provides playback; the player is not an original audio engine or an official Spotify product.\n",
+      "sections": [
+        {
+          "id": "coding-session-dj:readme:1",
+          "title": "A soundtrack for the session",
+          "anchor": "a-soundtrack-for-the-session",
+          "text": "# A soundtrack for the session\n\nLet the session change the music without confusing intent with playback.\n\n> This separately authored narrative describes a private implementation. Readers cannot inspect its code here. Historical validation described in project documentation was not independently rerun for this case study. No application, model, playback, ingestion or deployment was exercised. Individual authorship has not been independently established; this is not a claim of sole authorship. Private source redistribution requires separate review and permission."
+        },
+        {
+          "id": "coding-session-dj:readme:2",
+          "title": "Two kinds of interruption",
+          "anchor": "two-kinds-of-interruption",
+          "text": "## Two kinds of interruption\n\nA soundtrack director must avoid changing music every time the work changes slightly. It must also avoid misleading the listener when a request is queued but playback has not caught up. This project addresses those as separate problems: a local policy chooses whether to act, and a playback boundary reports what was actually observed."
+        },
+        {
+          "id": "coding-session-dj:readme:3",
+          "title": "A deliberately narrow input",
+          "anchor": "a-deliberately-narrow-input",
+          "text": "## A deliberately narrow input\n\nA coding agent supplies a bounded scene label, tags and numeric dimensions such as energy or tension. The accepted scene format excludes source code, diffs, prompts, paths and private reasoning. That is a data-minimization boundary, not a promise that an arbitrary free-text label is safe: the sender must still avoid placing private material in permitted fields. The activity pane is a compact account of received signals and control states, not a raw coding transcript.\n\nThe selector uses human-curated playlist or album crates. Preference constraints rule out unsuitable choices before scoring. Minimum hold periods, crate cooldowns, track-boundary preference and temporary manual overrides reduce switching. This is deterministic selection over configured metadata, not automatic musical analysis or a claim that the system can infer a person's emotions."
+        },
+        {
+          "id": "coding-session-dj:readme:4",
+          "title": "Playback and activation boundaries",
+          "anchor": "playback-and-activation-boundaries",
+          "text": "## Playback and activation boundaries\n\nThe official Spotify Web API is the primary backend. A separately selected compatibility bridge is secondary, not the default playback engine. Playback requires Spotify Premium, user authorization, an active Connect device and usable crate configuration. Authorization uses PKCE without a client secret.\n\nIn the reviewed runtime, automatic adaptation starts enabled; the user can disable it or hold it. Holding adaptation does not pause music. A submitted control first enters a delivery lifecycle. The interface must distinguish receipt from an acknowledged result, and neither a preference acknowledgement nor a policy decision alone proves a new track is playing. Playback mutations are checked against fresh observations. Uncertain delivery must remain uncertain rather than invite an automatic duplicate request."
+        },
+        {
+          "id": "coding-session-dj:readme:5",
+          "title": "Hypothetical illustration — not a bundled test",
+          "anchor": "hypothetical-illustration--not-a-bundled-test",
+          "text": "## Hypothetical illustration — not a bundled test\n\nImagine an agent reporting a recovery scene after a frustrating task. The policy might wait for a track boundary instead of interrupting immediately. A later observation could confirm a new context, or expose a failure. No playlist, song sequence, listening history or actual playback result is supplied here. This invented example explains the wait-and-observe boundary, not a successful music session."
+        },
+        {
+          "id": "coding-session-dj:readme:6",
+          "title": "Evidence and limits",
+          "anchor": "evidence-and-limits",
+          "text": "## Evidence and limits\n\nDocumentation describes local HTTP/state regressions and browser checks, including fictional Spotify responses. Those historical tests do not establish current account access, physical-phone behavior or successful playback. No Spotify operation or application test was run for this narrative.\n\nThe application runs locally while its process is active. It is not a public music-control endpoint. The frontend does not generate audio, beatmatch, provide crossfade or add audio effects; visual text transitions should not be mistaken for audio mixing. Its contribution is a bounded session-to-selection workflow and honest state reporting, not proven productivity or mood improvement."
+        },
+        {
+          "id": "coding-session-dj:readme:7",
+          "title": "Contribution boundary",
+          "anchor": "contribution-boundary",
+          "text": "## Contribution boundary\n\nIndividual role unverified. The reviewed artifact combines a compact player, deterministic scene policy, Spotify authorization and explicit delivery-state handling. Spotify provides playback; the player is not an original audio engine or an official Spotify product."
+        }
+      ]
+    },
+    {
+      "projectId": "recurrence-gated-knowledge",
+      "title": "Knowledge that earns its place",
+      "sourceType": "curated-case-study",
+      "visibility": "public",
+      "provenance": "author-written-sanitized-narrative",
+      "url": "https://ortizjorge639.github.io/case-studies/recurrence-gated-knowledge.md",
+      "sha": "eaf8839f07d8d05817631a57ef5fef3bb6a4f6d4",
+      "retrievedAt": "2026-11-13T17:48:19.753Z",
+      "text": "# Knowledge that earns its place\n\nCapture freely. Promote carefully. Keep the evidence close.\n\n> This separately authored narrative describes a private implementation. Readers cannot inspect its code here. Historical validation described in project documentation was not independently rerun for this case study. No application, model, playback, ingestion or deployment was exercised. Individual authorship has not been independently established; this is not a claim of sole authorship. Private source redistribution requires separate review and permission.\n\n## Keeping a thought from becoming a conclusion too soon\n\nThe workflow distinguishes keeping material from endorsing it. Capture has no review gate: a passing thought can remain a dated raw note and be found later. Durable knowledge has a higher bar. This reduces the conceptual risk of presenting an isolated idea as an established conclusion without pretending that recurrence makes a claim true.\n\n## Eligibility is not approval\n\nThe documented recurrence floor is at least two independent source units separated by three or more calendar days. Event-aware deduplication prevents multiple representations of the same event from manufacturing extra support. Passing that floor makes a candidate eligible for assessment, not automatically correct or ready to promote.\n\nAn agent prepares a focused claim with exact supporting passages and considers existing knowledge and earlier decisions. The person can accept, correct, reject or defer, with a reason retained in the decision record. The helper requires confirmation of the displayed proposal before recording the outcome. Recording a decision is separate from changing a knowledge page; it does not rewrite raw sources or autonomously update the agent's instructions. Semantic assessments still need judgment, and a confirmation flag is not an authentication mechanism.\n\n## Retrieval that exposes its support\n\nThe core substrate is Markdown and links rather than a custom database or graph UI. Current grounded retrieval and review paths use Python; legacy Ruby helpers remain for capture and discovery. Raw-note search and accepted-knowledge retrieval are different operations.\n\nA deterministic, read-only packet builder scans accepted knowledge, resolves its supporting evidence, and emits only complete records that fit a context budget. It validates source metadata and distinguishes no match, budget exclusion and invalid evidence. It does not generate the final answer or call a model. An answer-generating host still has to interpret the packet faithfully; citations alone do not prove that interpretation is correct.\n\n## Hypothetical illustration — not a bundled test\n\nImagine a notebook containing an invented idea about a reusable workshop checklist. One note does not become a lasting page. Independent discussion several days later could make the idea eligible for assessment, while duplicate exports of the first discussion would not. A human might still reject the proposed page as unsupported or unnecessary. This invented notebook is not a supplied fixture, an executed recurrence test or a quotation from a real vault.\n\n## Evidence and limits\n\nThe reviewed README, product definition and review schema describe source preservation, recurrence, bounded citations and explicit decisions. Historical regression and experiment claims were not independently rerun. No real vault, pitch notes, decision history or generated packet was opened for this case study.\n\nThis is an on-demand file-and-script workflow, not a continuously running knowledge service. Documented import adapters read local exports; live API connectors are outside the described implementation. Link visualization can be delegated to an existing editor. The narrative claims no improvement in cognition, recall, answer quality or downstream work. The valuable boundary is a reviewable path from raw material to maintained knowledge, with the original evidence still available privately.\n\n## Contribution boundary\n\nIndividual role unverified. The reviewed engine combines recurrence checks, event-aware source handling, evidence-bounded retrieval and explicit review records on a portable Markdown substrate. Existing editors render links; no custom graph engine or autonomous preference-learning result is claimed.\n",
+      "sections": [
+        {
+          "id": "recurrence-gated-knowledge:readme:1",
+          "title": "Knowledge that earns its place",
+          "anchor": "knowledge-that-earns-its-place",
+          "text": "# Knowledge that earns its place\n\nCapture freely. Promote carefully. Keep the evidence close.\n\n> This separately authored narrative describes a private implementation. Readers cannot inspect its code here. Historical validation described in project documentation was not independently rerun for this case study. No application, model, playback, ingestion or deployment was exercised. Individual authorship has not been independently established; this is not a claim of sole authorship. Private source redistribution requires separate review and permission."
+        },
+        {
+          "id": "recurrence-gated-knowledge:readme:2",
+          "title": "Keeping a thought from becoming a conclusion too soon",
+          "anchor": "keeping-a-thought-from-becoming-a-conclusion-too-soon",
+          "text": "## Keeping a thought from becoming a conclusion too soon\n\nThe workflow distinguishes keeping material from endorsing it. Capture has no review gate: a passing thought can remain a dated raw note and be found later. Durable knowledge has a higher bar. This reduces the conceptual risk of presenting an isolated idea as an established conclusion without pretending that recurrence makes a claim true."
+        },
+        {
+          "id": "recurrence-gated-knowledge:readme:3",
+          "title": "Eligibility is not approval",
+          "anchor": "eligibility-is-not-approval",
+          "text": "## Eligibility is not approval\n\nThe documented recurrence floor is at least two independent source units separated by three or more calendar days. Event-aware deduplication prevents multiple representations of the same event from manufacturing extra support. Passing that floor makes a candidate eligible for assessment, not automatically correct or ready to promote.\n\nAn agent prepares a focused claim with exact supporting passages and considers existing knowledge and earlier decisions. The person can accept, correct, reject or defer, with a reason retained in the decision record. The helper requires confirmation of the displayed proposal before recording the outcome. Recording a decision is separate from changing a knowledge page; it does not rewrite raw sources or autonomously update the agent's instructions. Semantic assessments still need judgment, and a confirmation flag is not an authentication mechanism."
+        },
+        {
+          "id": "recurrence-gated-knowledge:readme:4",
+          "title": "Retrieval that exposes its support",
+          "anchor": "retrieval-that-exposes-its-support",
+          "text": "## Retrieval that exposes its support\n\nThe core substrate is Markdown and links rather than a custom database or graph UI. Current grounded retrieval and review paths use Python; legacy Ruby helpers remain for capture and discovery. Raw-note search and accepted-knowledge retrieval are different operations.\n\nA deterministic, read-only packet builder scans accepted knowledge, resolves its supporting evidence, and emits only complete records that fit a context budget. It validates source metadata and distinguishes no match, budget exclusion and invalid evidence. It does not generate the final answer or call a model. An answer-generating host still has to interpret the packet faithfully; citations alone do not prove that interpretation is correct."
+        },
+        {
+          "id": "recurrence-gated-knowledge:readme:5",
+          "title": "Hypothetical illustration — not a bundled test",
+          "anchor": "hypothetical-illustration--not-a-bundled-test",
+          "text": "## Hypothetical illustration — not a bundled test\n\nImagine a notebook containing an invented idea about a reusable workshop checklist. One note does not become a lasting page. Independent discussion several days later could make the idea eligible for assessment, while duplicate exports of the first discussion would not. A human might still reject the proposed page as unsupported or unnecessary. This invented notebook is not a supplied fixture, an executed recurrence test or a quotation from a real vault."
+        },
+        {
+          "id": "recurrence-gated-knowledge:readme:6",
+          "title": "Evidence and limits",
+          "anchor": "evidence-and-limits",
+          "text": "## Evidence and limits\n\nThe reviewed README, product definition and review schema describe source preservation, recurrence, bounded citations and explicit decisions. Historical regression and experiment claims were not independently rerun. No real vault, pitch notes, decision history or generated packet was opened for this case study.\n\nThis is an on-demand file-and-script workflow, not a continuously running knowledge service. Documented import adapters read local exports; live API connectors are outside the described implementation. Link visualization can be delegated to an existing editor. The narrative claims no improvement in cognition, recall, answer quality or downstream work. The valuable boundary is a reviewable path from raw material to maintained knowledge, with the original evidence still available privately."
+        },
+        {
+          "id": "recurrence-gated-knowledge:readme:7",
+          "title": "Contribution boundary",
+          "anchor": "contribution-boundary",
+          "text": "## Contribution boundary\n\nIndividual role unverified. The reviewed engine combines recurrence checks, event-aware source handling, evidence-bounded retrieval and explicit review records on a portable Markdown substrate. Existing editors render links; no custom graph engine or autonomous preference-learning result is claimed."
+        }
+      ]
+    },
+    {
+      "projectId": "retrieval-practice-harness",
+      "title": "From notes to recall",
+      "sourceType": "curated-case-study",
+      "visibility": "public",
+      "provenance": "author-written-sanitized-narrative",
+      "url": "https://ortizjorge639.github.io/case-studies/retrieval-practice-harness.md",
+      "sha": "5c0a703825b9a064102f2bf7ba24f8d240040a3e",
+      "retrievedAt": "2026-11-13T17:48:19.754Z",
+      "text": "# From notes to recall\n\nMake a private review artifact, then decide what deserves another look.\n\n> This separately authored narrative describes a private implementation. Readers cannot inspect its code here. Historical validation described in project documentation was not independently rerun for this case study. No application, model, playback, ingestion or deployment was exercised. Individual authorship has not been independently established; this is not a claim of sole authorship. Private source redistribution requires separate review and permission.\n\n## An artifact is not the same thing as learning\n\nA stored recap is easy to accumulate and easy not to revisit. This project creates a more concrete next action: open a private card artifact, try to retrieve or explain an idea, and mark the artifact reviewed. Its title describes the intended practice loop, not an observed improvement in recall.\n\n## The local path\n\nThe inspected command-line entry point accepts a supplied Markdown recap. It normalizes the content, invokes question generation, renders an HTML card artifact and records the result in a local registry. The README describes a twelve-card format; the question generator uses patterns and anchored source text, with fallback prompts. Card count should not be confused with twelve independently validated questions or a reliable semantic understanding of the source.\n\nA later command surfaces a small set of artifacts, defaulting to three. It uses a documented seventy-two-hour decay heuristic and registry state to prioritize the queue. Marking something reviewed resets its review clock; archiving retires it from the active list. Those are workflow records, not a test of mastery. A high urgency value is not a clinical or calibrated prediction that a person has forgotten the material.\n\n## Integration and write boundaries\n\nThe local-file path is distinct from live meeting access. The inspected Microsoft Graph connector is a skeleton: missing credentials lead to manual fallback, and supplying a token still does not make its stubbed discovery and transcript methods perform live retrieval. An onboarding suggestion to use an external agent connection is not proof that this application has a functioning Graph integration.\n\nWiki compilation is an additive option rather than a prerequisite for local cards. When explicitly selected, the CLI can write wiki files. Documentation defines source-lineage, audience and publish-readiness requirements, including human review where applicable. These contracts must not be presented as proof that every ingestion or wiki-write path enforces every check. Likewise, a local card or a passing checklist is not permission to share its underlying source.\n\n## Hypothetical illustration — not a bundled test\n\nImagine an invented recap about choosing a generic workshop layout. A private card could ask for the tradeoff behind that choice; a later queue could suggest revisiting the artifact. The learner could inspect the source before deciding what to retain. No recap, deck, generated answer, registry entry or learning result is supplied here. The example is explanatory fiction, not a fixture or a completed run.\n\n## Evidence and limits\n\nThe README and narrow design contracts describe the local artifact and review workflow. Inspection of the CLI, question generator, surfacing module and connector establishes important implementation boundaries, but does not demonstrate end-to-end execution. Historical test counts and checked-off specification items were not independently verified. Earlier specification card counts differ from the current README, so this narrative does not use a count as an acceptance claim.\n\nNo meeting transcript, personal wiki or generated private bundle was inspected. No ingestion, rendering, review action, API connection or model run was performed. Cards, lineage and heuristics can make review inspectable; they do not establish factual completeness, safe publication or improved retention.\n\n## Contribution boundary\n\nIndividual role unverified. The reviewed artifact connects local recap ingestion, source-referenced question templates, private card rendering and a review registry. Time-based urgency is a scheduling heuristic, not a measurement of a person’s memory or proof of educational effectiveness.\n",
+      "sections": [
+        {
+          "id": "retrieval-practice-harness:readme:1",
+          "title": "From notes to recall",
+          "anchor": "from-notes-to-recall",
+          "text": "# From notes to recall\n\nMake a private review artifact, then decide what deserves another look.\n\n> This separately authored narrative describes a private implementation. Readers cannot inspect its code here. Historical validation described in project documentation was not independently rerun for this case study. No application, model, playback, ingestion or deployment was exercised. Individual authorship has not been independently established; this is not a claim of sole authorship. Private source redistribution requires separate review and permission."
+        },
+        {
+          "id": "retrieval-practice-harness:readme:2",
+          "title": "An artifact is not the same thing as learning",
+          "anchor": "an-artifact-is-not-the-same-thing-as-learning",
+          "text": "## An artifact is not the same thing as learning\n\nA stored recap is easy to accumulate and easy not to revisit. This project creates a more concrete next action: open a private card artifact, try to retrieve or explain an idea, and mark the artifact reviewed. Its title describes the intended practice loop, not an observed improvement in recall."
+        },
+        {
+          "id": "retrieval-practice-harness:readme:3",
+          "title": "The local path",
+          "anchor": "the-local-path",
+          "text": "## The local path\n\nThe inspected command-line entry point accepts a supplied Markdown recap. It normalizes the content, invokes question generation, renders an HTML card artifact and records the result in a local registry. The README describes a twelve-card format; the question generator uses patterns and anchored source text, with fallback prompts. Card count should not be confused with twelve independently validated questions or a reliable semantic understanding of the source.\n\nA later command surfaces a small set of artifacts, defaulting to three. It uses a documented seventy-two-hour decay heuristic and registry state to prioritize the queue. Marking something reviewed resets its review clock; archiving retires it from the active list. Those are workflow records, not a test of mastery. A high urgency value is not a clinical or calibrated prediction that a person has forgotten the material."
+        },
+        {
+          "id": "retrieval-practice-harness:readme:4",
+          "title": "Integration and write boundaries",
+          "anchor": "integration-and-write-boundaries",
+          "text": "## Integration and write boundaries\n\nThe local-file path is distinct from live meeting access. The inspected Microsoft Graph connector is a skeleton: missing credentials lead to manual fallback, and supplying a token still does not make its stubbed discovery and transcript methods perform live retrieval. An onboarding suggestion to use an external agent connection is not proof that this application has a functioning Graph integration.\n\nWiki compilation is an additive option rather than a prerequisite for local cards. When explicitly selected, the CLI can write wiki files. Documentation defines source-lineage, audience and publish-readiness requirements, including human review where applicable. These contracts must not be presented as proof that every ingestion or wiki-write path enforces every check. Likewise, a local card or a passing checklist is not permission to share its underlying source."
+        },
+        {
+          "id": "retrieval-practice-harness:readme:5",
+          "title": "Hypothetical illustration — not a bundled test",
+          "anchor": "hypothetical-illustration--not-a-bundled-test",
+          "text": "## Hypothetical illustration — not a bundled test\n\nImagine an invented recap about choosing a generic workshop layout. A private card could ask for the tradeoff behind that choice; a later queue could suggest revisiting the artifact. The learner could inspect the source before deciding what to retain. No recap, deck, generated answer, registry entry or learning result is supplied here. The example is explanatory fiction, not a fixture or a completed run."
+        },
+        {
+          "id": "retrieval-practice-harness:readme:6",
+          "title": "Evidence and limits",
+          "anchor": "evidence-and-limits",
+          "text": "## Evidence and limits\n\nThe README and narrow design contracts describe the local artifact and review workflow. Inspection of the CLI, question generator, surfacing module and connector establishes important implementation boundaries, but does not demonstrate end-to-end execution. Historical test counts and checked-off specification items were not independently verified. Earlier specification card counts differ from the current README, so this narrative does not use a count as an acceptance claim.\n\nNo meeting transcript, personal wiki or generated private bundle was inspected. No ingestion, rendering, review action, API connection or model run was performed. Cards, lineage and heuristics can make review inspectable; they do not establish factual completeness, safe publication or improved retention."
+        },
+        {
+          "id": "retrieval-practice-harness:readme:7",
+          "title": "Contribution boundary",
+          "anchor": "contribution-boundary",
+          "text": "## Contribution boundary\n\nIndividual role unverified. The reviewed artifact connects local recap ingestion, source-referenced question templates, private card rendering and a review registry. Time-based urgency is a scheduling heuristic, not a measurement of a person’s memory or proof of educational effectiveness."
+        }
+      ]
+    },
+    {
+      "projectId": "synthetic-migration-pilot",
+      "title": "Prove the migration before the move",
+      "sourceType": "curated-case-study",
+      "visibility": "public",
+      "provenance": "author-written-sanitized-narrative",
+      "url": "https://ortizjorge639.github.io/case-studies/synthetic-migration-pilot.md",
+      "sha": "441f8c42cace2888040047fac157e827c4171ce7",
+      "retrievedAt": "2026-11-13T17:48:19.754Z",
+      "text": "# Prove the migration before the move\n\nA small parity check, before a bigger migration claim.\n\n## Overview\n\nA tiny synthetic SQLite-to-DuckDB migration pilot that compares data invariants and application behavior before treating a move as successful.\n\n## Problem\n\nA migration can preserve row counts while changing what an application returns. A small rehearsal makes that distinction inspectable without moving real data.\n\n## Documented implementation\n\nThe usage documentation describes a generated-fixture runner, transactional SQLite-to-DuckDB transfer, canonical content and invariant checks, seven application comparisons, and generated reconciliation output. The reviewed workflow defines Linux and Windows jobs with read-only repository permissions and artifact retention. These are documentary observations, not an independent code audit or test run.\n\n## Intended workflow and scope\n\nUse a deliberately small rehearsal to identify mismatches and review corrections before any broader migration decision. An intentional-defect exercise is specified to fail before a corrected revision passes; neither transition was independently observed here.\n\n## Activation boundary\n\nNo application or workflow was activated for this review. The documented workflow is triggered by pull-request activity or manual dispatch; it is not production cutover automation.\n\n## Review evidence\n\nReviewed usage documentation and the validation workflow. The workflow definition demonstrates configured checks, not a passing CI history. No generated databases, reconciliation artifacts, logs, or application outputs were opened. Documentation was reviewed on 2026-11-13. Historical descriptions and configured CI are not fresh execution or acceptance evidence.\n\n## Hypothetical illustration\n\nHypothetical synthetic illustration: a made-up catalog and its line items agree on row counts after transfer, but a rounded total differs. A behavioral comparison should expose that mismatch. This illustration was not executed and is not an observed defect.\n\n## Limitations\n\n- Tiny generated relational fixtures only; not a customer migration.\n- No stored procedures, change-data capture, production performance, cutover, or enterprise approval validation.\n- Local attended agent reasoning is not an autonomous CI reasoning service.\n- No quantified reliability, savings, delivery speed, or production-readiness claim.\n\n## What would establish more\n\nAny larger claim needs a separately approved dataset, compatibility scope, failure/recovery criteria, observed test results, and explicit release authority. Passing a small pilot would not authorize deployment.\n\n## Attribution\n\nIndividual contribution and authorship are unverified. This entry describes the documented artifact or proposal, not a claim of sole design, implementation, or measured impact.\n\n## Disclosure\n\nThis is an independently authored, sanitized narrative about a private project. The implementation is not publicly inspectable. Documentation review is not fresh application, model, CI, or cloud verification. No source code or private data is released.\n",
+      "sections": [
+        {
+          "id": "synthetic-migration-pilot:readme:1",
+          "title": "Prove the migration before the move",
+          "anchor": "prove-the-migration-before-the-move",
+          "text": "# Prove the migration before the move\n\nA small parity check, before a bigger migration claim."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:2",
+          "title": "Overview",
+          "anchor": "overview",
+          "text": "## Overview\n\nA tiny synthetic SQLite-to-DuckDB migration pilot that compares data invariants and application behavior before treating a move as successful."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:3",
+          "title": "Problem",
+          "anchor": "problem",
+          "text": "## Problem\n\nA migration can preserve row counts while changing what an application returns. A small rehearsal makes that distinction inspectable without moving real data."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:4",
+          "title": "Documented implementation",
+          "anchor": "documented-implementation",
+          "text": "## Documented implementation\n\nThe usage documentation describes a generated-fixture runner, transactional SQLite-to-DuckDB transfer, canonical content and invariant checks, seven application comparisons, and generated reconciliation output. The reviewed workflow defines Linux and Windows jobs with read-only repository permissions and artifact retention. These are documentary observations, not an independent code audit or test run."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:5",
+          "title": "Intended workflow and scope",
+          "anchor": "intended-workflow-and-scope",
+          "text": "## Intended workflow and scope\n\nUse a deliberately small rehearsal to identify mismatches and review corrections before any broader migration decision. An intentional-defect exercise is specified to fail before a corrected revision passes; neither transition was independently observed here."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:6",
+          "title": "Activation boundary",
+          "anchor": "activation-boundary",
+          "text": "## Activation boundary\n\nNo application or workflow was activated for this review. The documented workflow is triggered by pull-request activity or manual dispatch; it is not production cutover automation."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:7",
+          "title": "Review evidence",
+          "anchor": "review-evidence",
+          "text": "## Review evidence\n\nReviewed usage documentation and the validation workflow. The workflow definition demonstrates configured checks, not a passing CI history. No generated databases, reconciliation artifacts, logs, or application outputs were opened. Documentation was reviewed on 2026-11-13. Historical descriptions and configured CI are not fresh execution or acceptance evidence."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:8",
+          "title": "Hypothetical illustration",
+          "anchor": "hypothetical-illustration",
+          "text": "## Hypothetical illustration\n\nHypothetical synthetic illustration: a made-up catalog and its line items agree on row counts after transfer, but a rounded total differs. A behavioral comparison should expose that mismatch. This illustration was not executed and is not an observed defect."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:9",
+          "title": "Limitations",
+          "anchor": "limitations",
+          "text": "## Limitations\n\n- Tiny generated relational fixtures only; not a customer migration.\n- No stored procedures, change-data capture, production performance, cutover, or enterprise approval validation.\n- Local attended agent reasoning is not an autonomous CI reasoning service.\n- No quantified reliability, savings, delivery speed, or production-readiness claim."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:10",
+          "title": "What would establish more",
+          "anchor": "what-would-establish-more",
+          "text": "## What would establish more\n\nAny larger claim needs a separately approved dataset, compatibility scope, failure/recovery criteria, observed test results, and explicit release authority. Passing a small pilot would not authorize deployment."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:11",
+          "title": "Attribution",
+          "anchor": "attribution",
+          "text": "## Attribution\n\nIndividual contribution and authorship are unverified. This entry describes the documented artifact or proposal, not a claim of sole design, implementation, or measured impact."
+        },
+        {
+          "id": "synthetic-migration-pilot:readme:12",
+          "title": "Disclosure",
+          "anchor": "disclosure",
+          "text": "## Disclosure\n\nThis is an independently authored, sanitized narrative about a private project. The implementation is not publicly inspectable. Documentation review is not fresh application, model, CI, or cloud verification. No source code or private data is released."
+        }
+      ]
+    },
+    {
+      "projectId": "source-grounded-connections",
+      "title": "Connections, with receipts",
+      "sourceType": "curated-case-study",
+      "visibility": "public",
+      "provenance": "author-written-sanitized-narrative",
+      "url": "https://ortizjorge639.github.io/case-studies/source-grounded-connections.md",
+      "sha": "1f754348ca886284a3d5199b8df077154d0612d7",
+      "retrievedAt": "2026-11-13T17:48:19.755Z",
+      "text": "# Connections, with receipts\n\nTest a useful connection before building a world around it.\n\n## Overview\n\nA chat-first design for suggesting one source-grounded connection at a time between explicitly permitted Markdown passages, with abstention and user judgment kept separate.\n\n## Problem\n\nA plausible connection is not necessarily supported by its sources or useful to the reader. A visual map should not conceal those separate questions.\n\n## Documented implementation\n\nNo runnable implementation is established by the reviewed main. Its tracked file inventory contains a specification only. The specification is an implementation contract; command examples, tests, provider restrictions, and acceptance targets inside it are requirements, not proof of completed features.\n\n## Intended workflow and scope\n\nA chat/CLI-first engine would index explicitly permitted Markdown passages without modifying them, propose a complementary connection for a focus question, check exact spans and current source hashes, separately assess contextual support and usefulness, then return at most one suggestion or abstain. Derived state would remain outside source notes.\n\n## Activation boundary\n\nNo indexing, model invocation, trial, or server was activated. The design calls for explicit per-file permission, fail-closed provider configuration, bounded calls, and synthetic offline tests; those controls are specified, not runtime-verified.\n\n## Review evidence\n\nReviewed the specification and tracked file inventory only. No implementation, CI outcome, model run, human feedback, source notes, or private trial manifest was inspected. Documentation was reviewed on 2026-11-13. Historical descriptions and configured CI are not fresh execution or acceptance evidence.\n\n## Hypothetical illustration\n\nHypothetical synthetic illustration: one invented note proposes shorter experiments; another invented note asks how to reduce evaluation effort. A tentative connection would cite both spans and explain when the analogy might fail. These are invented concepts, not private-note excerpts or observed model output.\n\n## Limitations\n\n- Only the specification on reviewed main was assessed; unmerged or local work is outside this review.\n- No real notes, feedback, model output, or trial evidence was accessed.\n- Quotation existence, contextual support, and human usefulness are separate; keeping a suggestion does not make it true.\n- Model scores would be judgments, not calibrated probabilities; no embedding or semantic-search implementation is claimed.\n- A city or spatial frontend is conditional future scope, not built or validated here.\n- Longitudinal usefulness and comparison with chat/list remain study work; acceptance targets are not measured outcomes.\n\n## What would establish more\n\nImplement and independently verify the bounded chat-first slice using synthetic fixtures, then separately authorize any real-source trial. Evaluate usefulness over time before deciding whether a spatial representation adds value.\n\n## Attribution\n\nIndividual contribution and authorship are unverified. This entry describes the documented artifact or proposal, not a claim of sole design, implementation, or measured impact.\n\n## Disclosure\n\nThis is an independently authored, sanitized narrative about a private project. The implementation is not publicly inspectable. Documentation review is not fresh application, model, CI, or cloud verification. No source code or private data is released.\n",
+      "sections": [
+        {
+          "id": "source-grounded-connections:readme:1",
+          "title": "Connections, with receipts",
+          "anchor": "connections-with-receipts",
+          "text": "# Connections, with receipts\n\nTest a useful connection before building a world around it."
+        },
+        {
+          "id": "source-grounded-connections:readme:2",
+          "title": "Overview",
+          "anchor": "overview",
+          "text": "## Overview\n\nA chat-first design for suggesting one source-grounded connection at a time between explicitly permitted Markdown passages, with abstention and user judgment kept separate."
+        },
+        {
+          "id": "source-grounded-connections:readme:3",
+          "title": "Problem",
+          "anchor": "problem",
+          "text": "## Problem\n\nA plausible connection is not necessarily supported by its sources or useful to the reader. A visual map should not conceal those separate questions."
+        },
+        {
+          "id": "source-grounded-connections:readme:4",
+          "title": "Documented implementation",
+          "anchor": "documented-implementation",
+          "text": "## Documented implementation\n\nNo runnable implementation is established by the reviewed main. Its tracked file inventory contains a specification only. The specification is an implementation contract; command examples, tests, provider restrictions, and acceptance targets inside it are requirements, not proof of completed features."
+        },
+        {
+          "id": "source-grounded-connections:readme:5",
+          "title": "Intended workflow and scope",
+          "anchor": "intended-workflow-and-scope",
+          "text": "## Intended workflow and scope\n\nA chat/CLI-first engine would index explicitly permitted Markdown passages without modifying them, propose a complementary connection for a focus question, check exact spans and current source hashes, separately assess contextual support and usefulness, then return at most one suggestion or abstain. Derived state would remain outside source notes."
+        },
+        {
+          "id": "source-grounded-connections:readme:6",
+          "title": "Activation boundary",
+          "anchor": "activation-boundary",
+          "text": "## Activation boundary\n\nNo indexing, model invocation, trial, or server was activated. The design calls for explicit per-file permission, fail-closed provider configuration, bounded calls, and synthetic offline tests; those controls are specified, not runtime-verified."
+        },
+        {
+          "id": "source-grounded-connections:readme:7",
+          "title": "Review evidence",
+          "anchor": "review-evidence",
+          "text": "## Review evidence\n\nReviewed the specification and tracked file inventory only. No implementation, CI outcome, model run, human feedback, source notes, or private trial manifest was inspected. Documentation was reviewed on 2026-11-13. Historical descriptions and configured CI are not fresh execution or acceptance evidence."
+        },
+        {
+          "id": "source-grounded-connections:readme:8",
+          "title": "Hypothetical illustration",
+          "anchor": "hypothetical-illustration",
+          "text": "## Hypothetical illustration\n\nHypothetical synthetic illustration: one invented note proposes shorter experiments; another invented note asks how to reduce evaluation effort. A tentative connection would cite both spans and explain when the analogy might fail. These are invented concepts, not private-note excerpts or observed model output."
+        },
+        {
+          "id": "source-grounded-connections:readme:9",
+          "title": "Limitations",
+          "anchor": "limitations",
+          "text": "## Limitations\n\n- Only the specification on reviewed main was assessed; unmerged or local work is outside this review.\n- No real notes, feedback, model output, or trial evidence was accessed.\n- Quotation existence, contextual support, and human usefulness are separate; keeping a suggestion does not make it true.\n- Model scores would be judgments, not calibrated probabilities; no embedding or semantic-search implementation is claimed.\n- A city or spatial frontend is conditional future scope, not built or validated here.\n- Longitudinal usefulness and comparison with chat/list remain study work; acceptance targets are not measured outcomes."
+        },
+        {
+          "id": "source-grounded-connections:readme:10",
+          "title": "What would establish more",
+          "anchor": "what-would-establish-more",
+          "text": "## What would establish more\n\nImplement and independently verify the bounded chat-first slice using synthetic fixtures, then separately authorize any real-source trial. Evaluate usefulness over time before deciding whether a spatial representation adds value."
+        },
+        {
+          "id": "source-grounded-connections:readme:11",
+          "title": "Attribution",
+          "anchor": "attribution",
+          "text": "## Attribution\n\nIndividual contribution and authorship are unverified. This entry describes the documented artifact or proposal, not a claim of sole design, implementation, or measured impact."
+        },
+        {
+          "id": "source-grounded-connections:readme:12",
+          "title": "Disclosure",
+          "anchor": "disclosure",
+          "text": "## Disclosure\n\nThis is an independently authored, sanitized narrative about a private project. The implementation is not publicly inspectable. Documentation review is not fresh application, model, CI, or cloud verification. No source code or private data is released."
+        }
+      ]
+    },
+    {
+      "projectId": "gesture-conversation-lab",
+      "title": "Drawing a conversation",
+      "sourceType": "curated-case-study",
+      "visibility": "public",
+      "provenance": "author-written-sanitized-narrative",
+      "url": "https://ortizjorge639.github.io/case-studies/gesture-conversation-lab.md",
+      "sha": "604e93de8bf02d9f5087945fcc655ae9b9fb70a2",
+      "retrievedAt": "2026-11-13T17:53:04.841Z",
+      "text": "# Drawing a conversation\n\nPreserve the drawing. Keep its meaning open to question.\n\n> This separately authored narrative describes a private implementation. Readers cannot inspect its code here. Historical validation described in project documentation was not independently rerun for this case study. No application, model, playback, ingestion or deployment was exercised. Individual authorship has not been independently established; this is not a claim of sole authorship. Private source redistribution requires separate review and permission.\n\n## Why preserve uncertainty?\n\nThe interesting design problem is not simply turning a sketch into text. It is keeping the original marks intact while allowing both parties to be wrong about them. The interface therefore treats an outgoing drawing and a separately authored incoming drawing as different messages. Written interpretation is optional supporting material rather than a mandatory translation screen.\n\n## What the reviewed design implements\n\nThe browser records delivered pointer samples and their relative timing. Drafts remain local until an affirmative send decision. Saving precedes model work: an unsuccessful save must not silently launch inference. The stored original can be reloaded and replayed; later corrections are additions, not replacements of the source.\n\nThe experimental response has two stages. First, a model chooses an intention and the server records it. A later model call draws toward that recorded intention. The person makes and saves a first reading of the reply before the interface reveals the intention for comparison. This distinguishes what the reply was meant to communicate from what its reader actually saw. It does not automatically decide whether the exchange succeeded. Supporting diagnostics produced during drawing are not an independent blind interpretation of the original.\n\n## Starting state and recovery\n\nDrawing alone does not upload content. Guided sending asks for consent to storage and model processing. Reloading saved evidence or checking for a reply does not itself request new inference; missing or failed work needs an explicit action. The displayed thread lives in page memory, while server evidence has its own archive. Refreshing the page is not deletion of archived drawings.\n\nOriginal capture timing and model-authored replay timing are different: the reply animation is synthetic. The server can read stored content, so this is not end-to-end encryption or secrecy from the authorized owner. Phone pairing is documented as an access mechanism, not a guarantee of current hardware acceptance.\n\n## Hypothetical illustration — not a bundled test\n\nImagine a person drawing an unfamiliar spiral. A reply arrives, and the person writes down what they think it means before seeing the earlier reply intention. They might agree, disagree or remain unsure. No spiral fixture, model response, correctness judgment or measured outcome is supplied here; this is an invented explanation of the comparison sequence.\n\n## Evidence and limits\n\nThe reviewed documentation describes isolated persistence, capture and browser regressions. Those are historical scoped claims, not fresh execution. Source inspection supports the workflow description, not a recognition score, a latency promise or a validated private language. Synthetic browser work is not physical-phone acceptance. No symbols trigger actions.\n\nThis prototype does not implement Apple Digital Touch compatibility or a native messaging integration. Shared understanding remains a human evaluation question. The portfolio value is the separation of evidence, consent, interpretation and correction—not a claim to have solved visual language.\n\n## Contribution boundary\n\nIndividual role unverified. The reviewed prototype connects immutable drawing evidence, a drawings-first conversation UI, bounded two-stage inference and a human comparison workflow. Existing browser, database and model capabilities are dependencies, not components claimed as newly invented.\n",
+      "sections": [
+        {
+          "id": "gesture-conversation-lab:readme:1",
+          "title": "Drawing a conversation",
+          "anchor": "drawing-a-conversation",
+          "text": "# Drawing a conversation\n\nPreserve the drawing. Keep its meaning open to question.\n\n> This separately authored narrative describes a private implementation. Readers cannot inspect its code here. Historical validation described in project documentation was not independently rerun for this case study. No application, model, playback, ingestion or deployment was exercised. Individual authorship has not been independently established; this is not a claim of sole authorship. Private source redistribution requires separate review and permission."
+        },
+        {
+          "id": "gesture-conversation-lab:readme:2",
+          "title": "Why preserve uncertainty?",
+          "anchor": "why-preserve-uncertainty",
+          "text": "## Why preserve uncertainty?\n\nThe interesting design problem is not simply turning a sketch into text. It is keeping the original marks intact while allowing both parties to be wrong about them. The interface therefore treats an outgoing drawing and a separately authored incoming drawing as different messages. Written interpretation is optional supporting material rather than a mandatory translation screen."
+        },
+        {
+          "id": "gesture-conversation-lab:readme:3",
+          "title": "What the reviewed design implements",
+          "anchor": "what-the-reviewed-design-implements",
+          "text": "## What the reviewed design implements\n\nThe browser records delivered pointer samples and their relative timing. Drafts remain local until an affirmative send decision. Saving precedes model work: an unsuccessful save must not silently launch inference. The stored original can be reloaded and replayed; later corrections are additions, not replacements of the source.\n\nThe experimental response has two stages. First, a model chooses an intention and the server records it. A later model call draws toward that recorded intention. The person makes and saves a first reading of the reply before the interface reveals the intention for comparison. This distinguishes what the reply was meant to communicate from what its reader actually saw. It does not automatically decide whether the exchange succeeded. Supporting diagnostics produced during drawing are not an independent blind interpretation of the original."
+        },
+        {
+          "id": "gesture-conversation-lab:readme:4",
+          "title": "Starting state and recovery",
+          "anchor": "starting-state-and-recovery",
+          "text": "## Starting state and recovery\n\nDrawing alone does not upload content. Guided sending asks for consent to storage and model processing. Reloading saved evidence or checking for a reply does not itself request new inference; missing or failed work needs an explicit action. The displayed thread lives in page memory, while server evidence has its own archive. Refreshing the page is not deletion of archived drawings.\n\nOriginal capture timing and model-authored replay timing are different: the reply animation is synthetic. The server can read stored content, so this is not end-to-end encryption or secrecy from the authorized owner. Phone pairing is documented as an access mechanism, not a guarantee of current hardware acceptance."
+        },
+        {
+          "id": "gesture-conversation-lab:readme:5",
+          "title": "Hypothetical illustration — not a bundled test",
+          "anchor": "hypothetical-illustration--not-a-bundled-test",
+          "text": "## Hypothetical illustration — not a bundled test\n\nImagine a person drawing an unfamiliar spiral. A reply arrives, and the person writes down what they think it means before seeing the earlier reply intention. They might agree, disagree or remain unsure. No spiral fixture, model response, correctness judgment or measured outcome is supplied here; this is an invented explanation of the comparison sequence."
+        },
+        {
+          "id": "gesture-conversation-lab:readme:6",
+          "title": "Evidence and limits",
+          "anchor": "evidence-and-limits",
+          "text": "## Evidence and limits\n\nThe reviewed documentation describes isolated persistence, capture and browser regressions. Those are historical scoped claims, not fresh execution. Source inspection supports the workflow description, not a recognition score, a latency promise or a validated private language. Synthetic browser work is not physical-phone acceptance. No symbols trigger actions.\n\nThis prototype does not implement Apple Digital Touch compatibility or a native messaging integration. Shared understanding remains a human evaluation question. The portfolio value is the separation of evidence, consent, interpretation and correction—not a claim to have solved visual language."
+        },
+        {
+          "id": "gesture-conversation-lab:readme:7",
+          "title": "Contribution boundary",
+          "anchor": "contribution-boundary",
+          "text": "## Contribution boundary\n\nIndividual role unverified. The reviewed prototype connects immutable drawing evidence, a drawings-first conversation UI, bounded two-stage inference and a human comparison workflow. Existing browser, database and model capabilities are dependencies, not components claimed as newly invented."
         }
       ]
     }

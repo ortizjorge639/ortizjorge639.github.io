@@ -1,3 +1,4 @@
+import { CURATED_CASE_STUDIES } from './source-policy.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,mkdtemp,rm} from 'node:fs/promises';
@@ -23,7 +24,14 @@ test('minimal host package has an explicit public-only allowlist and no CLI or p
   const manifest=await writeHostDirectory(target,{configText:'frog:\n  enabled: false\n'});
   assert.equal(manifest.files.length,HOST_FILES.length+2);
   const {loadSources}=await import(path.join(target,'scripts/guide-sources.mjs'));
-  assert.ok((await loadSources()).sourceCount>0,'package independently loads the real public corpus');
+  const corpus = await loadSources();
+  assert.ok(corpus.sourceCount>0,'package independently loads the real public corpus');
+  for (const id of Object.keys(CURATED_CASE_STUDIES)) {
+   const narrative = corpus.chunks.filter(c => c.projectId === id);
+   assert.ok(narrative.some(c => c.url === `https://ortizjorge639.github.io/case-studies/${id}.md`));
+   assert.ok(narrative.every(c => !c.url.includes('github.com/') && !c.url.includes('gist.')));
+   assert.ok(HOST_FILES.includes(`public/case-studies/${id}.md`));
+  }
   assert.equal(JSON.parse(await readFile(path.join(target,'package.json'),'utf8')).type,'module');
   await assert.rejects(writeHostDirectory(target,{configText:'frog:\n  enabled: false\n'}),/exist/i);
  } finally {await rm(dir,{recursive:true,force:true});}

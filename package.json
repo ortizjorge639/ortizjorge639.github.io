@@ -15,7 +15,7 @@
     "build": "npm run validate:stories && tsc --noEmit && vite build && node scripts/build-reading.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "test": "playwright test",
-    "test:unit": "node --test scripts/catalog.test.mjs scripts/reading.test.mjs",
+    "test:unit": "node --test scripts/catalog.test.mjs scripts/reading.test.mjs scripts/reading-depth.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
