@@ -276,7 +276,7 @@
     "contribution": "The public artifact presents a product concept around impermanence and mindful information keeping. This note uses only the approved public app surface; no private repository, personal notes, or private implementation details are published.",
     "repo": "",
     "site": "https://firstmind.app",
-    "illustration": "canvas",
+    "illustration": "memory",
     "color": "blue",
     "updated": "2026-11-13",
     "sources": [
@@ -313,7 +313,7 @@
     "contribution": "The public project packages a Steam-backlog product concept and a landing page around decks and a card-sorting flow. This overview withholds claims about live Steam integration or real user results.",
     "repo": "https://github.com/ortizjorge639/getflowlog",
     "site": "https://getflowlog.lovable.app",
-    "illustration": "game",
+    "illustration": "decks",
     "color": "red",
     "updated": "2026-11-13",
     "sources": [
@@ -353,7 +353,7 @@
     "problem": "Giving an agent a user’s token expands the consequences of a leak. A narrow broker can keep the credential boundary separate from the model.",
     "how": "The Foundry agent authenticates to APIM with a managed identity. APIM validates the caller, obtains a token from Credential Manager, calls Graph, and returns the tool result rather than the credential.",
     "contribution": "The public artifact includes an architectural walkthrough, an interactive diagram, APIM integration work, and a reusable Bicep template. It documents both the chosen approach and the limits of what its reported checks establish.",
-    "illustration": "bot",
+    "illustration": "broker",
     "color": "blue",
     "updated": "2026-10-06",
     "sources": [
@@ -389,7 +389,7 @@
     "how": "Plain HTML and CSS form the site, with an embedded generative-canvas example. The repository has no dependency install or build step and documents a static Vercel deployment.",
     "contribution": "The public artifact brings together the challenge format, static site, visual mark, social-card source, and an embedded example. No generated result or audience metric is invented here.",
     "site": "https://oneshottober.vercel.app/",
-    "illustration": "film",
+    "illustration": "prompt",
     "color": "red",
     "updated": "2026-09-26",
     "sources": [

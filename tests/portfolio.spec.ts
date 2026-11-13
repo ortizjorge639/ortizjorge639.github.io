@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { projects } from '../src/projects';
+import { projects, repoUrl } from '../src/projects';
 import { projectStories } from '../src/stories';
 import { readScreen } from '../src/navigation';
 
@@ -19,7 +19,7 @@ test('home is an app, with live clock, original palette, and no stacked website 
   await expect(page.locator('.title-credit')).toHaveText('© 2026 /ortizjorge639');
   await expect(page.locator('.launcher')).toHaveCount(2);
   await expect(page.locator('.project-tile')).toHaveCount(0);
-  await expect(page.locator('header, footer, #project-dialog, .featured-section')).toHaveCount(0);
+  await expect(page.locator('.studio-app header, .studio-app footer, #project-dialog, .featured-section')).toHaveCount(0);
   await expect(page.locator('#studio-clock')).toHaveText(/^\d{2}:\d{2}$/);
   await expect(page.locator('.screen-status #studio-date')).toHaveText(/^\d{2}\/\d{2}\/\d{4}$/);
   await expect(page.locator('.menu-heading #studio-date')).toHaveCount(0);
@@ -151,12 +151,15 @@ test('library selection, bounded pagination, and category filters cover the real
   await expect(page.locator('.story-topline h2')).toHaveText('Lineage');
   await expect(page.getByRole('button', { name: 'Previous library page' })).toBeDisabled();
   await page.getByRole('link', { name: 'Next library page' }).click();
-  await expect(page.locator('.project-tile')).toHaveCount(3);
+  await expect(page.locator('.project-tile')).toHaveCount(Math.min(4, projects.length - 4));
+  for (let n = 2; n < Math.ceil(projects.length / 4); n++) await page.getByRole('link', { name: 'Next library page' }).click();
+  await expect(page.locator('.project-tile')).toHaveCount(projects.length % 4 || 4);
   await expect(page.getByRole('button', { name: 'Next library page' })).toBeDisabled();
+  await page.getByRole('link', { name: 'Previous library page' }).click();
   await page.getByRole('button', { name: 'Preview RepoQuest', exact: true }).click();
   await expect(page.locator('.story-topline h2')).toHaveText('RepoQuest');
   await expect(page.getByRole('link', { name: 'Open RepoQuest', exact: true })).toBeVisible();
-  const expected = { Gaming: 2, AI: 3, Media: 2, Tech: 5 };
+  const expected = Object.fromEntries(['Gaming', 'AI', 'Media', 'Tech'].map(category => [category, projects.filter(p => p.categories.includes(category as never)).length]));
   for (const [filter, count] of Object.entries(expected)) {
     await page.getByRole('navigation', { name: 'Project categories' }).getByRole('link', { name: filter, exact: true }).click();
     await expect(page.locator('#result-count')).toHaveText(`${count} projects`);
@@ -164,7 +167,7 @@ test('library selection, bounded pagination, and category filters cover the real
     await expect(page.locator('.page-count')).toHaveText(`1 / ${Math.ceil(count / 4)}`);
   }
   await page.getByRole('navigation', { name: 'Project categories' }).getByRole('link', { name: 'All', exact: true }).click();
-  await expect(page.locator('#result-count')).toHaveText('7 projects');
+  await expect(page.locator('#result-count')).toHaveText(`${projects.length} projects`);
 });
 
 test('footer pagination is library-only and remains usable beside expanded Ink controls', async ({ page }) => {
@@ -179,7 +182,7 @@ test('footer pagination is library-only and remains usable beside expanded Ink c
     expect(await footer.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
   }
   await page.locator('#library-pagination').getByRole('link', { name: 'Next library page' }).click();
-  await expect(page.locator('#library-pagination .page-count')).toHaveText('2 / 2');
+  await expect(page.locator('#library-pagination .page-count')).toHaveText(`2 / ${Math.ceil(projects.length / 4)}`);
   await page.locator('.open-project').click();
   await expect(page.locator('#library-pagination')).toBeHidden();
   await expect(page.locator('#library-pagination .page-controls')).toHaveCount(0);
@@ -206,9 +209,10 @@ test('project pages retain every fact, capture, caveat and source', async ({ pag
     await expect(page.locator('.stack-tags span')).toHaveText(project.stack);
     await page.getByRole('link', { name: 'Links', exact: true }).click();
     await expect(page.locator('.project-note')).toHaveText(project.note);
-    await expect(page.getByRole('link', { name: 'View repository', exact: true })).toHaveAttribute('href', `https://github.com/ortizjorge639/${project.id}`);
-    await expect(page.locator('.source-note')).toHaveAttribute('href', `https://github.com/ortizjorge639/${project.id}#readme`);
-    if (project.site) await expect(page.getByRole('link', { name: 'Project walkthrough' })).toHaveAttribute('href', project.site);
+    if (repoUrl(project)) await expect(page.getByRole('link', { name: 'View repository', exact: true })).toHaveAttribute('href', repoUrl(project));
+    else await expect(page.getByRole('link', { name: 'View repository', exact: true })).toHaveCount(0);
+    await expect(page.locator('.source-note')).toHaveAttribute('href', project.sources![0].url);
+    if (project.site) await expect(page.getByRole('link', { name: 'Public landing page' })).toHaveAttribute('href', project.site);
     await expect(page.getByRole('button', { name: 'Next detail page' })).toBeDisabled();
   }
 });

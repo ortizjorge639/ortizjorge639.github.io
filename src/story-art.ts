@@ -3,6 +3,22 @@ import type { Project } from './projects';
 // Paired drawings show each project's subject before and after its workflow.
 export function storyArt(kind: Project['illustration'], phase: 'before' | 'after' = 'after') {
   const drawings: Record<Project['illustration'], { before: string; after: string }> = {
+    memory: {
+      before: '<path d="m4 8 24-4 5 31-24 4zM43 8h32v38H43M49 17h19m-19 8h14M14 48h23m-23 8h15"/>',
+      after: '<path d="M8 5h32v47H8zM15 15h18m-18 9h12M53 10v27m-6-6 6 6 6-6M49 51h25"/><circle cx="65" cy="16" r="7"/>',
+    },
+    decks: {
+      before: '<path d="M5 8h15v45H5zm20-4h15v49H25zm20 9h15v40H45zm20-6h14v46H65zM8 18h9m11-4h9m11 10h9m11-7h8"/>',
+      after: '<path d="M5 15h20v42H5zM32 5h20v42H32zM59 15h20v42H59zM10 24h10m17-10h10m17 10h10M10 43h10m17-10h10m17 10h10"/>',
+    },
+    broker: {
+      before: '<path d="M5 12h26v35H5zM53 12h26v35H53M31 29h22"/><circle cx="39" cy="13" r="5"/><path d="M44 13h8m-3 0v4"/>',
+      after: '<path d="M3 19h19v27H3zM62 19h19v27H62M22 33h10m20 0h10M32 24h20v23H32zM36 24v-8a6 6 0 0 1 12 0v8M42 32v7"/>',
+    },
+    prompt: {
+      before: '<path d="M7 8h47v44H7zM14 18l7 6-7 6m14 0h17M62 10v24m0 7v4"/>',
+      after: '<path d="M4 5h31v35H4zM10 14h19m-19 8h12M47 16h31v40H47zM54 25h17m-17 8h10M35 23h12m-5-5 5 5-5 5"/>',
+    },
     inbox: {
       before: '<path d="M5 15h32v24H5zm0 0 16 13 16-13M55 5h17v31l-8-6-9 6zM47 46h24v12H47M8 54h25"/>',
       after: '<path d="M18 6h48v52H18zM18 16h48M24 11h3m6 0h3m6 0h3"/><path d="M25 23h7v7h-7zm0 16h7v7h-7zM39 25h19M39 29h12M39 41h19M39 45h15"/>',
@@ -25,7 +41,7 @@ export function storyArt(kind: Project['illustration'], phase: 'before' | 'after
     },
     game: {
       before: '<path d="M7 10h18v39H7zm26-4h18v39H33zm26 9h18v39H59zM12 18h8m18-4h8m18 9h8M12 39h8m18-4h8m18 9h8"/>',
-      after: '<path d="M41 59V29M9 26l32-20 32 20M17 24v25h48V24M41 49v10"/><path d="M23 28h10v15H23zm15 0h10v15H38zm15 0h6v15h-6zM8 53h65M41 6V2"/>',
+      after: '<path d="M4 8h17v33H4zm23 0h17v33H27zm23 0h17v33H50M9 15h7m16 0h7m16 0h7M16 52h31"/><circle cx="67" cy="49" r="10"/><path d="M67 42v7l5 3"/>',
     },
     film: {
       before: '<path d="M5 13h19v35H5zm26-9h20v35H31zm28 12h19v35H59zM10 21h9m-9 7h9m-9 7h6M36 12h10m-10 7h7M64 24h9m-9 8h9"/>',

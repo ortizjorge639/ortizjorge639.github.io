@@ -1,3 +1,4 @@
+import { projects } from './projects.ts';
 import { currentStories } from './current-stories.ts';
 import type { ProjectStory } from './story-types';
 
@@ -495,3 +496,12 @@ export const projectStories: Record<string, ProjectStory> = {
   },
   ...currentStories,
 };
+
+// Keep original authored scenes, but cite the newly reviewed README revisions.
+for (const project of projects) {
+  if (currentStories[project.id]) continue;
+  const story = projectStories[project.id];
+  const reviewed = project.sources?.find(source => source.url.startsWith('https://github.com/'));
+  if (story && reviewed) story.sources[0].url = reviewed.url;
+}
+projectStories['bot-meetings-dotnet'].scenes[5].body = 'Preview, not production-ready. Requires tenant admin consent, a transcript access policy, and your own service configuration. Use non-sensitive test meetings only.';

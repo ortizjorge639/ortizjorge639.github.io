@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { projects } from '../src/projects.ts';
 import assert from 'node:assert/strict';
 import { request } from 'node:http';
 import { spawn } from 'node:child_process';
@@ -41,16 +42,22 @@ test('validation: exact input limits, nullable project, roles, unknown propertie
   }
 });
 
-test('snapshots: all seven public repos pinned with exact provenance; owner copy included', async () => {
+test('snapshots: all catalog public sources pinned or exact-approved pages with integrity; owner copy included', async () => {
   const snapshot = JSON.parse(await readFile(new URL('../data/guide-sources.json', import.meta.url)));
-  assert.equal(snapshot.sources.length, 7);
+  assert.equal(snapshot.sources.length, projects.length);
   for (const source of snapshot.sources) {
     assert.equal(source.visibility, 'public');
-    assert.match(source.commit, /^[a-f0-9]{40}$/);
+    if (source.sourceType === 'public-page') {
+      assert.equal(source.url, projects.find(p => p.id === source.projectId).site);
+      assert.ok(['https://firstmind.app','https://getflowlog.lovable.app'].includes(source.url));
+    } else {
+      assert.match(source.commit, /^[a-f0-9]{40}$/);
+      assert.ok(source.path);
+    }
     assert.match(source.sha, /^[a-f0-9]{40}$/);
-    assert.ok(source.path && source.retrievedAt && source.sections.length);
+    assert.ok(source.retrievedAt && source.sections.length);
   }
-  assert.equal(sources.summaries.length, 8);
+  assert.equal(sources.summaries.length, projects.length + 1);
   assert.match(sources.summaries.find(chunk => chunk.id === 'portfolio:about').text, /Jorge.*Joji/s);
   const biography = sources.summaries.find(chunk => chunk.id === 'portfolio:about').text;
   assert.match(biography, /I work at Microsoft/);
@@ -58,13 +65,13 @@ test('snapshots: all seven public repos pinned with exact provenance; owner copy
   assert.match(biography, /apps for AI conversations, creative workflows/);
   assert.match(biography, /backlog/);
   assert.doesNotMatch(biography, /not developing games yet|a few games along the way|Some tools\. Some toys/);
-  assert.equal(sources.chunks.filter(chunk => chunk.id.includes(':story:')).length, 42);
+  assert.equal(sources.chunks.filter(chunk => chunk.id.includes(':story:')).length, projects.length * 6);
   assert.ok(sources.chunks.filter(chunk => chunk.id.includes(':story:')).every(chunk => chunk.url.includes('?scene=')));
 });
 
 test('retrieval: all summaries, bounded README chunks, comparisons, injection stays quoted data', () => {
   const selected = retrieveSources(sources, input);
-  assert.equal(selected.filter(chunk => chunk.id.endsWith(':portfolio')).length, 7);
+  assert.equal(selected.filter(chunk => chunk.id.endsWith(':portfolio')).length, projects.length);
   assert.ok(selected.some(chunk => chunk.id.startsWith('web-context-graph:readme:')));
   assert.ok(selected.reduce((total, chunk) => total + chunk.text.length, 0) <= 25_000);
   const compared = retrieveSources(sources, { ...input, projectId: null, question: 'Compare Lineage and RepoQuest setup' });
@@ -251,7 +258,10 @@ test('HTTP fake executor: honest health, valid response, proxy Host, nullable po
   const status = await (await fetch(`${app.url}/api/guide/status`)).json();
   assert.equal(status.available, true);
   assert.equal(status.authVerified, false);
-  assert.equal(status.sourceCount, 11);
+  const snapshot = JSON.parse(await readFile(new URL('../data/guide-sources.json', import.meta.url)));
+  const uniqueDocuments = new Set(snapshot.sources.map(s => s.sourceType === 'public-page' ? s.url : `https://github.com/${s.repo}/blob/${s.commit}/${s.path}`));
+  uniqueDocuments.add('https://ortizjorge639.github.io/');
+  assert.equal(status.sourceCount, uniqueDocuments.size);
   const response = await app.chat();
   assert.equal(response.status, 200);
   assert.equal((await response.json()).contextProjectId, input.projectId);

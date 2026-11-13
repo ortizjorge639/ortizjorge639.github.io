@@ -115,6 +115,7 @@ export function setupStoryPlayer(hooks: PlayerHooks) {
     const sources = root.querySelector<HTMLElement>('#story-sources')!;
     sources.innerHTML = renderStorySources(story, scene);
     sources.hidden = true;
+    canvas.inert = false;
     root.querySelector('.story-sources-toggle')!.setAttribute('aria-expanded', 'false');
     canvas.querySelector<HTMLImageElement>('img')?.addEventListener('error', (event) => {
       const image = event.currentTarget as HTMLImageElement;
@@ -212,7 +213,10 @@ export function setupStoryPlayer(hooks: PlayerHooks) {
         pause();
         const sources = root!.querySelector<HTMLElement>('#story-sources')!;
         sources.hidden = !sources.hidden;
-        root!.querySelector('.story-sources-toggle')!.setAttribute('aria-expanded', String(!sources.hidden));
+        root!.querySelector<HTMLElement>('#story-canvas')!.inert = !sources.hidden;
+        const toggle = root!.querySelector<HTMLButtonElement>('.story-sources-toggle')!;
+        toggle.setAttribute('aria-expanded', String(!sources.hidden));
+        (sources.hidden ? toggle : sources.querySelector<HTMLElement>('a'))?.focus({ preventScroll: true });
       } else if (event.target.closest('.story-canvas') && !event.target.closest('a,button,input,[data-ink-ui]')) {
         replay('replay');
       }

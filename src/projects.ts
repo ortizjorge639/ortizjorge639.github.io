@@ -12,7 +12,7 @@ export interface Project {
   status: string;
   note: string;
   updated: string;
-  illustration: 'tree' | 'inbox' | 'bot' | 'blocks' | 'canvas' | 'film' | 'game';
+  illustration: 'tree' | 'inbox' | 'bot' | 'blocks' | 'canvas' | 'film' | 'game' | 'memory' | 'decks' | 'broker' | 'prompt';
   color: 'blue' | 'red';
   image?: string;
   imageAlt?: string;

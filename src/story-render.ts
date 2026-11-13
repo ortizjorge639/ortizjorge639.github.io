@@ -62,10 +62,11 @@ export function connectStoryFlow(root: HTMLElement) {
       const from = flow.querySelector<HTMLElement>(`[data-node="${CSS.escape(edge.from)}"]`)!.getBoundingClientRect();
       const to = flow.querySelector<HTMLElement>(`[data-node="${CSS.escape(edge.to)}"]`)!.getBoundingClientRect();
       const vertical = Math.abs(from.top - to.top) > 8;
-      const x1 = (vertical ? from.left + from.width / 2 : from.right) - bounds.left;
-      const y1 = (vertical ? from.bottom : from.top + from.height / 2) - bounds.top;
-      const x2 = (vertical ? to.left + to.width / 2 : to.left) - bounds.left;
-      const y2 = (vertical ? to.top : to.top + to.height / 2) - bounds.top;
+      const forward = vertical ? to.top > from.top : to.left > from.left;
+      const x1 = (vertical ? from.left + from.width / 2 : forward ? from.right : from.left) - bounds.left;
+      const y1 = (vertical ? forward ? from.bottom : from.top : from.top + from.height / 2) - bounds.top;
+      const x2 = (vertical ? to.left + to.width / 2 : forward ? to.left : to.right) - bounds.left;
+      const y2 = (vertical ? forward ? to.top : to.bottom : to.top + to.height / 2) - bounds.top;
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.classList.add('story-wire');
       path.dataset.from = edge.from;
@@ -74,8 +75,9 @@ export function connectStoryFlow(root: HTMLElement) {
         ? `M${x1} ${y1}C${x1} ${(y1 + y2) / 2} ${x2} ${(y1 + y2) / 2} ${x2} ${y2}`
         : `M${x1} ${y1}C${(x1 + x2) / 2} ${y1} ${(x1 + x2) / 2} ${y2} ${x2} ${y2}`);
       const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      arrow.setAttribute('d', vertical ? `M${x2 - 3} ${y2 - 5}L${x2} ${y2}L${x2 + 3} ${y2 - 5}`
-        : `M${x2 - 5} ${y2 - 3}L${x2} ${y2}L${x2 - 5} ${y2 + 3}`);
+      const tip = forward ? -5 : 5;
+      arrow.setAttribute('d', vertical ? `M${x2 - 3} ${y2 + tip}L${x2} ${y2}L${x2 + 3} ${y2 + tip}`
+        : `M${x2 + tip} ${y2 - 3}L${x2} ${y2}L${x2 + tip} ${y2 + 3}`);
       svg.append(path, arrow);
     }
     return true;
@@ -92,7 +94,7 @@ export function renderStoryScene(scene: StoryScene, project: Project) {
     <h3 id="story-heading">${escapeText(scene.headline)}</h3>
     <div class="story-visual">${visualMarkup(scene.visual, project)}</div>
     <p class="story-body">${escapeText(scene.body)}</p>
-    ${scene.beat === 'use' ? `<div class="story-links"><a href="${escapeText(repoUrl(project))}" target="_blank" rel="noopener noreferrer">Repository ${icon('external')}</a>${project.site ? `<a href="${escapeText(project.site)}" target="_blank" rel="noopener noreferrer">Walkthrough ${icon('external')}</a>` : ''}</div>` : ''}
+    ${scene.beat === 'use' ? `<div class="story-links">${repoUrl(project) ? `<a href="${escapeText(repoUrl(project))}" target="_blank" rel="noopener noreferrer">Repository ${icon('external')}</a>` : ''}${project.site ? `<a href="${escapeText(project.site)}" target="_blank" rel="noopener noreferrer">Public landing page ${icon('external')}</a>` : ''}</div>` : ''}
   </article>`;
 }
 

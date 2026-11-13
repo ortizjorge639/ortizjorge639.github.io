@@ -14,12 +14,12 @@ const rejects = (mutate, expected) => {
   assert.match(validateStories(stories, projects).join('\n'), expected);
 };
 
-test('all seven catalog stories have six ordered beats and 45–60 second runtimes', () => {
-  assert.equal(projects.length, 7);
+test('all canonical catalog stories have six ordered beats and 45–60 second runtimes', () => {
+  assert.equal(projects.length, 11);
   assert.deepEqual(validateStories(projectStories, projects), []);
   assert.deepEqual(Object.keys(projectStories).sort(), projects.map(project => project.id).sort());
   const scenes = Object.values(projectStories).flatMap(story => story.scenes);
-  assert.equal(scenes.length, 42);
+  assert.equal(scenes.length, projects.length * 6);
   for (const story of Object.values(projectStories)) {
     assert.deepEqual(story.scenes.map(scene => scene.beat), ['need', 'approach', 'flow', 'build', 'details', 'use']);
     assert.equal(story.scenes.reduce((sum, scene) => sum + scene.duration, 0), 50);
@@ -32,7 +32,7 @@ test('sources match the pinned public README snapshots', () => {
   for (const [projectId, story] of Object.entries(projectStories)) {
     const source = snapshot.sources.find(source => source.projectId === projectId);
     assert.equal(source.visibility, 'public');
-    assert.equal(story.sources[0].url, `https://github.com/${source.repo}/blob/${source.commit}/${source.path}`);
+    assert.equal(story.sources[0].url, source.sourceType === 'public-page' ? source.url : `https://github.com/${source.repo}/blob/${source.commit}/${source.path}`);
     assert.ok(story.scenes.every(scene => scene.sources.includes(story.sources[0].id)));
   }
 });

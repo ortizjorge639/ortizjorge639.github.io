@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { projects } from '../src/projects';
+import { projects, repoUrl } from '../src/projects';
 import { projectStories } from '../src/stories';
 import { readScreen } from '../src/navigation';
 
@@ -17,7 +17,7 @@ async function goFrame(page: Page, count: number) {
   for (let i = 0; i < count; i++) await page.getByRole('button', { name: 'Next frame', exact: true }).click();
 }
 
-test('all seven projects expose the same six-frame data-driven player and verified source links', async ({ page }) => {
+test('all catalog projects expose the same six-frame data-driven player and verified source links', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const project of projects) {
     await ready(page, `#project/${project.id}/overview`);
@@ -42,7 +42,8 @@ test('all seven projects expose the same six-frame data-driven player and verifi
       if (i < story.scenes.length - 1) await goFrame(page, 1);
     }
     await expect(page.getByRole('button', { name: 'Next frame', exact: true })).toBeDisabled();
-    await expect(page.locator('.story-links a').first()).toHaveAttribute('href', `https://github.com/ortizjorge639/${project.id}`);
+    await expect(page.locator('.story-links a')).toHaveCount(Number(!!repoUrl(project)) + Number(!!project.site));
+    await expect(page.locator('.story-links a').first()).toHaveAttribute('href', repoUrl(project) || project.site!);
   }
 });
 
@@ -64,7 +65,7 @@ test('manual upper-screen navigation never alters the catalog or its scroll and 
   expect((await page.locator('.library-content').innerHTML()).replace(/\?scene=[^"]+/g, '')).toBe(before.replace(/\?scene=[^"]+/g, ''));
   expect(await page.locator('#lower-scroll').evaluate(element => element.scrollTop)).toBe(scroll);
   await expect(page.getByRole('button', { name: 'Preview RepoQuest', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('.page-count')).toHaveText('2 / 2');
+  await expect(page.locator('.page-count')).toHaveText(`2 / ${Math.ceil(projects.length / 4)}`);
   await expect(page.locator('.story-player')).toBeFocused();
 });
 

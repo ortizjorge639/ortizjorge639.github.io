@@ -300,10 +300,10 @@ document.addEventListener('keydown', (event) => {
   if (screen.kind !== 'projects' || !(event.target instanceof HTMLElement) || !event.target.matches('[data-select]')) return;
   const directions: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -2, ArrowDown: 2 };
   const direction = directions[event.key];
-  if (!direction) return;
+  if (!direction || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   event.preventDefault();
   const items = libraryPage(screen.filter, screen.page);
-  const selectedId = screen.selected.id;
+  const selectedId = event.target.dataset.select;
   const index = items.findIndex((project) => project.id === selectedId);
   const selected = items[Math.max(0, Math.min(items.length - 1, index + direction))];
   navigate(libraryHash(screen.filter, screen.page, selected.id), true, `project-${selected.id}`);

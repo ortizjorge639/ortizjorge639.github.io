@@ -6,7 +6,7 @@ import type { StudioAudio } from './audio';
 import type { Screen } from './navigation';
 
 interface Citation { id: string; title: string; url: string; projectId: string | null }
-interface Answer { answer: string; citations: Citation[]; suggestedProjects?: string[]; contextProjectId: string | null }
+interface Answer { grounded?: boolean; answer: string; citations: Citation[]; suggestedProjects?: string[]; contextProjectId: string | null }
 interface Message { role: 'user' | 'assistant'; content: string }
 interface Question { question: string; projectId: string | null; history: Message[] }
 
@@ -42,6 +42,7 @@ function readAnswer(value: unknown): Answer {
   });
   return {
     answer: value.answer,
+    grounded: value.grounded === true,
     citations,
     contextProjectId: value.contextProjectId,
     suggestedProjects: Array.isArray(value.suggestedProjects) ? value.suggestedProjects.filter(projectExists) : [],
@@ -256,9 +257,9 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
         link.setAttribute('aria-label', citation.title);
         sources.append(link);
       }
-      if (!answer.citations.length) {
+      if (!answer.grounded || !answer.citations.length) {
         const note = document.createElement('small');
-        note.textContent = 'Not established by the available notes.';
+        note.textContent = answer.citations.length ? 'Not fully established by the available notes.' : 'Not established by the available notes.';
         sources.append(note);
       }
       article.append(sources);
