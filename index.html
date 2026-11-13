@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f6f3e9" />
+    <meta name="theme-color" content="#3157bc" />
     <meta name="description" content="Jorge's open-source sketchbook. Explore experiments in AI, creative technology, media, and games, one frame at a time." />
     <meta property="og:title" content="Joji's sketchbook — ideas in play" />
     <meta property="og:description" content="A hands-on collection of open-source experiments in AI, tech, media, and gaming." />
@@ -12,10 +12,49 @@
     <meta property="og:image" content="https://ortizjorge639.github.io/social.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Joji's sketchbook — ideas in play</title>
+    <style>
+      html { background: #3157bc; }
+      body { margin: 0; }
+      [hidden] { display: none !important; }
+      html:not([data-app-ready]) #app, html:not([data-entry-complete]) .skip-link { visibility: hidden; }
+      .entry-screen { position: fixed; inset: 0; z-index: 100; box-sizing: border-box; background: #3157bc; color: #fffdf6; display: grid; grid-template-rows: minmax(0, 1fr); padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); font: 16px/1.4 ui-monospace, monospace; }
+      .entry-screen[hidden] { display: none; }
+      .entry-center { align-self: center; justify-self: center; text-align: center; }
+      .entry-frog { display: block; width: 64px; height: 64px; margin: 0 auto 18px; animation: entry-spin 1100ms linear infinite; }
+      @keyframes entry-spin { from { transform: perspective(200px) rotateY(0deg); } to { transform: perspective(200px) rotateY(360deg); } }
+      @media (prefers-reduced-motion: reduce) { .entry-frog { animation: none; } }
+      .entry-wordmark { font: bold clamp(18px, 4vw, 26px)/1.2 ui-monospace, monospace; }
+      .entry-center p { margin: 16px 0 0; font: inherit; }
+      #entry-reload { display: inline-block; color: #fffdf6; padding: 12px; }
+      #entry-reload:focus-visible { outline: 2px solid #fffdf6; outline-offset: 3px; }
+    </style>
   </head>
   <body>
     <a class="skip-link" href="#projects">Skip to projects</a>
-    <div id="app"></div>
+    <div id="app" inert></div>
+    <div id="entry-screen" class="entry-screen" data-phase="loading">
+      <div class="entry-center">
+        <svg class="entry-frog" viewBox="0 0 48 48" aria-hidden="true" shape-rendering="crispEdges">
+          <path d="M8 32h8v8h16v-8h8l5 8v4H3v-4zM6 17h5V8h10v6h6V8h10v9h5v11h-5v5H11v-5H6z" fill="#fffdf6"/>
+          <path d="M11 16h11v9H11zm15 0h11v9H26z" fill="none" stroke="#3157bc" stroke-width="2"/>
+          <path d="M22 20h4m-10-2v4m16-4v4M18 27v2h12v-2" fill="none" stroke="#3157bc" stroke-width="2"/>
+          <path d="M12 32h24v4H23v5h-6v-5h-5z" fill="#c53f2e"/>
+        </svg>
+        <span class="entry-wordmark">Joji's Sketchbook</span>
+        <p id="entry-message">Opening studio…</p>
+        <a id="entry-reload" href="" hidden>Reload</a>
+      </div>
+    </div>
+    <noscript><style>#entry-message{display:none}.entry-frog{animation:none}</style><p style="position:fixed;bottom:24px;z-index:101;color:#fffdf6;padding:16px">This interactive portfolio needs JavaScript. <a style="color:inherit" href="https://github.com/ortizjorge639">Explore Jorge's projects on GitHub</a>.</p></noscript>
+    <script>
+      window.setTimeout(function () {
+        if (!document.documentElement.hasAttribute('data-app-ready')) {
+          document.getElementById('entry-message').textContent = 'The studio could not finish loading. Please reload.';
+          document.getElementById('entry-reload').hidden = false;
+          document.querySelector('.entry-frog').style.animation = 'none';
+        }
+      }, 10000);
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -5,13 +5,21 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
+    "dev:guide": "node scripts/dev-guide.mjs",
+    "guide:serve": "node --experimental-strip-types scripts/guide-server.mjs",
+    "guide:sources": "node --experimental-strip-types scripts/refresh-guide-sources.mjs",
+    "test:guide": "node --experimental-strip-types --test scripts/guide-*.test.mjs",
+    "test:responsive": "playwright test --config=playwright.responsive.config.ts --workers=3",
+    "validate:stories": "node --experimental-strip-types scripts/validate-stories.mjs",
+    "test:stories": "node --experimental-strip-types --test scripts/story-*.test.mjs",
+    "build": "npm run validate:stories && tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "playwright test"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.55.0",
+    "@types/node": "^22.20.1",
     "typescript": "^5.9.0",
     "vite": "^7.1.0"
   }

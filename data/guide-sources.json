@@ -1,0 +1,643 @@
+{
+  "version": 1,
+  "retrievedAt": "2026-09-16T03:53:50.708Z",
+  "sources": [
+    {
+      "projectId": "weekend-batch",
+      "title": "The Batch",
+      "repo": "ortizjorge639/weekend-batch",
+      "visibility": "public",
+      "commit": "5febeb13b59cdae1dc0f29b877236c620f393f92",
+      "path": "README.md",
+      "sha": "0e2536e89a39d975238a86469892f21061a25540",
+      "retrievedAt": "2026-09-16T03:53:32.771Z",
+      "text": "# The Batch — stateful weekly saved-items feed\n\nA phone-friendly static feed of your starred Gmail and X Bookmarks, refreshed every Saturday by a GitHub Actions cron. Items carry persistent state (`new|seen|sparred|acted|dismissed`) and spar/act threads that compound week over week.\n\n## Gmail OAuth walkthrough\n\n1. Google Cloud Console → new project → enable Gmail API.\n2. OAuth consent screen → External → add your email as a test user.\n3. Credentials → OAuth client ID → Desktop app → note Client ID + Secret.\n4. OAuth 2.0 Playground → gear → \"Use your own OAuth credentials\" → paste ID+secret.\n5. Authorize scope `https://www.googleapis.com/auth/gmail.readonly` → allow → exchange for tokens → copy refresh token.\n6. Repo → Settings → Secrets and variables → Actions → add GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN.\n7. Repo → Settings → Pages → deploy from main / root. Open the URL on your phone, add to home screen.\n\n## Architecture\n\nOne **context store** (repo JSON) is the single source of truth. Two clients read/write it: a **phone-friendly static feed** (GitHub Pages) and **Dia on Mac** (via a write-back file). Item **state** and **spar/act threads** live in the store, never only in a client. Each Saturday the cron reads prior item state before writing the new batch, so the memory compounds week over week.\n\n### File tree\n\n```\nbatch/\n├─ index.html\n├─ updates.json                 # write-back channel; starts as []\n├─ batches/\n│   ├─ index.json\n│   └─ 2026-08-01.json\n├─ scripts/\n│   ├─ gather-gmail.mjs\n│   └─ lib.mjs\n├─ .github/workflows/batch.yml\n├─ package.json\n└─ README.md\n```\n\n## Known limitation (by design, not a stopgap)\n\nThe static feed cannot write to the store server-side. Phone marks (seen/dismissed) and Dia spar/act updates are queued into `updates.json`, which the Saturday cron folds into the store on its next run. Write-back is therefore **asynchronous**.\n\nThe feed queues marks in `localStorage` and surfaces a **\"Copy updates.json\"** button so you can manually paste the pending marks into `updates.json` in the repo (or commit them via the GitHub UI) until the next cron fold.\n\nWhen a persistent server-side store is added later, the write path becomes synchronous with no change to the store schema.\n\n## Usage\n\n```bash\nnpm install\n# With secrets set:\nnode scripts/gather-gmail.mjs\n# Without secrets (safe, exits 0):\nnode scripts/gather-gmail.mjs\n```\n\nThe workflow runs every Saturday at 13:00 UTC and can be triggered manually via `workflow_dispatch`.",
+      "sections": [
+        {
+          "id": "weekend-batch:readme:1",
+          "title": "The Batch — stateful weekly saved-items feed",
+          "anchor": "the-batch--stateful-weekly-saved-items-feed",
+          "text": "# The Batch — stateful weekly saved-items feed\n\nA phone-friendly static feed of your starred Gmail and X Bookmarks, refreshed every Saturday by a GitHub Actions cron. Items carry persistent state (`new|seen|sparred|acted|dismissed`) and spar/act threads that compound week over week."
+        },
+        {
+          "id": "weekend-batch:readme:2",
+          "title": "Gmail OAuth walkthrough",
+          "anchor": "gmail-oauth-walkthrough",
+          "text": "## Gmail OAuth walkthrough\n\n1. Google Cloud Console → new project → enable Gmail API.\n2. OAuth consent screen → External → add your email as a test user.\n3. Credentials → OAuth client ID → Desktop app → note Client ID + Secret.\n4. OAuth 2.0 Playground → gear → \"Use your own OAuth credentials\" → paste ID+secret.\n5. Authorize scope `https://www.googleapis.com/auth/gmail.readonly` → allow → exchange for tokens → copy refresh token.\n6. Repo → Settings → Secrets and variables → Actions → add GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN.\n7. Repo → Settings → Pages → deploy from main / root. Open the URL on your phone, add to home screen."
+        },
+        {
+          "id": "weekend-batch:readme:3",
+          "title": "Architecture",
+          "anchor": "architecture",
+          "text": "## Architecture\n\nOne **context store** (repo JSON) is the single source of truth. Two clients read/write it: a **phone-friendly static feed** (GitHub Pages) and **Dia on Mac** (via a write-back file). Item **state** and **spar/act threads** live in the store, never only in a client. Each Saturday the cron reads prior item state before writing the new batch, so the memory compounds week over week."
+        },
+        {
+          "id": "weekend-batch:readme:4",
+          "title": "File tree",
+          "anchor": "file-tree",
+          "text": "### File tree\n\n```\nbatch/\n├─ index.html\n├─ updates.json                 # write-back channel; starts as []\n├─ batches/\n│   ├─ index.json\n│   └─ 2026-08-01.json\n├─ scripts/\n│   ├─ gather-gmail.mjs\n│   └─ lib.mjs\n├─ .github/workflows/batch.yml\n├─ package.json\n└─ README.md\n```"
+        },
+        {
+          "id": "weekend-batch:readme:5",
+          "title": "Known limitation (by design, not a stopgap)",
+          "anchor": "known-limitation-by-design-not-a-stopgap",
+          "text": "## Known limitation (by design, not a stopgap)\n\nThe static feed cannot write to the store server-side. Phone marks (seen/dismissed) and Dia spar/act updates are queued into `updates.json`, which the Saturday cron folds into the store on its next run. Write-back is therefore **asynchronous**.\n\nThe feed queues marks in `localStorage` and surfaces a **\"Copy updates.json\"** button so you can manually paste the pending marks into `updates.json` in the repo (or commit them via the GitHub UI) until the next cron fold.\n\nWhen a persistent server-side store is added later, the write path becomes synchronous with no change to the store schema."
+        },
+        {
+          "id": "weekend-batch:readme:6",
+          "title": "Usage",
+          "anchor": "usage",
+          "text": "## Usage\n\n```bash\nnpm install\n# With secrets set:\nnode scripts/gather-gmail.mjs\n# Without secrets (safe, exits 0):\nnode scripts/gather-gmail.mjs\n```\n\nThe workflow runs every Saturday at 13:00 UTC and can be triggered manually via `workflow_dispatch`."
+        }
+      ]
+    },
+    {
+      "projectId": "web-context-graph",
+      "title": "Lineage",
+      "repo": "ortizjorge639/web-context-graph",
+      "visibility": "public",
+      "commit": "259037c89becdb88b2b9c69002c6efe5a6e9167b",
+      "path": "README.md",
+      "sha": "3ce0cf391bcef050baf6c21509ade42a723d63e7",
+      "retrievedAt": "2026-09-16T03:53:34.288Z",
+      "text": "# Lineage App\n\n[![CI](https://github.com/ortizjorge639/web-context-graph/actions/workflows/ci.yml/badge.svg)](https://github.com/ortizjorge639/web-context-graph/actions/workflows/ci.yml)\n[![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPL--3.0--or--later-blue.svg)](LICENSE)\n\n**Branch agent conversations into knowledge you own.**\n\nLineage App is a trusted, single-user, local-first agent conversation workspace. FastAPI serves the React interface on localhost, each GitHub Copilot CLI response becomes addressable Markdown blocks, and a branch can begin from any whole block while preserving its root-to-fork lineage and excluding sibling branches.\n\nThe interface is a view over a durable Knowledge Tree you own: `thread.md` stores conversation content, `meta.yaml` stores authoritative relationships, `index.md` is a regenerable discovery cache, and `AGENTS.md` explains the vault contract to other agent harnesses. Every mutation is committed to the vault's local Git history.\n\n**Product landing:** [https://ortizjorge639.github.io/web-context-graph/](https://ortizjorge639.github.io/web-context-graph/)\n\n> Lineage App is the product name. `web-context-graph` remains the repository slug and legacy technical name.\n\n## Quickstart\n\nLineage App runs locally on Windows, macOS, and Linux. The UI runs in a modern browser; the host machine runs the backend and Copilot CLI.\n\n### Prerequisites\n\n- Git\n- Python 3.11+\n- Node.js 22+\n- GitHub Copilot CLI with active Copilot access\n- A modern browser\n\nClone the repository and authenticate the CLI once:\n\n```bash\ngit clone https://github.com/ortizjorge639/web-context-graph.git\ncd web-context-graph\ncopilot login\n```\n\nOptionally choose a different vault directory, then start.\n\nOn macOS or Linux:\n\n```bash\nexport WCG_VAULT_ROOT=\"$HOME/my-lineage-vault\"\n./scripts/run-local.sh\n```\n\nOn Windows PowerShell:\n\n```powershell\n$env:WCG_VAULT_ROOT = \"$env:USERPROFILE\\my-lineage-vault\"\n.\\scripts\\run-local.ps1\n```\n\nWithout `WCG_VAULT_ROOT`, data lives in `~/web-context-graph-data/`. The launcher checks for Python, npm, Git, and `copilot`; creates the backend virtual environment if needed; installs project dependencies; builds the frontend; binds FastAPI to `127.0.0.1`; and opens the browser. It does not clone the repository, install system tools, provide Copilot access, or authenticate your account.\n\nSet `PORT` to choose a different local port, or set `WCG_NO_OPEN=1` to start the server without opening a browser. Copilot CLI calls default to a 5-minute quiet-output timeout; set `WCG_COPILOT_TIMEOUT_SECONDS` if your local agent regularly needs more time to respond.\n\n## How it works\n\n1. **Branch a block.** Each agent response is split into addressable Markdown blocks, with list items treated as separate branchable slices. Choose a whole block or item to begin the next request from that exact point.\n2. **Preserve lineage.** The child thread receives root-to-fork context and continues independently; sibling branch content is excluded.\n3. **Navigate the tree.** Map/Knowledge Tree views let you trace branches, return to a node, branch again, and open conversations.\n4. **Own the artifact.** Plain Markdown and YAML remain useful outside the interface, while local Git records every mutation.\n\nNew root conversations open directly to the composer. The initial placeholder title is replaced from the first user request so you can start writing without naming the thread first.\n\nArbitrary highlighted-text or span branching is not implemented. Branching is block/list-item level today.\n\n## Screenshots\n\nCurrent captures from one coherent Lineage App journey:\n\n**Linear thread** - begin with a normal Copilot conversation.\n\n![A linear conversation in Lineage App](site/assets/product-thread-linear-desktop.webp)\n\n**Branch from a block** - anchor a new prompt to one addressable response block.\n\n![The branch composer anchored to a response block](site/assets/product-branch-from-chunk-desktop.webp)\n\n**Isolated child context** - carry root-to-fork context into the child without sibling content.\n\n![A child conversation with ancestor context above the current branch](site/assets/product-child-context-desktop.webp)\n\n**Knowledge Tree** - trace branches, return to any node, and open its conversation.\n\n![The Knowledge Tree connecting the conversation branches](site/assets/product-knowledge-tree-desktop.webp)\n\n**Files and local vault** - inspect the durable Markdown, YAML, index, and folder hierarchy.\n\n![The Files view showing the local Lineage App vault](site/assets/product-vault-files-desktop.webp)\n\n## Promotional media\n\nWatch the [17-second Lineage App highlight reel](media/promo/lineage-app-highlight-reel.mp4)\nor inspect its [editable HyperFrames project](media/promo/lineage-app-highlight-reel/).\n\n## Data, Git, and agent access\n\nThe vault defaults to `~/web-context-graph-data/` and can be changed with `WCG_VAULT_ROOT` when launching. It is separate from this source repository.\n\n- `threads/<thread-id>/thread.md` contains Markdown role messages.\n- `threads/<thread-id>/meta.yaml` is the structural source of truth.\n- `index.md` is regenerated by scanning metadata and is never authoritative.\n- `AGENTS.md` teaches external agent harnesses to discover threads, reconstruct root-to-current lineage, stop at recorded fork blocks, and exclude siblings.\n- `graph-layout.json`, when present, stores presentation state only.\n\nExisting `AGENTS.md` files are intentionally never overwritten. New vaults receive a guide that users can extend.\n\nThe Files view can reveal vault folders and files in the host file manager. It opens Finder on macOS, File Explorer on Windows, and the default file manager on Linux.\n\nLineage App initializes and commits to a local Git repository automatically. It does **not** configure or push to a GitHub remote. You may add and push your own remote manually; use a private repository when conversations may contain sensitive information.\n\n## Provider and security boundaries\n\nLineage App invokes the installed and authenticated GitHub Copilot CLI directly as a subprocess with `--no-remote`. It does not use the Copilot SDK, has no arbitrary-provider adapter, and supports GitHub Copilot CLI only today. Available models come from your Copilot CLI account.\n\nDo not expose the backend publicly. This is a trusted localhost app, and the current Copilot invocation has broad local tool access. The backend accepts only `localhost` and `127.0.0.1` Host headers (with any local port), rejecting non-local hosts before routing so a DNS-rebinding origin cannot become same-origin with the API. Browser JSON mutations are also limited to the documented local development origins by CORS, while no-Origin local CLI clients remain supported. A hosted multi-user service would require authentication, isolated workers, restricted tools, encrypted credentials, quotas, audit logging, and remote storage that do not exist here.\n\nCopilot usage, subscriptions, model availability, and billing remain governed by GitHub.\n\n## Manual development\n\nRun the backend:\n\n```bash\ncd backend\npython3 -m venv .venv\n.venv/bin/pip install -r requirements.txt\n.venv/bin/uvicorn main:app --reload\n```\n\nRun the frontend in a separate terminal:\n\n```bash\ncd frontend\nnpm install\nnpm run dev\n```\n\n## Test\n\n```bash\n# Backend fast suite (no real Copilot CLI calls)\ncd backend\n.venv/bin/pytest -v --ignore=test_smoke_e2e.py --ignore=test_copilot_engine.py\n\n# Frontend\ncd ../frontend\nnpm test\nnpm run lint\nnpm run build\n```\n\nThe full backend suite runs real authenticated Copilot CLI integration tests:\n\n```bash\ncd backend\n.venv/bin/pytest -v\n```\n\n## FAQ\n\n### What exactly is Lineage App?\n\nA local-first browser workspace for branching GitHub Copilot CLI conversations at addressable response blocks and preserving the resulting lineage as a plain-file Knowledge Tree.\n\n### Is it a desktop app or hosted service? What devices and platforms work today?\n\nNeither. FastAPI serves a React web UI on localhost, and the host machine runs the backend and agent. The Bash launcher supports macOS and Linux-style environments. There is no supported native-Windows launcher and no hosted multi-user service.\n\n### Which agents, models, and providers are supported?\n\nGitHub Copilot CLI only. Lineage App invokes the installed CLI directly; it is not provider-neutral. Model availability follows the user's Copilot account and CLI.\n\n### What do I need before starting?\n\nGit, Python 3.11+, Node.js 22+, GitHub Copilot CLI with active access and authentication, and a modern browser on a macOS or Linux-style environment.\n\n### Does the one-command launcher install everything?\n\nNo. After prerequisites, clone/download, and Copilot authentication are ready, `./scripts/run-local.sh` handles project dependencies, the production frontend build, localhost startup, and opening the browser.\n\n### Where is my data, and how do I choose the directory?\n\nThe default is `~/web-context-graph-data/`. Set `WCG_VAULT_ROOT` before launching to use another directory.\n\n### Does it sync to GitHub?\n\nNot automatically. Each mutation is committed to local Git. You may configure and push a remote yourself; a private remote is recommended for sensitive conversations.\n\n### Why not use NotebookLM or an LLM wiki?\n\nNotebookLM is excellent for source-grounded synthesis, while LLM wikis can compile documents into useful pages and links. Lineage App solves a different problem: keeping you in control while knowledge is explored.\n\nEvery branch is a deliberate choice; its parent and fork point remain visible, sibling contexts stay isolated, and the complete tree remains inspectable as local Markdown, YAML, and Git history. It does not make AI infallible - it makes the path from question to answer auditable, revisable, and yours. The tools can complement one another.\n\n### Can another agent harness consume the vault?\n\nYes. `AGENTS.md` documents discovery through `index.md`, authoritative relationships in `meta.yaml`, conversation content in `thread.md`, and the rule for reconstructing lineage without sibling leakage.\n\n### Is it safe to expose publicly?\n\nNo. Keep it on trusted localhost. Copilot currently runs with broad local tool access.\n\n### Is highlighted-text branching supported?\n\nNo. Responses are addressable at the Markdown block level. Arbitrary highlighted spans are future work.\n\n### Is it free and open source?\n\nThe source is licensed under [GNU AGPL-3.0-or-later](LICENSE). Copilot access, usage, subscription, and billing are governed separately by GitHub.\n\n## Architecture and invariants\n\n- `/edit` changes one thread in place and never cascades.\n- `/refork` recursively deletes the selected child branch before creating its replacement.\n- Creating a fork updates both child `forked_from` and parent `forked_children`.\n- Rendering computes deterministic positional chunk IDs (`<thread-id>#c<order>`) from `thread.md` without rewriting stored Markdown.\n- Backend mutations rebuild `index.md` and autocommit the external vault.\n- Copilot session IDs are one-to-one with threads, and assembled context is root-to-current with siblings excluded.\n\nSee [`docs/plans/2026-08-27-web-context-graph-mvp.md`](docs/plans/2026-08-27-web-context-graph-mvp.md) for the legacy Web-Context Graph implementation decisions.\n\n## License\n\nCopyright (C) 2026 Jorge Ortiz Flores.\n\nLineage App is free software licensed under the [GNU Affero General Public License v3.0 or later](LICENSE). Modified versions offered over a network must make their corresponding source available under the license.\n",
+      "sections": [
+        {
+          "id": "web-context-graph:readme:1",
+          "title": "Lineage App",
+          "anchor": "lineage-app",
+          "text": "# Lineage App\n\n[![CI](https://github.com/ortizjorge639/web-context-graph/actions/workflows/ci.yml/badge.svg)](https://github.com/ortizjorge639/web-context-graph/actions/workflows/ci.yml)\n[![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPL--3.0--or--later-blue.svg)](LICENSE)\n\n**Branch agent conversations into knowledge you own.**\n\nLineage App is a trusted, single-user, local-first agent conversation workspace. FastAPI serves the React interface on localhost, each GitHub Copilot CLI response becomes addressable Markdown blocks, and a branch can begin from any whole block while preserving its root-to-fork lineage and excluding sibling branches.\n\nThe interface is a view over a durable Knowledge Tree you own: `thread.md` stores conversation content, `meta.yaml` stores authoritative relationships, `index.md` is a regenerable discovery cache, and `AGENTS.md` explains the vault contract to other agent harnesses. Every mutation is committed to the vault's local Git history.\n\n**Product landing:** [https://ortizjorge639.github.io/web-context-graph/](https://ortizjorge639.github.io/web-context-graph/)\n\n> Lineage App is the product name. `web-context-graph` remains the repository slug and legacy technical name."
+        },
+        {
+          "id": "web-context-graph:readme:2",
+          "title": "Quickstart",
+          "anchor": "quickstart",
+          "text": "## Quickstart\n\nLineage App runs locally on Windows, macOS, and Linux. The UI runs in a modern browser; the host machine runs the backend and Copilot CLI."
+        },
+        {
+          "id": "web-context-graph:readme:3",
+          "title": "Prerequisites",
+          "anchor": "prerequisites",
+          "text": "### Prerequisites\n\n- Git\n- Python 3.11+\n- Node.js 22+\n- GitHub Copilot CLI with active Copilot access\n- A modern browser\n\nClone the repository and authenticate the CLI once:\n\n```bash\ngit clone https://github.com/ortizjorge639/web-context-graph.git\ncd web-context-graph\ncopilot login\n```\n\nOptionally choose a different vault directory, then start.\n\nOn macOS or Linux:\n\n```bash\nexport WCG_VAULT_ROOT=\"$HOME/my-lineage-vault\"\n./scripts/run-local.sh\n```\n\nOn Windows PowerShell:\n\n```powershell\n$env:WCG_VAULT_ROOT = \"$env:USERPROFILE\\my-lineage-vault\"\n.\\scripts\\run-local.ps1\n```\n\nWithout `WCG_VAULT_ROOT`, data lives in `~/web-context-graph-data/`. The launcher checks for Python, npm, Git, and `copilot`; creates the backend virtual environment if needed; installs project dependencies; builds the frontend; binds FastAPI to `127.0.0.1`; and opens the browser. It does not clone the repository, install system tools, provide Copilot access, or authenticate your account.\n\nSet `PORT` to choose a different local port, or set `WCG_NO_OPEN=1` to start the server without opening a browser. Copilot CLI calls default to a 5-minute quiet-output timeout; set `WCG_COPILOT_TIMEOUT_SECONDS` if your local agent regularly needs more time to respond."
+        },
+        {
+          "id": "web-context-graph:readme:4",
+          "title": "How it works",
+          "anchor": "how-it-works",
+          "text": "## How it works\n\n1. **Branch a block.** Each agent response is split into addressable Markdown blocks, with list items treated as separate branchable slices. Choose a whole block or item to begin the next request from that exact point.\n2. **Preserve lineage.** The child thread receives root-to-fork context and continues independently; sibling branch content is excluded.\n3. **Navigate the tree.** Map/Knowledge Tree views let you trace branches, return to a node, branch again, and open conversations.\n4. **Own the artifact.** Plain Markdown and YAML remain useful outside the interface, while local Git records every mutation.\n\nNew root conversations open directly to the composer. The initial placeholder title is replaced from the first user request so you can start writing without naming the thread first.\n\nArbitrary highlighted-text or span branching is not implemented. Branching is block/list-item level today."
+        },
+        {
+          "id": "web-context-graph:readme:5",
+          "title": "Screenshots",
+          "anchor": "screenshots",
+          "text": "## Screenshots\n\nCurrent captures from one coherent Lineage App journey:\n\n**Linear thread** - begin with a normal Copilot conversation.\n\n![A linear conversation in Lineage App](site/assets/product-thread-linear-desktop.webp)\n\n**Branch from a block** - anchor a new prompt to one addressable response block.\n\n![The branch composer anchored to a response block](site/assets/product-branch-from-chunk-desktop.webp)\n\n**Isolated child context** - carry root-to-fork context into the child without sibling content.\n\n![A child conversation with ancestor context above the current branch](site/assets/product-child-context-desktop.webp)\n\n**Knowledge Tree** - trace branches, return to any node, and open its conversation.\n\n![The Knowledge Tree connecting the conversation branches](site/assets/product-knowledge-tree-desktop.webp)\n\n**Files and local vault** - inspect the durable Markdown, YAML, index, and folder hierarchy.\n\n![The Files view showing the local Lineage App vault](site/assets/product-vault-files-desktop.webp)"
+        },
+        {
+          "id": "web-context-graph:readme:6",
+          "title": "Promotional media",
+          "anchor": "promotional-media",
+          "text": "## Promotional media\n\nWatch the [17-second Lineage App highlight reel](media/promo/lineage-app-highlight-reel.mp4)\nor inspect its [editable HyperFrames project](media/promo/lineage-app-highlight-reel/)."
+        },
+        {
+          "id": "web-context-graph:readme:7",
+          "title": "Data, Git, and agent access",
+          "anchor": "data-git-and-agent-access",
+          "text": "## Data, Git, and agent access\n\nThe vault defaults to `~/web-context-graph-data/` and can be changed with `WCG_VAULT_ROOT` when launching. It is separate from this source repository.\n\n- `threads/<thread-id>/thread.md` contains Markdown role messages.\n- `threads/<thread-id>/meta.yaml` is the structural source of truth.\n- `index.md` is regenerated by scanning metadata and is never authoritative.\n- `AGENTS.md` teaches external agent harnesses to discover threads, reconstruct root-to-current lineage, stop at recorded fork blocks, and exclude siblings.\n- `graph-layout.json`, when present, stores presentation state only.\n\nExisting `AGENTS.md` files are intentionally never overwritten. New vaults receive a guide that users can extend.\n\nThe Files view can reveal vault folders and files in the host file manager. It opens Finder on macOS, File Explorer on Windows, and the default file manager on Linux.\n\nLineage App initializes and commits to a local Git repository automatically. It does **not** configure or push to a GitHub remote. You may add and push your own remote manually; use a private repository when conversations may contain sensitive information."
+        },
+        {
+          "id": "web-context-graph:readme:8",
+          "title": "Provider and security boundaries",
+          "anchor": "provider-and-security-boundaries",
+          "text": "## Provider and security boundaries\n\nLineage App invokes the installed and authenticated GitHub Copilot CLI directly as a subprocess with `--no-remote`. It does not use the Copilot SDK, has no arbitrary-provider adapter, and supports GitHub Copilot CLI only today. Available models come from your Copilot CLI account.\n\nDo not expose the backend publicly. This is a trusted localhost app, and the current Copilot invocation has broad local tool access. The backend accepts only `localhost` and `127.0.0.1` Host headers (with any local port), rejecting non-local hosts before routing so a DNS-rebinding origin cannot become same-origin with the API. Browser JSON mutations are also limited to the documented local development origins by CORS, while no-Origin local CLI clients remain supported. A hosted multi-user service would require authentication, isolated workers, restricted tools, encrypted credentials, quotas, audit logging, and remote storage that do not exist here.\n\nCopilot usage, subscriptions, model availability, and billing remain governed by GitHub."
+        },
+        {
+          "id": "web-context-graph:readme:9",
+          "title": "Manual development",
+          "anchor": "manual-development",
+          "text": "## Manual development\n\nRun the backend:\n\n```bash\ncd backend\npython3 -m venv .venv\n.venv/bin/pip install -r requirements.txt\n.venv/bin/uvicorn main:app --reload\n```\n\nRun the frontend in a separate terminal:\n\n```bash\ncd frontend\nnpm install\nnpm run dev\n```"
+        },
+        {
+          "id": "web-context-graph:readme:10",
+          "title": "Test",
+          "anchor": "test",
+          "text": "## Test\n\n```bash\n# Backend fast suite (no real Copilot CLI calls)\ncd backend\n.venv/bin/pytest -v --ignore=test_smoke_e2e.py --ignore=test_copilot_engine.py\n\n# Frontend\ncd ../frontend\nnpm test\nnpm run lint\nnpm run build\n```\n\nThe full backend suite runs real authenticated Copilot CLI integration tests:\n\n```bash\ncd backend\n.venv/bin/pytest -v\n```"
+        },
+        {
+          "id": "web-context-graph:readme:11",
+          "title": "FAQ",
+          "anchor": "faq",
+          "text": "## FAQ"
+        },
+        {
+          "id": "web-context-graph:readme:12",
+          "title": "What exactly is Lineage App?",
+          "anchor": "what-exactly-is-lineage-app",
+          "text": "### What exactly is Lineage App?\n\nA local-first browser workspace for branching GitHub Copilot CLI conversations at addressable response blocks and preserving the resulting lineage as a plain-file Knowledge Tree."
+        },
+        {
+          "id": "web-context-graph:readme:13",
+          "title": "Is it a desktop app or hosted service? What devices and platforms work today?",
+          "anchor": "is-it-a-desktop-app-or-hosted-service-what-devices-and-platforms-work-today",
+          "text": "### Is it a desktop app or hosted service? What devices and platforms work today?\n\nNeither. FastAPI serves a React web UI on localhost, and the host machine runs the backend and agent. The Bash launcher supports macOS and Linux-style environments. There is no supported native-Windows launcher and no hosted multi-user service."
+        },
+        {
+          "id": "web-context-graph:readme:14",
+          "title": "Which agents, models, and providers are supported?",
+          "anchor": "which-agents-models-and-providers-are-supported",
+          "text": "### Which agents, models, and providers are supported?\n\nGitHub Copilot CLI only. Lineage App invokes the installed CLI directly; it is not provider-neutral. Model availability follows the user's Copilot account and CLI."
+        },
+        {
+          "id": "web-context-graph:readme:15",
+          "title": "What do I need before starting?",
+          "anchor": "what-do-i-need-before-starting",
+          "text": "### What do I need before starting?\n\nGit, Python 3.11+, Node.js 22+, GitHub Copilot CLI with active access and authentication, and a modern browser on a macOS or Linux-style environment."
+        },
+        {
+          "id": "web-context-graph:readme:16",
+          "title": "Does the one-command launcher install everything?",
+          "anchor": "does-the-one-command-launcher-install-everything",
+          "text": "### Does the one-command launcher install everything?\n\nNo. After prerequisites, clone/download, and Copilot authentication are ready, `./scripts/run-local.sh` handles project dependencies, the production frontend build, localhost startup, and opening the browser."
+        },
+        {
+          "id": "web-context-graph:readme:17",
+          "title": "Where is my data, and how do I choose the directory?",
+          "anchor": "where-is-my-data-and-how-do-i-choose-the-directory",
+          "text": "### Where is my data, and how do I choose the directory?\n\nThe default is `~/web-context-graph-data/`. Set `WCG_VAULT_ROOT` before launching to use another directory."
+        },
+        {
+          "id": "web-context-graph:readme:18",
+          "title": "Does it sync to GitHub?",
+          "anchor": "does-it-sync-to-github",
+          "text": "### Does it sync to GitHub?\n\nNot automatically. Each mutation is committed to local Git. You may configure and push a remote yourself; a private remote is recommended for sensitive conversations."
+        },
+        {
+          "id": "web-context-graph:readme:19",
+          "title": "Why not use NotebookLM or an LLM wiki?",
+          "anchor": "why-not-use-notebooklm-or-an-llm-wiki",
+          "text": "### Why not use NotebookLM or an LLM wiki?\n\nNotebookLM is excellent for source-grounded synthesis, while LLM wikis can compile documents into useful pages and links. Lineage App solves a different problem: keeping you in control while knowledge is explored.\n\nEvery branch is a deliberate choice; its parent and fork point remain visible, sibling contexts stay isolated, and the complete tree remains inspectable as local Markdown, YAML, and Git history. It does not make AI infallible - it makes the path from question to answer auditable, revisable, and yours. The tools can complement one another."
+        },
+        {
+          "id": "web-context-graph:readme:20",
+          "title": "Can another agent harness consume the vault?",
+          "anchor": "can-another-agent-harness-consume-the-vault",
+          "text": "### Can another agent harness consume the vault?\n\nYes. `AGENTS.md` documents discovery through `index.md`, authoritative relationships in `meta.yaml`, conversation content in `thread.md`, and the rule for reconstructing lineage without sibling leakage."
+        },
+        {
+          "id": "web-context-graph:readme:21",
+          "title": "Is it safe to expose publicly?",
+          "anchor": "is-it-safe-to-expose-publicly",
+          "text": "### Is it safe to expose publicly?\n\nNo. Keep it on trusted localhost. Copilot currently runs with broad local tool access."
+        },
+        {
+          "id": "web-context-graph:readme:22",
+          "title": "Is highlighted-text branching supported?",
+          "anchor": "is-highlighted-text-branching-supported",
+          "text": "### Is highlighted-text branching supported?\n\nNo. Responses are addressable at the Markdown block level. Arbitrary highlighted spans are future work."
+        },
+        {
+          "id": "web-context-graph:readme:23",
+          "title": "Is it free and open source?",
+          "anchor": "is-it-free-and-open-source",
+          "text": "### Is it free and open source?\n\nThe source is licensed under [GNU AGPL-3.0-or-later](LICENSE). Copilot access, usage, subscription, and billing are governed separately by GitHub."
+        },
+        {
+          "id": "web-context-graph:readme:24",
+          "title": "Architecture and invariants",
+          "anchor": "architecture-and-invariants",
+          "text": "## Architecture and invariants\n\n- `/edit` changes one thread in place and never cascades.\n- `/refork` recursively deletes the selected child branch before creating its replacement.\n- Creating a fork updates both child `forked_from` and parent `forked_children`.\n- Rendering computes deterministic positional chunk IDs (`<thread-id>#c<order>`) from `thread.md` without rewriting stored Markdown.\n- Backend mutations rebuild `index.md` and autocommit the external vault.\n- Copilot session IDs are one-to-one with threads, and assembled context is root-to-current with siblings excluded.\n\nSee [`docs/plans/2026-08-27-web-context-graph-mvp.md`](docs/plans/2026-08-27-web-context-graph-mvp.md) for the legacy Web-Context Graph implementation decisions."
+        },
+        {
+          "id": "web-context-graph:readme:25",
+          "title": "License",
+          "anchor": "license",
+          "text": "## License\n\nCopyright (C) 2026 Jorge Ortiz Flores.\n\nLineage App is free software licensed under the [GNU Affero General Public License v3.0 or later](LICENSE). Modified versions offered over a network must make their corresponding source available under the license."
+        }
+      ]
+    },
+    {
+      "projectId": "bot-meetings-dotnet",
+      "title": "After the meeting",
+      "repo": "ortizjorge639/bot-meetings-dotnet",
+      "visibility": "public",
+      "commit": "a06b0cdb75978413edff44987f863ccc67749cd7",
+      "path": "README.md",
+      "sha": "ee399bf2147d5995e6ee0e5ef8da7fb31d0da366",
+      "retrievedAt": "2026-09-16T03:53:44.886Z",
+      "text": "# Meeting Transcript Copilot for Microsoft Teams\n\nThis .NET 10 sample listens for Microsoft Teams meeting events, retrieves the meeting transcript from Microsoft Graph, and answers post-meeting questions with speaker- and timestamp-aware citations using Azure OpenAI and Microsoft Agent Framework.\n\n> [!CAUTION]\n> **Preview, not production-ready.** Transcript jobs and documents are JSON files on one App Service instance. The store has process-local locking and retention cleanup, but no distributed leases, transactions, encryption key isolation, legal hold, user deletion workflow, or multi-instance consistency. Keep App Service at one instance and use only non-sensitive test meetings until the production gaps are addressed.\n\n## Documentation index\n\n### Start here\n\n| Goal | Guide |\n| --- | --- |\n| Understand the solution and deploy a preview | [Architecture](#architecture) and [15-minute developer quickstart](#15-minute-developer-quickstart) |\n| Configure Entra, Microsoft Graph, Teams policies, and Azure Bot | [Tenant and Teams administrator setup](docs/tenant-admin-setup.md) |\n| Build the Teams package and publish it to the organization catalog | [Organization publishing and end-to-end test plan](docs/publish-and-test.md) |\n| Plan monitoring, retention, privacy, security, and production hardening | [Operations, privacy, and production readiness](docs/operations-and-production.md) |\n| Review license and dependency notice responsibilities | [MIT License](LICENSE) and [Third-party notices](THIRD-PARTY-NOTICES.md) |\n\n### README navigation\n\n- [What is included](#what-is-included)\n- [Architecture](#architecture)\n- [15-minute developer quickstart](#15-minute-developer-quickstart)\n- [Local development](#local-development)\n- [Configuration](#configuration)\n- [Security and data handling](#security-and-data-handling)\n- [Troubleshooting](#troubleshooting)\n- [Validation](#validation)\n- [Licensing and attribution](#licensing-and-attribution)\n\n## What is included\n\n- Meeting start, end, join, and leave handlers.\n- Asynchronous transcript polling with bounded retries.\n- Tenant- and conversation-scoped transcript retrieval.\n- Lexical context selection and cited transcript Q&A.\n- Bounded model concurrency, queue wait, and answer timeout.\n- Configurable local-file retention cleanup.\n- Liveness, readiness, and build-version endpoints.\n- Bicep and PowerShell for a repeatable new-tenant preview deployment.\n- GitHub Actions validation and App Service deployment.\n\n## Architecture\n\n1. Teams sends meeting activities to `/api/messages` through Azure Bot Service.\n2. The meeting-end handler records a transcript job and returns immediately.\n3. A hosted worker polls Microsoft Graph for the organizer's meeting transcript.\n4. Parsed VTT cues become speaker-aware chunks stored under the configured data path.\n5. The bot posts a readiness card in the meeting chat.\n6. Questions in that chat select relevant chunks and invoke Azure OpenAI.\n7. Responses are accepted only when they contain known source labels; deterministic speaker and timestamp notes are appended.\n\nThe current Graph call is app-only and uses `/users/{organizerId}/onlineMeetings/{meetingId}/transcripts`. It therefore requires organization-wide Graph application permissions **and** a Teams application access policy for each allowed organizer. Manifest RSC consent is not a substitute for that authorization path.\n\n## 15-minute developer quickstart\n\n### Prerequisites\n\n- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)\n- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)\n- An Azure subscription where Azure OpenAI is available\n- A Microsoft 365 tenant with Teams\n- Roles needed for the selected steps:\n  - Azure Contributor and User Access Administrator, or equivalent scoped roles\n  - Application Administrator to create the app registration\n  - Global Administrator or Privileged Role Administrator to grant Graph admin consent\n  - Teams Administrator to configure transcript access and application access policy\n\n### 1. Provision an isolated preview environment\n\nSign in to the intended Azure tenant and subscription, then run:\n\n```powershell\naz login --tenant <tenant-guid>\n./infra/provision-tenant.ps1 `\n  -NamePrefix meeting-copilot-dev `\n  -ResourceGroup meeting-copilot-dev-rg `\n  -Location centralus `\n  -Subscription <subscription-id>\n```\n\nThe script creates or reuses a single-tenant Entra app, configures the least-privileged `OnlineMeetingTranscript.Read.All` permission, creates a one-year bootstrap secret, and deploys App Service, Azure Bot with the Teams channel, and a keyless Azure OpenAI account. It does **not** silently grant tenant admin consent unless `-GrantAdminConsent` is explicitly supplied by an authorized administrator.\n\nOn reruns, pass `-AppId <application-client-id>` to select the existing registration explicitly. Credential creation is additive so an unsuccessful deployment does not invalidate the previously deployed credential; remove superseded credentials only after the new deployment is validated.\n\n### 2. Complete tenant administrator actions\n\n1. In **Microsoft Entra admin center** > **App registrations** > the new app > **API permissions**, review and grant tenant-wide admin consent for:\n   - `OnlineMeetingTranscript.Read.All` (Application)\n2. Assign access only to test organizers:\n\n```powershell\n./infra/configure-teams-access.ps1 `\n  -AppId <application-client-id> `\n  -OrganizerIdentity organizer@contoso.com\n```\n\n1. In **Teams admin center**, confirm meeting transcription is allowed for the test users and that Graph transcript access and speaker attribution are enabled under the applicable meeting policies.\n2. Wait up to 30 minutes for a new application access policy to affect Microsoft Graph.\n\nSee [Tenant and Teams administrator setup](docs/tenant-admin-setup.md) for the permission decision guide, policy details, and failure modes.\n\n### 3. Publish the code\n\n```powershell\ndotnet restore --locked-mode\ndotnet test tests/BotMeetings.Tests/BotMeetings.Tests.csproj -c Release --no-restore\ndotnet publish BotMeetings.csproj -c Release --no-restore -o publish\n```\n\nDeploy the `publish` directory to the App Service created by Bicep. The supplied GitHub workflow does this for the repository's configured environment; update its environment variables and OIDC secrets before enabling it in another repository.\n\n### 4. Build the Teams package\n\nUse real, public HTTPS legal and support URLs owned by your organization:\n\n```powershell\n./infra/build-app-package.ps1 `\n  -TeamsAppId <new-stable-teams-app-guid> `\n  -BotAppId <application-client-id> `\n  -WebAppUrl https://<app-name>.azurewebsites.net `\n  -DeveloperName \"Contoso\" `\n  -DeveloperWebsite https://contoso.com `\n  -PrivacyUrl https://contoso.com/privacy `\n  -TermsUrl https://contoso.com/terms\n```\n\nThe package is written to `appPackage/build/bot-meetings.zip`. Keep both IDs stable when updating the app; changing the Teams app ID creates a different app.\n\n### 5. Install and test\n\nFor development, in Teams select **Apps** > **Manage your apps** > **Upload an app** > **Upload a custom app**. Add it to a scheduled private meeting chat before the meeting starts.\n\n1. Start and transcribe the meeting.\n2. Have at least two people speak so attribution can be checked.\n3. End the meeting and wait for the readiness message.\n4. Ask a question whose answer is explicit in the transcript.\n5. Verify the answer, source label, speaker, timestamp, and tenant/chat isolation.\n\nFor organization-wide distribution, follow [Publish and validate in your organization](docs/publish-and-test.md).\n\n## Local development\n\nCreate a git-ignored `appsettings.Development.json` and enter local secrets directly. Do not commit or paste its contents into logs:\n\n```json\n{\n  \"Teams\": {\n    \"TenantId\": \"<tenant-guid>\",\n    \"ClientId\": \"<application-client-id>\",\n    \"ClientSecret\": \"<secret-value>\"\n  },\n  \"TranscriptAgent\": {\n    \"Endpoint\": \"https://<account>.openai.azure.com/\",\n    \"DeploymentName\": \"gpt-4.1-mini\"\n  }\n}\n```\n\nAuthenticate to Azure for `DefaultAzureCredential`, then run `dotnet run`. Use a public HTTPS development tunnel and set the Azure Bot messaging endpoint to `<tunnel-url>/api/messages`.\n\n## Configuration\n\n| Setting | Default | Purpose |\n| --- | ---: | --- |\n| `Teams__TenantId` | required | Only this tenant is accepted. |\n| `Teams__ClientId` | required | Entra application and Azure Bot app ID. |\n| `Teams__ClientSecret` | required | Bot authentication secret. Store in Key Vault for production. |\n| `TranscriptIngestion__DataPath` | local path | Use `/home/data/...` on single-instance App Service. |\n| `TranscriptIngestion__MaximumWait` | 5 minutes | Maximum Graph publication polling window. |\n| `TranscriptIngestion__MaximumAttempts` | 20 | Maximum ingestion attempts. |\n| `TranscriptIngestion__RetentionPeriod` | 30 days | Deletes expired jobs and associated documents. |\n| `TranscriptIngestion__PurgeInterval` | 6 hours | Cleanup frequency. |\n| `TranscriptAgent__Endpoint` | required | Azure OpenAI endpoint. |\n| `TranscriptAgent__DeploymentName` | `gpt-4.1-mini` | Model deployment name. |\n| `TranscriptAgent__MaximumContextChunks` | 50 | Lexically ranked chunks sent to the model. |\n| `TranscriptAgent__MaximumConcurrentAnswers` | 2 | In-process model concurrency. |\n| `TranscriptAgent__QueueWaitTimeout` | 5 seconds | Admission wait before returning busy. |\n| `TranscriptAgent__AnswerTimeout` | 2 minutes | Per-answer model deadline. |\n\nRuntime probes:\n\n- `/health/live`: process is serving HTTP.\n- `/health/ready`: startup configuration succeeded. This is not a dependency probe.\n- `/version`: assembly version and `BUILD_COMMIT` setting.\n\n## Security and data handling\n\n- Transcript text is treated as untrusted prompt data.\n- Q&A lookup is scoped by tenant ID and Teams conversation ID.\n- Azure OpenAI local keys are disabled by Bicep; App Service uses managed identity.\n- The Teams bot still uses a bootstrap client secret. Production deployments should use Key Vault references, rotation alerts, and a tested rotation runbook.\n- Model citations are syntactically constrained to selected chunks; they are not claim-by-claim factual verification.\n- `GlobalStandard` model deployments can process data outside the resource region. Choose an approved deployment type and region based on organizational residency requirements.\n- Define notice, consent, retention, deletion, eDiscovery, legal hold, and acceptable-use policy with privacy/legal/compliance owners before real use.\n\nSee [Operations, privacy, and production readiness](docs/operations-and-production.md).\n\n## Troubleshooting\n\n| Symptom | Likely cause |\n| --- | --- |\n| `403 No application access policy found` | The organizer lacks the Teams application access policy, or propagation is incomplete. |\n| `403 GraphAccessToTranscriptsDisabled` | Tenant Graph transcript access is disabled. |\n| Transcript has no speakers | Speaker attribution is disabled by tenant policy or the returned format lacks attribution. |\n| No transcript after meeting end | Transcription was not started, meeting type is unsupported, organizer policy is missing, or publication exceeded the polling window. |\n| Bot does not receive events | Azure Bot endpoint/channel, app IDs, app installation scope, or manifest permissions are incorrect. |\n| Q&A says no relevant material | No question terms or speaker names matched the transcript chunks. Ask a more specific question. |\n| Q&A is busy or times out | Concurrency, queue-wait, or model timeout limits were reached. Check App Service and Azure OpenAI metrics. |\n\n## Validation\n\n```powershell\ndotnet restore --locked-mode\ndotnet format BotMeetings.csproj --verify-no-changes --no-restore\ndotnet test tests/BotMeetings.Tests/BotMeetings.Tests.csproj -c Release --no-restore\ndotnet list BotMeetings.csproj package --vulnerable --include-transitive\naz bicep build --file infra/main.bicep\n```\n\n## Licensing and attribution\n\nThe repository is licensed under the [MIT License](LICENSE) and is based on Microsoft's [Bot Meetings Teams SDK sample](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-meetings/dotnet/bot-meetings). NuGet and GitHub Actions dependencies retain their own licenses. Review [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) and regenerate the dependency inventory before every release.\n\n[Back to documentation index](#documentation-index)\n\n",
+      "sections": [
+        {
+          "id": "bot-meetings-dotnet:readme:1",
+          "title": "Meeting Transcript Copilot for Microsoft Teams",
+          "anchor": "meeting-transcript-copilot-for-microsoft-teams",
+          "text": "# Meeting Transcript Copilot for Microsoft Teams\n\nThis .NET 10 sample listens for Microsoft Teams meeting events, retrieves the meeting transcript from Microsoft Graph, and answers post-meeting questions with speaker- and timestamp-aware citations using Azure OpenAI and Microsoft Agent Framework.\n\n> [!CAUTION]\n> **Preview, not production-ready.** Transcript jobs and documents are JSON files on one App Service instance. The store has process-local locking and retention cleanup, but no distributed leases, transactions, encryption key isolation, legal hold, user deletion workflow, or multi-instance consistency. Keep App Service at one instance and use only non-sensitive test meetings until the production gaps are addressed."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:2",
+          "title": "Documentation index",
+          "anchor": "documentation-index",
+          "text": "## Documentation index"
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:3",
+          "title": "Start here",
+          "anchor": "start-here",
+          "text": "### Start here\n\n| Goal | Guide |\n| --- | --- |\n| Understand the solution and deploy a preview | [Architecture](#architecture) and [15-minute developer quickstart](#15-minute-developer-quickstart) |\n| Configure Entra, Microsoft Graph, Teams policies, and Azure Bot | [Tenant and Teams administrator setup](docs/tenant-admin-setup.md) |\n| Build the Teams package and publish it to the organization catalog | [Organization publishing and end-to-end test plan](docs/publish-and-test.md) |\n| Plan monitoring, retention, privacy, security, and production hardening | [Operations, privacy, and production readiness](docs/operations-and-production.md) |\n| Review license and dependency notice responsibilities | [MIT License](LICENSE) and [Third-party notices](THIRD-PARTY-NOTICES.md) |"
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:4",
+          "title": "README navigation",
+          "anchor": "readme-navigation",
+          "text": "### README navigation\n\n- [What is included](#what-is-included)\n- [Architecture](#architecture)\n- [15-minute developer quickstart](#15-minute-developer-quickstart)\n- [Local development](#local-development)\n- [Configuration](#configuration)\n- [Security and data handling](#security-and-data-handling)\n- [Troubleshooting](#troubleshooting)\n- [Validation](#validation)\n- [Licensing and attribution](#licensing-and-attribution)"
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:5",
+          "title": "What is included",
+          "anchor": "what-is-included",
+          "text": "## What is included\n\n- Meeting start, end, join, and leave handlers.\n- Asynchronous transcript polling with bounded retries.\n- Tenant- and conversation-scoped transcript retrieval.\n- Lexical context selection and cited transcript Q&A.\n- Bounded model concurrency, queue wait, and answer timeout.\n- Configurable local-file retention cleanup.\n- Liveness, readiness, and build-version endpoints.\n- Bicep and PowerShell for a repeatable new-tenant preview deployment.\n- GitHub Actions validation and App Service deployment."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:6",
+          "title": "Architecture",
+          "anchor": "architecture",
+          "text": "## Architecture\n\n1. Teams sends meeting activities to `/api/messages` through Azure Bot Service.\n2. The meeting-end handler records a transcript job and returns immediately.\n3. A hosted worker polls Microsoft Graph for the organizer's meeting transcript.\n4. Parsed VTT cues become speaker-aware chunks stored under the configured data path.\n5. The bot posts a readiness card in the meeting chat.\n6. Questions in that chat select relevant chunks and invoke Azure OpenAI.\n7. Responses are accepted only when they contain known source labels; deterministic speaker and timestamp notes are appended.\n\nThe current Graph call is app-only and uses `/users/{organizerId}/onlineMeetings/{meetingId}/transcripts`. It therefore requires organization-wide Graph application permissions **and** a Teams application access policy for each allowed organizer. Manifest RSC consent is not a substitute for that authorization path."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:7",
+          "title": "15-minute developer quickstart",
+          "anchor": "15-minute-developer-quickstart",
+          "text": "## 15-minute developer quickstart"
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:8",
+          "title": "Prerequisites",
+          "anchor": "prerequisites",
+          "text": "### Prerequisites\n\n- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)\n- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)\n- An Azure subscription where Azure OpenAI is available\n- A Microsoft 365 tenant with Teams\n- Roles needed for the selected steps:\n  - Azure Contributor and User Access Administrator, or equivalent scoped roles\n  - Application Administrator to create the app registration\n  - Global Administrator or Privileged Role Administrator to grant Graph admin consent\n  - Teams Administrator to configure transcript access and application access policy"
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:9",
+          "title": "1. Provision an isolated preview environment",
+          "anchor": "1-provision-an-isolated-preview-environment",
+          "text": "### 1. Provision an isolated preview environment\n\nSign in to the intended Azure tenant and subscription, then run:\n\n```powershell\naz login --tenant <tenant-guid>\n./infra/provision-tenant.ps1 `\n  -NamePrefix meeting-copilot-dev `\n  -ResourceGroup meeting-copilot-dev-rg `\n  -Location centralus `\n  -Subscription <subscription-id>\n```\n\nThe script creates or reuses a single-tenant Entra app, configures the least-privileged `OnlineMeetingTranscript.Read.All` permission, creates a one-year bootstrap secret, and deploys App Service, Azure Bot with the Teams channel, and a keyless Azure OpenAI account. It does **not** silently grant tenant admin consent unless `-GrantAdminConsent` is explicitly supplied by an authorized administrator.\n\nOn reruns, pass `-AppId <application-client-id>` to select the existing registration explicitly. Credential creation is additive so an unsuccessful deployment does not invalidate the previously deployed credential; remove superseded credentials only after the new deployment is validated."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:10",
+          "title": "2. Complete tenant administrator actions",
+          "anchor": "2-complete-tenant-administrator-actions",
+          "text": "### 2. Complete tenant administrator actions\n\n1. In **Microsoft Entra admin center** > **App registrations** > the new app > **API permissions**, review and grant tenant-wide admin consent for:\n   - `OnlineMeetingTranscript.Read.All` (Application)\n2. Assign access only to test organizers:\n\n```powershell\n./infra/configure-teams-access.ps1 `\n  -AppId <application-client-id> `\n  -OrganizerIdentity organizer@contoso.com\n```\n\n1. In **Teams admin center**, confirm meeting transcription is allowed for the test users and that Graph transcript access and speaker attribution are enabled under the applicable meeting policies.\n2. Wait up to 30 minutes for a new application access policy to affect Microsoft Graph.\n\nSee [Tenant and Teams administrator setup](docs/tenant-admin-setup.md) for the permission decision guide, policy details, and failure modes."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:11",
+          "title": "3. Publish the code",
+          "anchor": "3-publish-the-code",
+          "text": "### 3. Publish the code\n\n```powershell\ndotnet restore --locked-mode\ndotnet test tests/BotMeetings.Tests/BotMeetings.Tests.csproj -c Release --no-restore\ndotnet publish BotMeetings.csproj -c Release --no-restore -o publish\n```\n\nDeploy the `publish` directory to the App Service created by Bicep. The supplied GitHub workflow does this for the repository's configured environment; update its environment variables and OIDC secrets before enabling it in another repository."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:12",
+          "title": "4. Build the Teams package",
+          "anchor": "4-build-the-teams-package",
+          "text": "### 4. Build the Teams package\n\nUse real, public HTTPS legal and support URLs owned by your organization:\n\n```powershell\n./infra/build-app-package.ps1 `\n  -TeamsAppId <new-stable-teams-app-guid> `\n  -BotAppId <application-client-id> `\n  -WebAppUrl https://<app-name>.azurewebsites.net `\n  -DeveloperName \"Contoso\" `\n  -DeveloperWebsite https://contoso.com `\n  -PrivacyUrl https://contoso.com/privacy `\n  -TermsUrl https://contoso.com/terms\n```\n\nThe package is written to `appPackage/build/bot-meetings.zip`. Keep both IDs stable when updating the app; changing the Teams app ID creates a different app."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:13",
+          "title": "5. Install and test",
+          "anchor": "5-install-and-test",
+          "text": "### 5. Install and test\n\nFor development, in Teams select **Apps** > **Manage your apps** > **Upload an app** > **Upload a custom app**. Add it to a scheduled private meeting chat before the meeting starts.\n\n1. Start and transcribe the meeting.\n2. Have at least two people speak so attribution can be checked.\n3. End the meeting and wait for the readiness message.\n4. Ask a question whose answer is explicit in the transcript.\n5. Verify the answer, source label, speaker, timestamp, and tenant/chat isolation.\n\nFor organization-wide distribution, follow [Publish and validate in your organization](docs/publish-and-test.md)."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:14",
+          "title": "Local development",
+          "anchor": "local-development",
+          "text": "## Local development\n\nCreate a git-ignored `appsettings.Development.json` and enter local secrets directly. Do not commit or paste its contents into logs:\n\n```json\n{\n  \"Teams\": {\n    \"TenantId\": \"<tenant-guid>\",\n    \"ClientId\": \"<application-client-id>\",\n    \"ClientSecret\": \"<secret-value>\"\n  },\n  \"TranscriptAgent\": {\n    \"Endpoint\": \"https://<account>.openai.azure.com/\",\n    \"DeploymentName\": \"gpt-4.1-mini\"\n  }\n}\n```\n\nAuthenticate to Azure for `DefaultAzureCredential`, then run `dotnet run`. Use a public HTTPS development tunnel and set the Azure Bot messaging endpoint to `<tunnel-url>/api/messages`."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:15",
+          "title": "Configuration",
+          "anchor": "configuration",
+          "text": "## Configuration\n\n| Setting | Default | Purpose |\n| --- | ---: | --- |\n| `Teams__TenantId` | required | Only this tenant is accepted. |\n| `Teams__ClientId` | required | Entra application and Azure Bot app ID. |\n| `Teams__ClientSecret` | required | Bot authentication secret. Store in Key Vault for production. |\n| `TranscriptIngestion__DataPath` | local path | Use `/home/data/...` on single-instance App Service. |\n| `TranscriptIngestion__MaximumWait` | 5 minutes | Maximum Graph publication polling window. |\n| `TranscriptIngestion__MaximumAttempts` | 20 | Maximum ingestion attempts. |\n| `TranscriptIngestion__RetentionPeriod` | 30 days | Deletes expired jobs and associated documents. |\n| `TranscriptIngestion__PurgeInterval` | 6 hours | Cleanup frequency. |\n| `TranscriptAgent__Endpoint` | required | Azure OpenAI endpoint. |\n| `TranscriptAgent__DeploymentName` | `gpt-4.1-mini` | Model deployment name. |\n| `TranscriptAgent__MaximumContextChunks` | 50 | Lexically ranked chunks sent to the model. |\n| `TranscriptAgent__MaximumConcurrentAnswers` | 2 | In-process model concurrency. |\n| `TranscriptAgent__QueueWaitTimeout` | 5 seconds | Admission wait before returning busy. |\n| `TranscriptAgent__AnswerTimeout` | 2 minutes | Per-answer model deadline. |\n\nRuntime probes:\n\n- `/health/live`: process is serving HTTP.\n- `/health/ready`: startup configuration succeeded. This is not a dependency probe.\n- `/version`: assembly version and `BUILD_COMMIT` setting."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:16",
+          "title": "Security and data handling",
+          "anchor": "security-and-data-handling",
+          "text": "## Security and data handling\n\n- Transcript text is treated as untrusted prompt data.\n- Q&A lookup is scoped by tenant ID and Teams conversation ID.\n- Azure OpenAI local keys are disabled by Bicep; App Service uses managed identity.\n- The Teams bot still uses a bootstrap client secret. Production deployments should use Key Vault references, rotation alerts, and a tested rotation runbook.\n- Model citations are syntactically constrained to selected chunks; they are not claim-by-claim factual verification.\n- `GlobalStandard` model deployments can process data outside the resource region. Choose an approved deployment type and region based on organizational residency requirements.\n- Define notice, consent, retention, deletion, eDiscovery, legal hold, and acceptable-use policy with privacy/legal/compliance owners before real use.\n\nSee [Operations, privacy, and production readiness](docs/operations-and-production.md)."
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:17",
+          "title": "Troubleshooting",
+          "anchor": "troubleshooting",
+          "text": "## Troubleshooting\n\n| Symptom | Likely cause |\n| --- | --- |\n| `403 No application access policy found` | The organizer lacks the Teams application access policy, or propagation is incomplete. |\n| `403 GraphAccessToTranscriptsDisabled` | Tenant Graph transcript access is disabled. |\n| Transcript has no speakers | Speaker attribution is disabled by tenant policy or the returned format lacks attribution. |\n| No transcript after meeting end | Transcription was not started, meeting type is unsupported, organizer policy is missing, or publication exceeded the polling window. |\n| Bot does not receive events | Azure Bot endpoint/channel, app IDs, app installation scope, or manifest permissions are incorrect. |\n| Q&A says no relevant material | No question terms or speaker names matched the transcript chunks. Ask a more specific question. |\n| Q&A is busy or times out | Concurrency, queue-wait, or model timeout limits were reached. Check App Service and Azure OpenAI metrics. |"
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:18",
+          "title": "Validation",
+          "anchor": "validation",
+          "text": "## Validation\n\n```powershell\ndotnet restore --locked-mode\ndotnet format BotMeetings.csproj --verify-no-changes --no-restore\ndotnet test tests/BotMeetings.Tests/BotMeetings.Tests.csproj -c Release --no-restore\ndotnet list BotMeetings.csproj package --vulnerable --include-transitive\naz bicep build --file infra/main.bicep\n```"
+        },
+        {
+          "id": "bot-meetings-dotnet:readme:19",
+          "title": "Licensing and attribution",
+          "anchor": "licensing-and-attribution",
+          "text": "## Licensing and attribution\n\nThe repository is licensed under the [MIT License](LICENSE) and is based on Microsoft's [Bot Meetings Teams SDK sample](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-meetings/dotnet/bot-meetings). NuGet and GitHub Actions dependencies retain their own licenses. Review [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) and regenerate the dependency inventory before every release.\n\n[Back to documentation index](#documentation-index)"
+        }
+      ]
+    },
+    {
+      "projectId": "mcreator-workspace-harness",
+      "title": "Modding, with guardrails",
+      "repo": "ortizjorge639/mcreator-workspace-harness",
+      "visibility": "public",
+      "commit": "547eaf435bed89ca7eadaa56407723a556a48ebb",
+      "path": "README.md",
+      "sha": "5c6b4a8e38a16f7c90b00bb41f405444a5f84caa",
+      "retrievedAt": "2026-09-16T03:53:46.297Z",
+      "text": "# MCreator Workspace Harness\n\n[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)\n\nAn agent skill and field guide for safely connecting coding agents to local\n[MCreator](https://mcreator.net/) workspaces.\n\nIt teaches agents how to create and modify procedures, coordinate Blockly\ndefinitions with generated Java, survive MCreator regeneration, compile with\nthe bundled JDK, and prove behavior inside Minecraft through real-time logs.\n\n> [!IMPORTANT]\n> Close MCreator before an agent writes workspace files. MCreator can overwrite\n> external changes from its in-memory workspace model.\n\n## Why this exists\n\nComplex MCreator work spans several representations:\n\n- The workspace index (`.mcreator`)\n- Mod element definitions (`elements/*.mod.json`)\n- Embedded Blockly XML\n- Generated Java\n- Hooking elements such as tools or blocks\n- The running Minecraft client and integrated server\n\nChanging only one layer can compile yet still disappear from MCreator, be\nregenerated away, or never execute in Minecraft. This harness treats the whole\npath as one testable system.\n\n## What agents learn\n\n- Discover and inspect an MCreator workspace safely.\n- Add a procedure that appears in MCreator's block editor.\n- Wire procedures to item, block, or entity triggers.\n- Read installed MCreator block schemas and generator templates.\n- Choose between block-editable and code-locked workflows.\n- Use server-authoritative item state for reliable counters.\n- Compile with the workspace Gradle wrapper and MCreator JDK.\n- Tail `run/logs/latest.log` while a user tests in Minecraft.\n- Distinguish visual sameness from registry-level state.\n- Recover when an open MCreator session overwrites external edits.\n\n## Install as a Copilot CLI skill\n\n```powershell\ngit clone https://github.com/ortizjorge639/mcreator-workspace-harness.git `\n  \"$HOME\\.copilot\\skills\\mcreator-workspace-harness\"\n```\n\nRestart Copilot CLI, then open `/skills`. The skill activates for requests\nabout direct MCreator workspace automation, procedures, generated Java, or\nRun Client tracing.\n\nFor another agent that supports the open Agent Skills convention, clone the\nrepository into its skills directory, such as:\n\n```text\n~/.agents/skills/mcreator-workspace-harness\n```\n\n## Quick start for users\n\n1. Back up or commit your MCreator workspace.\n2. Tell the agent the workspace name and desired behavior.\n3. Close MCreator before the agent edits.\n4. Let the agent inspect all related elements before writing.\n5. Reopen MCreator only after JSON/XML validation and compilation.\n6. Confirm the procedure appears and opens correctly.\n7. Run Client and perform the exact requested test.\n8. Let the agent watch `run/logs/latest.log` in real time.\n9. Verify final state by registry ID when textures or names are identical.\n\nSee [the user quick start](docs/user-quick-start.md) for the complete flow.\n\n## Quick start for agents\n\nRead [`SKILL.md`](SKILL.md), then:\n\n```powershell\n.\\scripts\\inspect-mcreator-workspace.ps1 `\n  -Workspace \"$HOME\\MCreatorWorkspaces\\my-mod\"\n```\n\nThe minimum safe loop is:\n\n```text\ninspect -> close MCreator -> edit all layers -> validate -> compile\n-> reopen -> Run Client -> trace -> verify Minecraft state\n```\n\nSee [the agent integration guide](docs/agent-integration-guide.md) and the\n[right-click conversion example](examples/right-click-tool-conversion.md).\n\n## Proven concept\n\nThe original field test implemented this behavior:\n\n1. An original wand fires a projectile when right-clicked.\n2. Each accepted server-side right-click increments item custom data.\n3. At a threshold, the held stack becomes a separate broken-wand item.\n4. Live logs show every counter transition and the replacement registry ID.\n5. `/data get entity @s SelectedItem` proves conversion even when both items\n   have the same name and texture.\n\n![Right-click counter procedure](assets/right-click-counter-procedure.png)\n\n## Compatibility\n\nThe approach was validated with:\n\n| Component | Validated version |\n| --- | --- |\n| MCreator | 2026 |\n| Workspace format | 85 |\n| Generator | NeoForge 1.21.8 |\n| Host | Windows |\n\nThe architecture applies more broadly, but field names, Blockly block types,\ngenerator templates, Java APIs, and paths can differ by version. Agents must\ninspect the installed version rather than copy code blindly.\n\n## Safety and limitations\n\n- Never edit while MCreator has the workspace open.\n- Never treat generated Java as durable unless the element is code-locked.\n- Never claim runtime success from compilation alone.\n- Never publish a user's workspace, textures, logs, or source without consent.\n- Back up first; this project operates on source files, not through an official\n  MCreator automation API.\n\n## Project layout\n\n```text\n.\n|-- SKILL.md\n|-- references/\n|-- docs/\n|-- examples/\n|-- scripts/\n|-- assets/\n`-- .github/\n```\n\n## Contributing\n\nVersion-specific findings, tested block schemas, generator differences, and\nreproducible tracing techniques are welcome. Read\n[`CONTRIBUTING.md`](CONTRIBUTING.md).\n\n## Disclaimer\n\nThis independent project is not affiliated with or endorsed by MCreator,\nPylo, Mojang, or Microsoft. Product and game names are trademarks of their\nrespective owners.\n\n## License\n\n[MIT](LICENSE)\n",
+      "sections": [
+        {
+          "id": "mcreator-workspace-harness:readme:1",
+          "title": "MCreator Workspace Harness",
+          "anchor": "mcreator-workspace-harness",
+          "text": "# MCreator Workspace Harness\n\n[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)\n\nAn agent skill and field guide for safely connecting coding agents to local\n[MCreator](https://mcreator.net/) workspaces.\n\nIt teaches agents how to create and modify procedures, coordinate Blockly\ndefinitions with generated Java, survive MCreator regeneration, compile with\nthe bundled JDK, and prove behavior inside Minecraft through real-time logs.\n\n> [!IMPORTANT]\n> Close MCreator before an agent writes workspace files. MCreator can overwrite\n> external changes from its in-memory workspace model."
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:2",
+          "title": "Why this exists",
+          "anchor": "why-this-exists",
+          "text": "## Why this exists\n\nComplex MCreator work spans several representations:\n\n- The workspace index (`.mcreator`)\n- Mod element definitions (`elements/*.mod.json`)\n- Embedded Blockly XML\n- Generated Java\n- Hooking elements such as tools or blocks\n- The running Minecraft client and integrated server\n\nChanging only one layer can compile yet still disappear from MCreator, be\nregenerated away, or never execute in Minecraft. This harness treats the whole\npath as one testable system."
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:3",
+          "title": "What agents learn",
+          "anchor": "what-agents-learn",
+          "text": "## What agents learn\n\n- Discover and inspect an MCreator workspace safely.\n- Add a procedure that appears in MCreator's block editor.\n- Wire procedures to item, block, or entity triggers.\n- Read installed MCreator block schemas and generator templates.\n- Choose between block-editable and code-locked workflows.\n- Use server-authoritative item state for reliable counters.\n- Compile with the workspace Gradle wrapper and MCreator JDK.\n- Tail `run/logs/latest.log` while a user tests in Minecraft.\n- Distinguish visual sameness from registry-level state.\n- Recover when an open MCreator session overwrites external edits."
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:4",
+          "title": "Install as a Copilot CLI skill",
+          "anchor": "install-as-a-copilot-cli-skill",
+          "text": "## Install as a Copilot CLI skill\n\n```powershell\ngit clone https://github.com/ortizjorge639/mcreator-workspace-harness.git `\n  \"$HOME\\.copilot\\skills\\mcreator-workspace-harness\"\n```\n\nRestart Copilot CLI, then open `/skills`. The skill activates for requests\nabout direct MCreator workspace automation, procedures, generated Java, or\nRun Client tracing.\n\nFor another agent that supports the open Agent Skills convention, clone the\nrepository into its skills directory, such as:\n\n```text\n~/.agents/skills/mcreator-workspace-harness\n```"
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:5",
+          "title": "Quick start for users",
+          "anchor": "quick-start-for-users",
+          "text": "## Quick start for users\n\n1. Back up or commit your MCreator workspace.\n2. Tell the agent the workspace name and desired behavior.\n3. Close MCreator before the agent edits.\n4. Let the agent inspect all related elements before writing.\n5. Reopen MCreator only after JSON/XML validation and compilation.\n6. Confirm the procedure appears and opens correctly.\n7. Run Client and perform the exact requested test.\n8. Let the agent watch `run/logs/latest.log` in real time.\n9. Verify final state by registry ID when textures or names are identical.\n\nSee [the user quick start](docs/user-quick-start.md) for the complete flow."
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:6",
+          "title": "Quick start for agents",
+          "anchor": "quick-start-for-agents",
+          "text": "## Quick start for agents\n\nRead [`SKILL.md`](SKILL.md), then:\n\n```powershell\n.\\scripts\\inspect-mcreator-workspace.ps1 `\n  -Workspace \"$HOME\\MCreatorWorkspaces\\my-mod\"\n```\n\nThe minimum safe loop is:\n\n```text\ninspect -> close MCreator -> edit all layers -> validate -> compile\n-> reopen -> Run Client -> trace -> verify Minecraft state\n```\n\nSee [the agent integration guide](docs/agent-integration-guide.md) and the\n[right-click conversion example](examples/right-click-tool-conversion.md)."
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:7",
+          "title": "Proven concept",
+          "anchor": "proven-concept",
+          "text": "## Proven concept\n\nThe original field test implemented this behavior:\n\n1. An original wand fires a projectile when right-clicked.\n2. Each accepted server-side right-click increments item custom data.\n3. At a threshold, the held stack becomes a separate broken-wand item.\n4. Live logs show every counter transition and the replacement registry ID.\n5. `/data get entity @s SelectedItem` proves conversion even when both items\n   have the same name and texture.\n\n![Right-click counter procedure](assets/right-click-counter-procedure.png)"
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:8",
+          "title": "Compatibility",
+          "anchor": "compatibility",
+          "text": "## Compatibility\n\nThe approach was validated with:\n\n| Component | Validated version |\n| --- | --- |\n| MCreator | 2026 |\n| Workspace format | 85 |\n| Generator | NeoForge 1.21.8 |\n| Host | Windows |\n\nThe architecture applies more broadly, but field names, Blockly block types,\ngenerator templates, Java APIs, and paths can differ by version. Agents must\ninspect the installed version rather than copy code blindly."
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:9",
+          "title": "Safety and limitations",
+          "anchor": "safety-and-limitations",
+          "text": "## Safety and limitations\n\n- Never edit while MCreator has the workspace open.\n- Never treat generated Java as durable unless the element is code-locked.\n- Never claim runtime success from compilation alone.\n- Never publish a user's workspace, textures, logs, or source without consent.\n- Back up first; this project operates on source files, not through an official\n  MCreator automation API."
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:10",
+          "title": "Project layout",
+          "anchor": "project-layout",
+          "text": "## Project layout\n\n```text\n.\n|-- SKILL.md\n|-- references/\n|-- docs/\n|-- examples/\n|-- scripts/\n|-- assets/\n`-- .github/\n```"
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:11",
+          "title": "Contributing",
+          "anchor": "contributing",
+          "text": "## Contributing\n\nVersion-specific findings, tested block schemas, generator differences, and\nreproducible tracing techniques are welcome. Read\n[`CONTRIBUTING.md`](CONTRIBUTING.md)."
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:12",
+          "title": "Disclaimer",
+          "anchor": "disclaimer",
+          "text": "## Disclaimer\n\nThis independent project is not affiliated with or endorsed by MCreator,\nPylo, Mojang, or Microsoft. Product and game names are trademarks of their\nrespective owners."
+        },
+        {
+          "id": "mcreator-workspace-harness:readme:13",
+          "title": "License",
+          "anchor": "license",
+          "text": "## License\n\n[MIT](LICENSE)"
+        }
+      ]
+    },
+    {
+      "projectId": "reset-canvas",
+      "title": "Grand Reset",
+      "repo": "ortizjorge639/reset-canvas",
+      "visibility": "public",
+      "commit": "24a5cd964306ba740bb9c94610e61e670265ec04",
+      "path": "README.md",
+      "sha": "e954b8c84d93b0d4bb68a4980716198558433f3a",
+      "retrievedAt": "2026-09-16T03:53:47.835Z",
+      "text": "# Grand Reset\n\nA calm, local-first map of what occupies your physical and digital world. Grand Reset is designed for perspective and worry-free mental decluttering—not task tracking, deadlines, or productivity pressure.\n\n## Run locally\n\nGrand Reset uses browser modules, so serve the repository over HTTP:\n\n```bash\npython3 -m http.server 4173\n```\n\nOpen <http://127.0.0.1:4173>. Browser data is local to that exact origin, including its port.\n\n## Hermes operator quickstart\n\nHermes must operate inside, or automate, the same browser page that owns the state. There is no application server, database, or server-side change log.\n\n1. Start the static server from the repository root:\n\n   ```bash\n   python3 -m http.server 4173 --bind 127.0.0.1\n   ```\n\n2. Confirm it is reachable, then open that exact origin in Hermes's browser:\n\n   ```bash\n   curl --fail http://127.0.0.1:4173/\n   ```\n\n3. In the page context, wait for the API, capture the initial state, and subscribe before the user explores:\n\n   ```js\n   async function connectGrandReset() {\n     if (!window.grandReset) {\n       await new Promise((resolve) => {\n         window.addEventListener(\"grand-reset-ready\", resolve, { once: true });\n       });\n     }\n\n     const api = window.grandReset;\n     const initialSnapshot = api.snapshot();\n     const unsubscribe = api.subscribe((snapshot, change) => {\n       // Hermes should forward this record to its own durable memory or log.\n       console.log(\"grand-reset-change\", JSON.stringify({ change, snapshot }));\n     });\n\n     return { api, initialSnapshot, unsubscribe };\n   }\n\n   const grandReset = await connectGrandReset();\n   ```\n\n4. Read `grandReset.initialSnapshot` for the complete baseline. Later state commits arrive reactively through the subscription. Call `grandReset.unsubscribe()` before detaching.\n5. Submit proposed additions or updates with `grandReset.api.propose(payload, \"Hermes\")`. They enter the visible Agent inbox and require human approval.\n\n**What is persisted:** the latest canonical snapshot in `localStorage[\"grand_reset_baseline_v3\"]` (full map state, including card lifecycle history, revision, and update time).\n\n**What is not persisted:** the transient `grand-reset-state-changed` event stream. If Hermes needs an audit log across browser sessions, it must store each subscribed `{ change, snapshot }` record in its own durable memory. The Python server output is only an HTTP request log; it is not application state.\n\n## Development checks\n\n```bash\nnpm ci\nnpm run check\nnpm test\n```\n\n## The life-map model\n\nEvery thought has independent dimensions:\n\n- **Space:** Compass, Radar, Horizon, Stowed, or Released\n- **Kind:** principle, pursuit, idea, artifact, open loop, or memory\n- **Realm:** personal, relationships, family, health, career, money, creative, digital, systems, patterns, or faith\n- **Portfolio state:** not an artifact, worth documenting, or documented\n- **History:** source, capture/update time, lifecycle transitions, outcome, and lesson\n\nThe five spaces serve different purposes:\n\n| Space | Meaning |\n| --- | --- |\n| Compass | Enduring thought-seeds worth keeping close |\n| Radar | What is meaningfully present now; capped at seven thoughts |\n| Horizon | Valid possibilities that are not for now |\n| Stowed | Resolved and preserved with outcome and lesson |\n| Released | Consciously left behind without erasing the record |\n\nCards are observations, not todos. There are intentionally no deadlines, overdue indicators, or urgency scores.\n\nThe earlier Eisenhower-matrix idea has evolved into the lifecycle itself: **Radar** holds what is present, **Horizon** safely holds “not now,” **Compass** preserves how you want to move, and **Stowed/Released** close loops. This keeps urgency scoring out of the reflective experience.\n\n## Interaction\n\n- Search across thought text, kind, realm, provenance, outcomes, and lessons\n- Filter by lifecycle space, kind, and realm\n- Switch in one press among three views without changing card data or freeform positions:\n  - **Canvas** — drag cards, pan with two-finger wheel/touch translation, pinch-zoom around the gesture center, scatter, or gather\n  - **Grid** — responsive scan view from mobile through desktop\n  - **Flow** — native swipe/trackpad carousel with neighboring cards peeking in\n- Navigate Flow with swipe, tapping a peeking card, previous/next controls, or the left/right arrow keys\n- Toggle between calm Moonlight and warm Sunlight from the toolbar; Sunlight adds a subtle palm-canopy shade across Canvas, Grid, Flow, cards, dialogs, menus, and mobile layouts\n- Inline-edit wording or open the card editor for metadata\n- On Canvas, dropping a card into a lifecycle region changes its space; Stowed and Released still require an outcome and lesson\n- The Grand Reset guide keeps **Start reset** (Reset path) separate from **How to use** (reference tutorial)\n- Open **How to use** from the toolbar or with `?` for the in-app view guide, card-action reference, global controls, and one-click practice routes\n- In the guide, left/right arrow keys switch tabs and move focus between **Reset path** and **How to use**\n- Stowing and releasing require an outcome and lesson\n- `n` plants a thought; `1`, `2`, and `3` select Canvas, Grid, and Flow\n- In Canvas, two-finger trackpad/touch drag pans both axes, pinch zooms, `+`/`-` zooms, and `0` returns home\n\nView changes use the browser View Transitions API when available. Native scroll-snap drives Flow, and `prefers-reduced-motion` disables ambient, palm-shade, and transition animation. Wheel/pointer gesture interception is Canvas-only, so Grid and Flow keep native scroll/swipe behavior. The theme toggle exposes `aria-pressed` state, keeps explicit mode labels in the control, and updates browser `color-scheme` plus `<meta name=\"theme-color\">`.\n\nTheme and view preferences persist with the local snapshot, and toggling theme never changes card content or positions.\n\n## Persistence and migration\n\nThere is no remote backend. The complete canonical state is stored at `localStorage[\"grand_reset_baseline_v3\"]` in the current browser origin. Every user-visible state commit increments `revision` and updates `updatedAt`; simply reloading does not. View mode, theme, and the currently focused Flow card are restored from saved state. Canvas wheel pan/zoom persistence is debounced during interaction and flushed on `pagehide` before navigation/reload. JSON exports include active and inactive spaces, complete history, pending agent suggestions, layout, revision, and view/theme state.\n\nCanvas lifecycle regions are real drop targets. Dropping into Compass, Radar, or Horizon changes stage immediately; a full Radar rejects the move. Dropping into Stowed or Released opens the required closure reflection, and cancelling restores the card to its prior position. Scatter and Gather keep cards inside their lifecycle regions.\n\nOn first v3 load, legacy `reset_canvas_h2_2026` cards migrate as follows:\n\n- `carry` → Compass\n- `later` or untagged → Horizon\n- `cut` → Released\n- legacy archive entries → Stowed\n\nLegacy category and rotation fields migrate, malformed entries are skipped, duplicate IDs are repaired, and Radar overflow moves safely to Horizon.\n\nCurated baseline additions carry a revision number. Existing local maps receive each new reflection once on reload, semantic duplicates are skipped, and additions never displace cards from a full Radar.\n\nBaseline revision `1` adds seven seasonal reflections:\n\n- one-hill-at-a-time focus as a Compass principle\n- a building season pursuit spanning Hermes, builder learning/community, the project suite, and Just Play\n- gaming as valid play/curiosity\n- journaling and second-brain practice as reflective support\n- weekend decluttering and a compact financial roundup safely held on Horizon\n- routine foundations (faith/meditation, movement, nutrition, relationships, care, chores, hygiene, organizing, and desk support) as Compass context\n\n## Agent-safe updates\n\nAgents never overwrite the map silently. Imports and API submissions enter the **Agent inbox**, where each suggestion can be approved or dismissed.\n\nWhile the page is running, Hermes or browser automation can use:\n\n```js\nwindow.grandReset.version // 2\nwindow.grandReset.schema()\nwindow.grandReset.snapshot()\nwindow.grandReset.subscribe((snapshot, change) => {})\nwindow.grandReset.propose(payload, \"Hermes\")\n```\n\n`schema()` returns runtime taxonomy and limits. `snapshot()` returns a clone of the complete current local state. `subscribe()` receives future successful state commits with revision, reason, `changedAt`, and snapshot (including `updatedAt`), and returns an unsubscribe function. This lets Hermes capture changes while attached to the running page; an agent outside that browser still needs browser automation or an exported JSON snapshot. `propose()` accepts additions or stable-ID updates and returns:\n\n```json\n{\n  \"queued\": 1,\n  \"duplicates\": 0,\n  \"inboxSize\": 1\n}\n```\n\n`propose()` and JSON imports accept any of these payload shapes:\n\n- `{ suggestions: [...] }` (primary contract)\n- `{ cards: [...] }` (legacy-compatible)\n- `[...]` (raw array of suggestions/cards)\n\nFor update suggestions, include `targetId` and at least one `patch` field. Any suggestion that sets `stage` to Stowed or Released must include both `outcome` and `lesson`. For update patches that include closure details, provide both fields together.\n\nProposal validation runs before anything is queued: if a payload includes an invalid suggestion (including one-sided `outcome`/`lesson` closure updates), `propose()`/JSON import throws and no new inbox entries are added from that payload.\n\nExample proposal:\n\n```json\n{\n  \"suggestions\": [\n    {\n      \"operation\": \"add\",\n      \"card\": {\n        \"text\": \"A new idea worth keeping safely on the horizon.\",\n        \"stage\": \"horizon\",\n        \"kind\": \"idea\",\n        \"realm\": \"creative\",\n        \"portfolio\": \"none\"\n      },\n      \"rationale\": \"This appeared across several recent reflections.\",\n      \"source\": {\n        \"type\": \"agent\",\n        \"label\": \"Hermes\"\n      }\n    },\n    {\n      \"operation\": \"update\",\n      \"targetId\": \"card-id-from-snapshot\",\n      \"patch\": {\n        \"text\": \"Clearer wording with current context.\",\n        \"stage\": \"radar\"\n      },\n      \"rationale\": \"This has become active again.\",\n      \"source\": {\n        \"type\": \"agent\",\n        \"label\": \"Hermes\"\n      }\n    }\n  ]\n}\n```\n\nThe machine-readable contract is [`grand-reset.schema.json`](./grand-reset.schema.json). Exact semantic duplicates are skipped. Suggestions that exceed Radar capacity remain pending instead of displacing existing thoughts.\n\nAutomation hooks:\n\n- `grand-reset-ready` event after `window.grandReset` is installed (`detail.version`, `detail.persistence`, `detail.revision`)\n- `grand-reset-state-changed` after successful local writes (`detail.revision`, `reason`, `changedAt`, and `snapshot`)\n- `grand-reset-inbox-updated` event after `propose()` queues suggestions (`detail` matches the queue result)\n\nData menu exports:\n\n- **Export complete snapshot** writes the full canonical JSON state\n- **Export readable Markdown** writes a lifecycle-grouped thought summary\n\n## Code organization\n\n- `data.js` — taxonomy, product configuration, and baseline observations\n- `model.js` — normalization, migration, lifecycle, deduplication, proposal application, and export\n- `app.js` — rendering, browser persistence, interactions, inbox, and agent API\n- `styles.css` — calm responsive visual system\n- `grand-reset.schema.json` — agent proposal contract\n- `*.test.js` — model and browser-DOM regression coverage\n\nStarter data in `data.js` is repository content. Thoughts added in the browser remain local unless explicitly exported or committed.\n",
+      "sections": [
+        {
+          "id": "reset-canvas:readme:1",
+          "title": "Grand Reset",
+          "anchor": "grand-reset",
+          "text": "# Grand Reset\n\nA calm, local-first map of what occupies your physical and digital world. Grand Reset is designed for perspective and worry-free mental decluttering—not task tracking, deadlines, or productivity pressure."
+        },
+        {
+          "id": "reset-canvas:readme:2",
+          "title": "Run locally",
+          "anchor": "run-locally",
+          "text": "## Run locally\n\nGrand Reset uses browser modules, so serve the repository over HTTP:\n\n```bash\npython3 -m http.server 4173\n```\n\nOpen <http://127.0.0.1:4173>. Browser data is local to that exact origin, including its port."
+        },
+        {
+          "id": "reset-canvas:readme:3",
+          "title": "Hermes operator quickstart",
+          "anchor": "hermes-operator-quickstart",
+          "text": "## Hermes operator quickstart\n\nHermes must operate inside, or automate, the same browser page that owns the state. There is no application server, database, or server-side change log.\n\n1. Start the static server from the repository root:\n\n   ```bash\n   python3 -m http.server 4173 --bind 127.0.0.1\n   ```\n\n2. Confirm it is reachable, then open that exact origin in Hermes's browser:\n\n   ```bash\n   curl --fail http://127.0.0.1:4173/\n   ```\n\n3. In the page context, wait for the API, capture the initial state, and subscribe before the user explores:\n\n   ```js\n   async function connectGrandReset() {\n     if (!window.grandReset) {\n       await new Promise((resolve) => {\n         window.addEventListener(\"grand-reset-ready\", resolve, { once: true });\n       });\n     }\n\n     const api = window.grandReset;\n     const initialSnapshot = api.snapshot();\n     const unsubscribe = api.subscribe((snapshot, change) => {\n       // Hermes should forward this record to its own durable memory or log.\n       console.log(\"grand-reset-change\", JSON.stringify({ change, snapshot }));\n     });\n\n     return { api, initialSnapshot, unsubscribe };\n   }\n\n   const grandReset = await connectGrandReset();\n   ```\n\n4. Read `grandReset.initialSnapshot` for the complete baseline. Later state commits arrive reactively through the subscription. Call `grandReset.unsubscribe()` before detaching.\n5. Submit proposed additions or updates with `grandReset.api.propose(payload, \"Hermes\")`. They enter the visible Agent inbox and require human approval.\n\n**What is persisted:** the latest canonical snapshot in `localStorage[\"grand_reset_baseline_v3\"]` (full map state, including card lifecycle history, revision, and update time).\n\n**What is not persisted:** the transient `grand-reset-state-changed` event stream. If Hermes needs an audit log across browser sessions, it must store each subscribed `{ change, snapshot }` record in its own durable memory. The Python server output is only an HTTP request log; it is not application state."
+        },
+        {
+          "id": "reset-canvas:readme:4",
+          "title": "Development checks",
+          "anchor": "development-checks",
+          "text": "## Development checks\n\n```bash\nnpm ci\nnpm run check\nnpm test\n```"
+        },
+        {
+          "id": "reset-canvas:readme:5",
+          "title": "The life-map model",
+          "anchor": "the-life-map-model",
+          "text": "## The life-map model\n\nEvery thought has independent dimensions:\n\n- **Space:** Compass, Radar, Horizon, Stowed, or Released\n- **Kind:** principle, pursuit, idea, artifact, open loop, or memory\n- **Realm:** personal, relationships, family, health, career, money, creative, digital, systems, patterns, or faith\n- **Portfolio state:** not an artifact, worth documenting, or documented\n- **History:** source, capture/update time, lifecycle transitions, outcome, and lesson\n\nThe five spaces serve different purposes:\n\n| Space | Meaning |\n| --- | --- |\n| Compass | Enduring thought-seeds worth keeping close |\n| Radar | What is meaningfully present now; capped at seven thoughts |\n| Horizon | Valid possibilities that are not for now |\n| Stowed | Resolved and preserved with outcome and lesson |\n| Released | Consciously left behind without erasing the record |\n\nCards are observations, not todos. There are intentionally no deadlines, overdue indicators, or urgency scores.\n\nThe earlier Eisenhower-matrix idea has evolved into the lifecycle itself: **Radar** holds what is present, **Horizon** safely holds “not now,” **Compass** preserves how you want to move, and **Stowed/Released** close loops. This keeps urgency scoring out of the reflective experience."
+        },
+        {
+          "id": "reset-canvas:readme:6",
+          "title": "Interaction",
+          "anchor": "interaction",
+          "text": "## Interaction\n\n- Search across thought text, kind, realm, provenance, outcomes, and lessons\n- Filter by lifecycle space, kind, and realm\n- Switch in one press among three views without changing card data or freeform positions:\n  - **Canvas** — drag cards, pan with two-finger wheel/touch translation, pinch-zoom around the gesture center, scatter, or gather\n  - **Grid** — responsive scan view from mobile through desktop\n  - **Flow** — native swipe/trackpad carousel with neighboring cards peeking in\n- Navigate Flow with swipe, tapping a peeking card, previous/next controls, or the left/right arrow keys\n- Toggle between calm Moonlight and warm Sunlight from the toolbar; Sunlight adds a subtle palm-canopy shade across Canvas, Grid, Flow, cards, dialogs, menus, and mobile layouts\n- Inline-edit wording or open the card editor for metadata\n- On Canvas, dropping a card into a lifecycle region changes its space; Stowed and Released still require an outcome and lesson\n- The Grand Reset guide keeps **Start reset** (Reset path) separate from **How to use** (reference tutorial)\n- Open **How to use** from the toolbar or with `?` for the in-app view guide, card-action reference, global controls, and one-click practice routes\n- In the guide, left/right arrow keys switch tabs and move focus between **Reset path** and **How to use**\n- Stowing and releasing require an outcome and lesson\n- `n` plants a thought; `1`, `2`, and `3` select Canvas, Grid, and Flow\n- In Canvas, two-finger trackpad/touch drag pans both axes, pinch zooms, `+`/`-` zooms, and `0` returns home\n\nView changes use the browser View Transitions API when available. Native scroll-snap drives Flow, and `prefers-reduced-motion` disables ambient, palm-shade, and transition animation. Wheel/pointer gesture interception is Canvas-only, so Grid and Flow keep native scroll/swipe behavior. The theme toggle exposes `aria-pressed` state, keeps explicit mode labels in the control, and updates browser `color-scheme` plus `<meta name=\"theme-color\">`.\n\nTheme and view preferences persist with the local snapshot, and toggling theme never changes card content or positions."
+        },
+        {
+          "id": "reset-canvas:readme:7",
+          "title": "Persistence and migration",
+          "anchor": "persistence-and-migration",
+          "text": "## Persistence and migration\n\nThere is no remote backend. The complete canonical state is stored at `localStorage[\"grand_reset_baseline_v3\"]` in the current browser origin. Every user-visible state commit increments `revision` and updates `updatedAt`; simply reloading does not. View mode, theme, and the currently focused Flow card are restored from saved state. Canvas wheel pan/zoom persistence is debounced during interaction and flushed on `pagehide` before navigation/reload. JSON exports include active and inactive spaces, complete history, pending agent suggestions, layout, revision, and view/theme state.\n\nCanvas lifecycle regions are real drop targets. Dropping into Compass, Radar, or Horizon changes stage immediately; a full Radar rejects the move. Dropping into Stowed or Released opens the required closure reflection, and cancelling restores the card to its prior position. Scatter and Gather keep cards inside their lifecycle regions.\n\nOn first v3 load, legacy `reset_canvas_h2_2026` cards migrate as follows:\n\n- `carry` → Compass\n- `later` or untagged → Horizon\n- `cut` → Released\n- legacy archive entries → Stowed\n\nLegacy category and rotation fields migrate, malformed entries are skipped, duplicate IDs are repaired, and Radar overflow moves safely to Horizon.\n\nCurated baseline additions carry a revision number. Existing local maps receive each new reflection once on reload, semantic duplicates are skipped, and additions never displace cards from a full Radar.\n\nBaseline revision `1` adds seven seasonal reflections:\n\n- one-hill-at-a-time focus as a Compass principle\n- a building season pursuit spanning Hermes, builder learning/community, the project suite, and Just Play\n- gaming as valid play/curiosity\n- journaling and second-brain practice as reflective support\n- weekend decluttering and a compact financial roundup safely held on Horizon\n- routine foundations (faith/meditation, movement, nutrition, relationships, care, chores, hygiene, organizing, and desk support) as Compass context"
+        },
+        {
+          "id": "reset-canvas:readme:8",
+          "title": "Agent-safe updates",
+          "anchor": "agent-safe-updates",
+          "text": "## Agent-safe updates\n\nAgents never overwrite the map silently. Imports and API submissions enter the **Agent inbox**, where each suggestion can be approved or dismissed.\n\nWhile the page is running, Hermes or browser automation can use:\n\n```js\nwindow.grandReset.version // 2\nwindow.grandReset.schema()\nwindow.grandReset.snapshot()\nwindow.grandReset.subscribe((snapshot, change) => {})\nwindow.grandReset.propose(payload, \"Hermes\")\n```\n\n`schema()` returns runtime taxonomy and limits. `snapshot()` returns a clone of the complete current local state. `subscribe()` receives future successful state commits with revision, reason, `changedAt`, and snapshot (including `updatedAt`), and returns an unsubscribe function. This lets Hermes capture changes while attached to the running page; an agent outside that browser still needs browser automation or an exported JSON snapshot. `propose()` accepts additions or stable-ID updates and returns:\n\n```json\n{\n  \"queued\": 1,\n  \"duplicates\": 0,\n  \"inboxSize\": 1\n}\n```\n\n`propose()` and JSON imports accept any of these payload shapes:\n\n- `{ suggestions: [...] }` (primary contract)\n- `{ cards: [...] }` (legacy-compatible)\n- `[...]` (raw array of suggestions/cards)\n\nFor update suggestions, include `targetId` and at least one `patch` field. Any suggestion that sets `stage` to Stowed or Released must include both `outcome` and `lesson`. For update patches that include closure details, provide both fields together.\n\nProposal validation runs before anything is queued: if a payload includes an invalid suggestion (including one-sided `outcome`/`lesson` closure updates), `propose()`/JSON import throws and no new inbox entries are added from that payload.\n\nExample proposal:\n\n```json\n{\n  \"suggestions\": [\n    {\n      \"operation\": \"add\",\n      \"card\": {\n        \"text\": \"A new idea worth keeping safely on the horizon.\",\n        \"stage\": \"horizon\",\n        \"kind\": \"idea\",\n        \"realm\": \"creative\",\n        \"portfolio\": \"none\"\n      },\n      \"rationale\": \"This appeared across several recent reflections.\",\n      \"source\": {\n        \"type\": \"agent\",\n        \"label\": \"Hermes\"\n      }\n    },\n    {\n      \"operation\": \"update\",\n      \"targetId\": \"card-id-from-"
+        },
+        {
+          "id": "reset-canvas:readme:9",
+          "title": "Agent-safe updates",
+          "anchor": "agent-safe-updates",
+          "text": "snapshot\",\n      \"patch\": {\n        \"text\": \"Clearer wording with current context.\",\n        \"stage\": \"radar\"\n      },\n      \"rationale\": \"This has become active again.\",\n      \"source\": {\n        \"type\": \"agent\",\n        \"label\": \"Hermes\"\n      }\n    }\n  ]\n}\n```\n\nThe machine-readable contract is [`grand-reset.schema.json`](./grand-reset.schema.json). Exact semantic duplicates are skipped. Suggestions that exceed Radar capacity remain pending instead of displacing existing thoughts.\n\nAutomation hooks:\n\n- `grand-reset-ready` event after `window.grandReset` is installed (`detail.version`, `detail.persistence`, `detail.revision`)\n- `grand-reset-state-changed` after successful local writes (`detail.revision`, `reason`, `changedAt`, and `snapshot`)\n- `grand-reset-inbox-updated` event after `propose()` queues suggestions (`detail` matches the queue result)\n\nData menu exports:\n\n- **Export complete snapshot** writes the full canonical JSON state\n- **Export readable Markdown** writes a lifecycle-grouped thought summary"
+        },
+        {
+          "id": "reset-canvas:readme:10",
+          "title": "Code organization",
+          "anchor": "code-organization",
+          "text": "## Code organization\n\n- `data.js` — taxonomy, product configuration, and baseline observations\n- `model.js` — normalization, migration, lifecycle, deduplication, proposal application, and export\n- `app.js` — rendering, browser persistence, interactions, inbox, and agent API\n- `styles.css` — calm responsive visual system\n- `grand-reset.schema.json` — agent proposal contract\n- `*.test.js` — model and browser-DOM regression coverage\n\nStarter data in `data.js` is repository content. Thoughts added in the browser remain local unless explicitly exported or committed."
+        }
+      ]
+    },
+    {
+      "projectId": "just-play",
+      "title": "Just Play",
+      "repo": "ortizjorge639/just-play",
+      "visibility": "public",
+      "commit": "b0ecead4e141b27749ef5327c00ca0d05d5d78b4",
+      "path": "README.md",
+      "sha": "53e3aaa292ca4739ea7167daaddd1133ff26365e",
+      "retrievedAt": "2026-09-16T03:53:49.342Z",
+      "text": "# Just Play\n\n> *You don't track games. You collect proof that you showed up.*\n\nJust Play is a game tracker built around a simple idea: every game you finish becomes a permanent part of your world. Not a spreadsheet. Not a list. A treehouse full of characters that grew from every hour you put in.\n\n---\n\n## What it does\n\n- **Backlog** — your queue. Add games, keep the pile honest.\n- **In Progress** — one game at a time. Track sessions, set goals, stay in it.\n- **Completed** — every finished game becomes a character in your treehouse. They live there.\n\n---\n\n## Stack\n\n- [Next.js 16](https://nextjs.org/) + React 19 + TypeScript\n- [Supabase](https://supabase.com/) — auth + database\n- [shadcn/ui](https://ui.shadcn.com/) + Tailwind CSS v4\n- [Framer Motion](https://www.framer.com/motion/) — animations\n- [IGDB](https://www.igdb.com/api) — game metadata\n\n---\n\n## Status\n\n**v2 in progress** — full redesign. Building in public.\n\nFollow the build → [@jojiguy639](https://x.com/jojiguy639)\n\n---\n\n## Running locally\n\n```bash\npnpm install\npnpm dev\n```\n\nRequires a `.env.local` with Supabase and IGDB credentials.\n\n---\n\n*Built by [@jojiguy639](https://x.com/jojiguy639)*\n",
+      "sections": [
+        {
+          "id": "just-play:readme:1",
+          "title": "Just Play",
+          "anchor": "just-play",
+          "text": "# Just Play\n\n> *You don't track games. You collect proof that you showed up.*\n\nJust Play is a game tracker built around a simple idea: every game you finish becomes a permanent part of your world. Not a spreadsheet. Not a list. A treehouse full of characters that grew from every hour you put in.\n\n---"
+        },
+        {
+          "id": "just-play:readme:2",
+          "title": "What it does",
+          "anchor": "what-it-does",
+          "text": "## What it does\n\n- **Backlog** — your queue. Add games, keep the pile honest.\n- **In Progress** — one game at a time. Track sessions, set goals, stay in it.\n- **Completed** — every finished game becomes a character in your treehouse. They live there.\n\n---"
+        },
+        {
+          "id": "just-play:readme:3",
+          "title": "Stack",
+          "anchor": "stack",
+          "text": "## Stack\n\n- [Next.js 16](https://nextjs.org/) + React 19 + TypeScript\n- [Supabase](https://supabase.com/) — auth + database\n- [shadcn/ui](https://ui.shadcn.com/) + Tailwind CSS v4\n- [Framer Motion](https://www.framer.com/motion/) — animations\n- [IGDB](https://www.igdb.com/api) — game metadata\n\n---"
+        },
+        {
+          "id": "just-play:readme:4",
+          "title": "Status",
+          "anchor": "status",
+          "text": "## Status\n\n**v2 in progress** — full redesign. Building in public.\n\nFollow the build → [@jojiguy639](https://x.com/jojiguy639)\n\n---"
+        },
+        {
+          "id": "just-play:readme:5",
+          "title": "Running locally",
+          "anchor": "running-locally",
+          "text": "## Running locally\n\n```bash\npnpm install\npnpm dev\n```\n\nRequires a `.env.local` with Supabase and IGDB credentials.\n\n---\n\n*Built by [@jojiguy639](https://x.com/jojiguy639)*"
+        }
+      ]
+    },
+    {
+      "projectId": "repoquest",
+      "title": "RepoQuest",
+      "repo": "ortizjorge639/repoquest",
+      "visibility": "public",
+      "commit": "eb712c1fa34690d2f772f06afd81c82d73482553",
+      "path": "README.md",
+      "sha": "ca6c6317de0863cb7303e1d50f67ce2f84aed797",
+      "retrievedAt": "2026-09-16T03:53:50.704Z",
+      "text": "# ⚔ RepoQuest\n\n> **Turn any GitHub repo into a cinematic setup guide — in one command.**\n\nClone a repo. Run `npx repoquest`. Get a self-contained HTML tutorial that walks you through setup in under 60 seconds — production-grade, WCAG-compliant, and ready to replace your walkthrough videos.\n\nNo more stale READMEs. No more walls of text. Just play and follow along.\n\n![RepoQuest tutorial theme — Requirements scene with sidebar nav](docs/screenshot.jpg)\n\n---\n\n## Quick Start\n\n```bash\n# Run against any local repo\nnpx repoquest --dir ./my-project\n\n# Pick a theme\nnpx repoquest --dir ./my-project --theme tutorial\n\n# Open immediately after generating\nnpx repoquest --dir ./my-project --open\n```\n\nOutput: a single `repoquest.html` file. Open it in any browser.\n\n---\n\n## How It Works\n\nRepoQuest reads your repository files and generates a fully animated HTML walkthrough:\n\n1. **Parses** `README.md`, `package.json`, `.env.example`, and your file tree\n2. **Extracts** project name, description, prerequisites, install steps, features, and tech stack\n3. **Infers** system design — inputs, core modules, and outputs — automatically from your code structure\n4. **Generates** a 10-scene animated HTML tutorial with GSAP transitions and a sidebar progress nav\n5. **Outputs** a self-contained file — no server, no build step, no dependencies\n\n---\n\n## Themes\n\n| Theme | Description | Best For |\n|-------|-------------|----------|\n| `tutorial` | Tutorial-grade, WCAG AA, sidebar nav, 10 scenes | Any project — the flagship |\n| `quest` | Medieval RPG aesthetic — Cinzel font, parchment tones | Developer tools, CLIs |\n| `minimal` | Clean dark, Inter font, cool grays | Any project |\n| `pitch` | Startup deck vibes — Plus Jakarta Sans, purple/yellow | SaaS, OSS launches |\n\n```bash\nnpx repoquest --dir . --theme tutorial  # 📘 Tutorial (recommended)\nnpx repoquest --dir . --theme quest     # ⚔ Medieval quest\nnpx repoquest --dir . --theme minimal   # 🖤 Clean dark\nnpx repoquest --dir . --theme pitch     # 🟡 Pitch deck\n```\n\n---\n\n## The Tutorial Theme\n\nThe `tutorial` theme is the flagship — designed to replace walkthrough videos.\n\n**10 scenes (~60s total):**\n\n| # | Scene | What it shows |\n|---|-------|---------------|\n| 1 | **Hero** | Project name, tagline, stat pills, Clone→Configure→Run flow, \"What you'll cover\" preview |\n| 2 | **System Design** | Auto-inferred input→core modules→output architecture diagram |\n| 3 | **Features** | Feature cards with icons |\n| 4 | **Stack** | Tech cards — languages, frameworks, tools |\n| 5 | **Key Files** | File tree with highlighted entry points |\n| 6 | **Requirements** | Prerequisites checklist |\n| 7 | **Install** | Animated terminal showing install commands |\n| 8 | **Configure** | Env var table (Variable / Description / Required) |\n| 9 | **Run** | Animated terminal showing start command + success callout |\n| 10 | **Recap** | Bento-box overview of everything covered |\n\n**Design:**\n- WCAG AA contrast throughout (`#0F1117` bg, `#F1F5F9` headlines, `#3B82F6` accent)\n- Left sidebar with step-by-step progress nav\n- Bottom progress bar\n- DM Sans + DM Mono typography\n\n---\n\n## Options\n\n```\nUsage:\n  npx repoquest [options]\n\nOptions:\n  --dir <path>      Repository directory to parse (default: current directory)\n  --theme <name>    Visual theme: tutorial | quest | minimal | pitch (default: quest)\n  --output <file>   Output HTML filename (default: repoquest.html)\n  --open            Open in browser after generating\n  --version         Print version\n  --help            Show this help\n```\n\n---\n\n## What Gets Parsed\n\nRepoQuest reads these files (all optional — it degrades gracefully):\n\n| File | What it extracts |\n|------|-----------------|\n| `package.json` | Name, description, scripts, engines, dependencies |\n| `README.md` | Tagline, features list, prerequisites section |\n| `.env.example` | Required environment variables |\n| File tree | Key source files (scored by importance) |\n\n---\n\n## Architecture\n\nRepoQuest is a clean 3-stage pipeline:\n\n```\nparseRepo(dir) → RepoData → generate(data, options) → HTML string\n```\n\nEach stage is independently testable:\n\n```\nsrc/\n  parser.ts      — reads repo files, outputs RepoData\n  generator.ts   — takes RepoData + theme, outputs HTML\n  types.ts       — shared interfaces\n  themes/\n    tutorial.ts  — tutorial theme (flagship — WCAG, sidebar nav, system design)\n    quest.ts     — medieval quest theme\n    minimal.ts   — clean dark theme\n    pitch.ts     — startup pitch theme\n  cli.ts         — npx entry point\n```\n\n**Adding a new theme** = one new file in `src/themes/` that exports:\n- `styles` — CSS string\n- `accentColor`, `bgColor`, `controlBorder` — player control styling\n- `scenes(data: RepoData)` — returns `Array<{ id, duration, html, customJs?, initJs? }>`\n\nNo changes needed elsewhere.\n\n**`customJs` system:** Each scene can include a `customJs` string with GSAP tweens. The generator replaces `{{START}}` with the scene's actual start time in seconds, enabling precise timeline positioning without knowing the full composition duration at scene-creation time.\n\n---\n\n## Development\n\n```bash\n# Clone and install\ngit clone https://github.com/qwibitai/repoquest\ncd repoquest\nnpm install\n\n# Build\nnpm run build\n\n# Run tests (18 tests, Node.js native runner)\nnpm test\n\n# Run against yourself\nnode dist/cli.js --dir . --theme tutorial --open\n```\n\n---\n\n## Philosophy\n\n> \"Takes less than an Instagram reel to learn how to get started.\"\n\nSetup guides should be *watched*, not read. RepoQuest generates a self-paced animated walkthrough that plays automatically — no slides, no separate video tool, just HTML and GSAP.\n\nThe output is a single file you can:\n- Commit to your repo as `SETUP.html`\n- Host on GitHub Pages\n- Drop in your README as a link\n- Use in your CI to auto-generate on every release\n\n---\n\n## License\n\nMIT — built to be open-sourced and forked freely.\n\n---\n\n*Built with ⚔ and [HyperFrames](https://github.com/heygen-com/hyperframes)*\n\n---\n\n## Rendering to Video\n\nThe HTML output is a valid [HyperFrames](https://github.com/heygen-com/hyperframes) composition — you can render it to a video clip:\n\n```bash\n# Install Chrome renderer (once)\nnpx hyperframes browser ensure\n\n# Render to MP4\nnpx hyperframes render . --output setup.mp4\n\n# Render to GIF (great for embedding in README)\nnpx hyperframes render . --output setup.gif\n```\n\nRun from the directory containing your generated `repoquest.html` (rename it to `index.html` first). Output can be shared on Slack, X, Discord, or embedded directly in your GitHub README.\n\n---\n\n## Attribution\n\nRepoQuest generates HTML compositions using the [HyperFrames](https://github.com/heygen-com/hyperframes) format — an open-source video rendering framework by [HeyGen](https://heygen.com), licensed under [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0). See [NOTICE](./NOTICE) for details.\n",
+      "sections": [
+        {
+          "id": "repoquest:readme:1",
+          "title": "⚔ RepoQuest",
+          "anchor": "-repoquest",
+          "text": "# ⚔ RepoQuest\n\n> **Turn any GitHub repo into a cinematic setup guide — in one command.**\n\nClone a repo. Run `npx repoquest`. Get a self-contained HTML tutorial that walks you through setup in under 60 seconds — production-grade, WCAG-compliant, and ready to replace your walkthrough videos.\n\nNo more stale READMEs. No more walls of text. Just play and follow along.\n\n![RepoQuest tutorial theme — Requirements scene with sidebar nav](docs/screenshot.jpg)\n\n---"
+        },
+        {
+          "id": "repoquest:readme:2",
+          "title": "Quick Start",
+          "anchor": "quick-start",
+          "text": "## Quick Start\n\n```bash\n# Run against any local repo\nnpx repoquest --dir ./my-project\n\n# Pick a theme\nnpx repoquest --dir ./my-project --theme tutorial\n\n# Open immediately after generating\nnpx repoquest --dir ./my-project --open\n```\n\nOutput: a single `repoquest.html` file. Open it in any browser.\n\n---"
+        },
+        {
+          "id": "repoquest:readme:3",
+          "title": "How It Works",
+          "anchor": "how-it-works",
+          "text": "## How It Works\n\nRepoQuest reads your repository files and generates a fully animated HTML walkthrough:\n\n1. **Parses** `README.md`, `package.json`, `.env.example`, and your file tree\n2. **Extracts** project name, description, prerequisites, install steps, features, and tech stack\n3. **Infers** system design — inputs, core modules, and outputs — automatically from your code structure\n4. **Generates** a 10-scene animated HTML tutorial with GSAP transitions and a sidebar progress nav\n5. **Outputs** a self-contained file — no server, no build step, no dependencies\n\n---"
+        },
+        {
+          "id": "repoquest:readme:4",
+          "title": "Themes",
+          "anchor": "themes",
+          "text": "## Themes\n\n| Theme | Description | Best For |\n|-------|-------------|----------|\n| `tutorial` | Tutorial-grade, WCAG AA, sidebar nav, 10 scenes | Any project — the flagship |\n| `quest` | Medieval RPG aesthetic — Cinzel font, parchment tones | Developer tools, CLIs |\n| `minimal` | Clean dark, Inter font, cool grays | Any project |\n| `pitch` | Startup deck vibes — Plus Jakarta Sans, purple/yellow | SaaS, OSS launches |\n\n```bash\nnpx repoquest --dir . --theme tutorial  # 📘 Tutorial (recommended)\nnpx repoquest --dir . --theme quest     # ⚔ Medieval quest\nnpx repoquest --dir . --theme minimal   # 🖤 Clean dark\nnpx repoquest --dir . --theme pitch     # 🟡 Pitch deck\n```\n\n---"
+        },
+        {
+          "id": "repoquest:readme:5",
+          "title": "The Tutorial Theme",
+          "anchor": "the-tutorial-theme",
+          "text": "## The Tutorial Theme\n\nThe `tutorial` theme is the flagship — designed to replace walkthrough videos.\n\n**10 scenes (~60s total):**\n\n| # | Scene | What it shows |\n|---|-------|---------------|\n| 1 | **Hero** | Project name, tagline, stat pills, Clone→Configure→Run flow, \"What you'll cover\" preview |\n| 2 | **System Design** | Auto-inferred input→core modules→output architecture diagram |\n| 3 | **Features** | Feature cards with icons |\n| 4 | **Stack** | Tech cards — languages, frameworks, tools |\n| 5 | **Key Files** | File tree with highlighted entry points |\n| 6 | **Requirements** | Prerequisites checklist |\n| 7 | **Install** | Animated terminal showing install commands |\n| 8 | **Configure** | Env var table (Variable / Description / Required) |\n| 9 | **Run** | Animated terminal showing start command + success callout |\n| 10 | **Recap** | Bento-box overview of everything covered |\n\n**Design:**\n- WCAG AA contrast throughout (`#0F1117` bg, `#F1F5F9` headlines, `#3B82F6` accent)\n- Left sidebar with step-by-step progress nav\n- Bottom progress bar\n- DM Sans + DM Mono typography\n\n---"
+        },
+        {
+          "id": "repoquest:readme:6",
+          "title": "Options",
+          "anchor": "options",
+          "text": "## Options\n\n```\nUsage:\n  npx repoquest [options]\n\nOptions:\n  --dir <path>      Repository directory to parse (default: current directory)\n  --theme <name>    Visual theme: tutorial | quest | minimal | pitch (default: quest)\n  --output <file>   Output HTML filename (default: repoquest.html)\n  --open            Open in browser after generating\n  --version         Print version\n  --help            Show this help\n```\n\n---"
+        },
+        {
+          "id": "repoquest:readme:7",
+          "title": "What Gets Parsed",
+          "anchor": "what-gets-parsed",
+          "text": "## What Gets Parsed\n\nRepoQuest reads these files (all optional — it degrades gracefully):\n\n| File | What it extracts |\n|------|-----------------|\n| `package.json` | Name, description, scripts, engines, dependencies |\n| `README.md` | Tagline, features list, prerequisites section |\n| `.env.example` | Required environment variables |\n| File tree | Key source files (scored by importance) |\n\n---"
+        },
+        {
+          "id": "repoquest:readme:8",
+          "title": "Architecture",
+          "anchor": "architecture",
+          "text": "## Architecture\n\nRepoQuest is a clean 3-stage pipeline:\n\n```\nparseRepo(dir) → RepoData → generate(data, options) → HTML string\n```\n\nEach stage is independently testable:\n\n```\nsrc/\n  parser.ts      — reads repo files, outputs RepoData\n  generator.ts   — takes RepoData + theme, outputs HTML\n  types.ts       — shared interfaces\n  themes/\n    tutorial.ts  — tutorial theme (flagship — WCAG, sidebar nav, system design)\n    quest.ts     — medieval quest theme\n    minimal.ts   — clean dark theme\n    pitch.ts     — startup pitch theme\n  cli.ts         — npx entry point\n```\n\n**Adding a new theme** = one new file in `src/themes/` that exports:\n- `styles` — CSS string\n- `accentColor`, `bgColor`, `controlBorder` — player control styling\n- `scenes(data: RepoData)` — returns `Array<{ id, duration, html, customJs?, initJs? }>`\n\nNo changes needed elsewhere.\n\n**`customJs` system:** Each scene can include a `customJs` string with GSAP tweens. The generator replaces `{{START}}` with the scene's actual start time in seconds, enabling precise timeline positioning without knowing the full composition duration at scene-creation time.\n\n---"
+        },
+        {
+          "id": "repoquest:readme:9",
+          "title": "Development",
+          "anchor": "development",
+          "text": "## Development\n\n```bash\n# Clone and install\ngit clone https://github.com/qwibitai/repoquest\ncd repoquest\nnpm install\n\n# Build\nnpm run build\n\n# Run tests (18 tests, Node.js native runner)\nnpm test\n\n# Run against yourself\nnode dist/cli.js --dir . --theme tutorial --open\n```\n\n---"
+        },
+        {
+          "id": "repoquest:readme:10",
+          "title": "Philosophy",
+          "anchor": "philosophy",
+          "text": "## Philosophy\n\n> \"Takes less than an Instagram reel to learn how to get started.\"\n\nSetup guides should be *watched*, not read. RepoQuest generates a self-paced animated walkthrough that plays automatically — no slides, no separate video tool, just HTML and GSAP.\n\nThe output is a single file you can:\n- Commit to your repo as `SETUP.html`\n- Host on GitHub Pages\n- Drop in your README as a link\n- Use in your CI to auto-generate on every release\n\n---"
+        },
+        {
+          "id": "repoquest:readme:11",
+          "title": "License",
+          "anchor": "license",
+          "text": "## License\n\nMIT — built to be open-sourced and forked freely.\n\n---\n\n*Built with ⚔ and [HyperFrames](https://github.com/heygen-com/hyperframes)*\n\n---"
+        },
+        {
+          "id": "repoquest:readme:12",
+          "title": "Rendering to Video",
+          "anchor": "rendering-to-video",
+          "text": "## Rendering to Video\n\nThe HTML output is a valid [HyperFrames](https://github.com/heygen-com/hyperframes) composition — you can render it to a video clip:\n\n```bash\n# Install Chrome renderer (once)\nnpx hyperframes browser ensure\n\n# Render to MP4\nnpx hyperframes render . --output setup.mp4\n\n# Render to GIF (great for embedding in README)\nnpx hyperframes render . --output setup.gif\n```\n\nRun from the directory containing your generated `repoquest.html` (rename it to `index.html` first). Output can be shared on Slack, X, Discord, or embedded directly in your GitHub README.\n\n---"
+        },
+        {
+          "id": "repoquest:readme:13",
+          "title": "Attribution",
+          "anchor": "attribution",
+          "text": "## Attribution\n\nRepoQuest generates HTML compositions using the [HyperFrames](https://github.com/heygen-com/hyperframes) format — an open-source video rendering framework by [HeyGen](https://heygen.com), licensed under [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0). See [NOTICE](./NOTICE) for details."
+        }
+      ]
+    }
+  ]
+}

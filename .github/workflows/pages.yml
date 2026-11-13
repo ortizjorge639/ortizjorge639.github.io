@@ -21,8 +21,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: npm run test:guide
+      - run: npm run test:stories
+      - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm test -- --grep-invert "touch drag paints"
+      - run: npm run test:responsive
       - name: Preserve browser failure evidence
         if: failure()
         uses: actions/upload-artifact@v4

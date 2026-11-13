@@ -1,0 +1,15 @@
+/* Keep the studio within one usable pane instead of placing controls on a hinge. */
+@media (horizontal-viewport-segments: 2), (vertical-viewport-segments: 2) {
+  #app {
+    width: env(viewport-segment-width 0 0, 100vw);
+    height: env(viewport-segment-height 0 0, 100dvh);
+    margin-left: env(viewport-segment-left 0 0, 0px);
+    padding: 8px;
+  }
+  .studio-app {
+    width: min(100%, 660px, calc((env(viewport-segment-height 0 0, 100dvh) - 16px) * 1878 / 2670));
+    height: auto;
+    max-height: 100%;
+    aspect-ratio: 1878 / 2670;
+  }
+}
