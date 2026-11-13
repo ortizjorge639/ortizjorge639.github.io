@@ -129,11 +129,24 @@ export function retrieveSources(sources, input) {
   // Keep every project discoverable without allowing catalog growth to crowd
   // detailed evidence out of the fixed prompt budget. Preserve caveats and role.
   const selected = sources.summaries.map(chunk => {
-    if (!chunk.projectId || mentioned.includes(chunk.projectId) || chunk.projectId === input.projectId) return chunk;
     const { title, subtitle, status, note, contribution } = JSON.parse(chunk.text);
     return { ...chunk, text: JSON.stringify({ title, subtitle, status, note, contribution }) };
   });
   let length = selected.reduce((total, chunk) => total + chunk.text.length, 0);
+  const summaryBudget = 18_000; // Reserve at least 7k for detailed evidence.
+  if (length > summaryBudget) throw new GuideError('source_error', 'Catalog summaries exceed reserved evidence budget.', 503);
+  // Selected-project context takes priority; mentions can upgrade only within
+  // the reservation. Mentioning every project cannot bypass the global cap.
+  for (const id of new Set([input.projectId, ...mentioned].filter(Boolean))) {
+    const index = selected.findIndex(chunk => chunk.projectId === id);
+    if (index < 0) continue;
+    const full = sources.summaries[index];
+    const extra = full.text.length - selected[index].text.length;
+    if (length + extra <= summaryBudget) {
+      selected[index] = full;
+      length += extra;
+    }
+  }
   const counts = new Map();
   for (const { chunk } of ranked) {
     if (selected.length >= sources.summaries.length + 9) break;

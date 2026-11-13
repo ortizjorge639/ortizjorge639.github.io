@@ -414,7 +414,7 @@
       "Tech"
     ],
     "updated": "2026-11-13",
-    "illustration": "bot",
+    "illustration": "inventory",
     "color": "blue",
     "repo": "",
     "site": "https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md",
@@ -448,7 +448,7 @@
     "id": "document-evidence-pipeline",
     "title": "Evidence-preserving document intelligence",
     "subtitle": "Keep the mark, its source and the decision together.",
-    "illustration": "film",
+    "illustration": "evidence",
     "description": "A PDF evidence pipeline routing native, scanned and hybrid pages into span-preserving decisions, review artifacts and a search-ingestion handoff. This sanitized narrative is not public code inspection.",
     "capabilities": [
       "Route native, scanned and hybrid pages; reuse optional document-level Azure Layout",
@@ -486,7 +486,7 @@
     "id": "custom-model-auth-diagnostics",
     "title": "Diagnosing custom-model authentication",
     "subtitle": "Observe the client contract before changing the gateway gate.",
-    "illustration": "broker",
+    "illustration": "auth-probe",
     "description": "A BYOK integration diagnostic using an isolated endpoint to observe authentication metadata, then validate the contract at Azure API Management and clean up. This sanitized narrative is not public code inspection.",
     "capabilities": [
       "Use disposable dummy credentials and bounded metadata-only observation on an isolated endpoint",
@@ -528,7 +528,7 @@
       "AI",
       "Tech"
     ],
-    "illustration": "canvas",
+    "illustration": "gestures",
     "color": "blue",
     "description": "A single-owner drawing-conversation prototype that separates exact captured marks, a tentative model-authored reply, and the human interpretation of that reply.",
     "capabilities": [
@@ -567,7 +567,7 @@
       "AI",
       "Media"
     ],
-    "illustration": "decks",
+    "illustration": "session-dj",
     "color": "red",
     "description": "A local Spotify-first control surface that turns bounded coding-session signals into deterministic playlist choices while keeping requests separate from observed playback.",
     "capabilities": [
@@ -606,7 +606,7 @@
       "AI",
       "Tech"
     ],
-    "illustration": "tree",
+    "illustration": "recurrence",
     "color": "blue",
     "description": "A file-based knowledge workflow that leaves one-off notes searchable while requiring recurring evidence and human approval before treating an idea as maintained knowledge.",
     "capabilities": [
@@ -645,7 +645,7 @@
       "AI",
       "Tech"
     ],
-    "illustration": "decks",
+    "illustration": "recall",
     "color": "red",
     "description": "A local command-line workflow that turns supplied Markdown recaps into private review cards, tracks artifacts and surfaces a small queue using a time-based heuristic.",
     "capabilities": [
@@ -700,7 +700,7 @@
     "problem": "A migration can preserve row counts while changing what an application returns. A small rehearsal makes that distinction inspectable without moving real data.",
     "how": "The documented runner generates small related tables, migrates them transactionally to DuckDB, and compares canonical content, invariants, and seven source/target application cases. A workflow defines checks on Linux and Windows; no run result was retrieved for this review.",
     "contribution": "Individual contribution and authorship are unverified. This entry describes the documented artifact or proposal, not a claim of sole design, implementation, or measured impact.",
-    "illustration": "blocks",
+    "illustration": "migration",
     "color": "blue",
     "updated": "2026-11-13",
     "repo": "",
@@ -738,7 +738,7 @@
     "problem": "A plausible connection is not necessarily supported by its sources or useful to the reader. A visual map should not conceal those separate questions.",
     "how": "The specification proposes read-only, allowlisted Markdown retrieval, a typed connection, exact quote and current-source checks, a separate contextual-support check, and a usefulness threshold. The output is at most one suggestion or abstention, with keep/dismiss feedback kept separate from truth.",
     "contribution": "Individual contribution and authorship are unverified. This entry describes the documented artifact or proposal, not a claim of sole design, implementation, or measured impact.",
-    "illustration": "tree",
+    "illustration": "connections",
     "color": "blue",
     "updated": "2026-11-13",
     "repo": "",

@@ -215,7 +215,7 @@ test('project pages retain every fact, capture, caveat and source', async ({ pag
     if (repoUrl(project)) await expect(page.getByRole('link', { name: 'View repository', exact: true })).toHaveAttribute('href', repoUrl(project));
     else await expect(page.getByRole('link', { name: 'View repository', exact: true })).toHaveCount(0);
     await expect(page.locator('.source-note')).toHaveAttribute('href', project.sources![0].url);
-    if (project.site) await expect(page.getByRole('link', { name: project.sourceType === 'curated-case-study' ? 'Case-study narrative' : 'Public landing page' })).toHaveAttribute('href', project.site);
+    if (project.site) await expect(page.getByRole('link', { name: project.sourceType === 'curated-case-study' ? 'Case-study narrative' : 'Public landing page', exact: true })).toHaveAttribute('href', project.site);
     await expect(page.getByRole('button', { name: 'Next detail page' })).toBeDisabled();
   }
 });
