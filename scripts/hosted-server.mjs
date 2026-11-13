@@ -23,7 +23,7 @@ export function createHostedServer({config,store=config.enabled?cosmosStore(conf
   const controllers=new Set();
   // Immutable public corpus loaded once; no runtime GitHub credentials/refresh.
   const corpus=Promise.resolve().then(sourceLoader); corpus.catch(()=>{});
-  const server=createServer(async(req,res)=>{
+  const server=createServer({maxHeaderSize:16_384},async(req,res)=>{
     const headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'",Connection:'close',Vary:'Origin'};
     const send=(status,value)=>{if(!res.destroyed&&!res.writableEnded){res.writeHead(status,headers);res.end(JSON.stringify(value));}};
     let controller,ownsBody=false,timer;
@@ -67,7 +67,9 @@ export function createHostedServer({config,store=config.enabled?cosmosStore(conf
       // Deliberately no prompts, responses, provider bodies, tokens or headers.
     } finally {clearTimeout(timer);if(ownsBody)reading--;if(controller)controllers.delete(controller);}
   });
-  server.headersTimeout=5000;server.requestTimeout=5000;server.timeout=35000;server.maxHeadersCount=24;server.maxConnections=16;
+  // App Service injects proxy headers before normal browser CORS headers.
+  // Keep the 16KiB byte ceiling while admitting that bounded platform envelope.
+  server.headersTimeout=5000;server.requestTimeout=5000;server.timeout=35000;server.maxHeadersCount=64;server.maxConnections=16;
   server.on('close',()=>{for(const controller of controllers)controller.abort();});
   return server;
 }
