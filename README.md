@@ -61,7 +61,7 @@ CI runs the general browser and cross-engine responsive suites on Ubuntu and a r
 - Hover instantly swaps the frog to one happy frame with a subtle blue-tinted fill, held until the pointer leaves; keyboard focus gets the same feedback. There is no hover bounce or multi-frame animation, and the hit target stays fixed. Hover cannot interrupt the timed greeting or an answer-in-progress pose. Reduced motion retains the static frame, tint, and direct pupil feedback. Idle blinks stop in hidden tabs. All artwork and sounds remain original.
 - Clicking the frog or **Guide** opens a non-modal conversation over the upper screen. Browse the lower screen without losing the conversation. The visible context label applies to the next question; an in-flight answer stays bound to the project selected when it was sent.
 - Minimize retains the transcript and draft. Guide options provide Hide and a confirmed Clear conversation; the status-strip Guide button restores a hidden companion. Clearing chat never clears ink. Expand gives the guide more of the paired canvas; keyboard-aware fitting keeps the composer and lower navigation reachable.
-- Fonts are served by Google Fonts (VT323 for pixel-style interface text, DM Sans for the retained original wordmark, and Kalam for drawing annotations), with system fallbacks. Body descriptions use a readable system sans-serif stack. The published static site has no analytics, API keys, runtime GitHub API dependency, or public AI backend. Real AI is currently a local-only rehearsal.
+- Fonts are served by Google Fonts (VT323 for pixel-style interface text, DM Sans for the retained original wordmark, and Kalam for drawing annotations), with system fallbacks. Body descriptions use a readable system sans-serif stack. The static site has no analytics, API keys, or runtime GitHub API dependency. Production builds can connect the frog to the dedicated, bounded Azure OpenAI backend; normal local builds remain disconnected unless explicitly configured. The loopback Copilot rehearsal is separate and is never a public fallback.
 
 ## Local AI guide
 
@@ -69,7 +69,7 @@ The frog's live answers use the installed, authenticated **GitHub Copilot CLI**.
 No model key or CLI connection is bundled into the browser. The agreed
 [production deployment plan](docs/frog-production.md) keeps GitHub Pages and
 adds a disabled-by-default YAML selection between hosted Copilot CLI and a
-direct model API. The direct adapter, strict YAML switch, Cosmos conditional reservation, global limits and public-endpoint wiring are now implemented but disabled; see [current runbook](docs/hosted-frog-runbook.md). Actual host quota, hosted identity/provider verification and original release gates remain unresolved. The local CLI is never a public fallback.
+direct model API. The direct adapter, strict YAML switch, Cosmos conditional reservation, global limits and public-endpoint wiring are implemented; the repository YAML remains disabled by default. The dedicated host uses an explicit server-side configuration, separate from the public build-time API origin. Actual hosted managed-identity/Cosmos/Azure OpenAI answers have been verified in both staged browser modes; production publication and exact-byte acceptance are tracked separately. See the [current runbook](docs/hosted-frog-runbook.md) for the cumulative allowance, expiry, privacy and shutdown boundaries. The local CLI is never a public fallback.
 
 ```sh
 npm run guide:sources   # Explicitly refresh approved public README snapshots
