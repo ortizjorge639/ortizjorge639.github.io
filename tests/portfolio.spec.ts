@@ -156,6 +156,9 @@ test('library selection, bounded pagination, and category filters cover the real
   await expect(page.locator('.project-tile')).toHaveCount(projects.length % 4 || 4);
   await expect(page.getByRole('button', { name: 'Next library page' })).toBeDisabled();
   await page.getByRole('link', { name: 'Previous library page' }).click();
+  for (let n = 0; n < Math.ceil(projects.length / 4) && !(await page.getByRole('button', { name: 'Preview RepoQuest', exact: true }).count()); n++) {
+    await page.getByRole('link', { name: 'Previous library page' }).click();
+  }
   await page.getByRole('button', { name: 'Preview RepoQuest', exact: true }).click();
   await expect(page.locator('.story-topline h2')).toHaveText('RepoQuest');
   await expect(page.getByRole('link', { name: 'Open RepoQuest', exact: true })).toBeVisible();

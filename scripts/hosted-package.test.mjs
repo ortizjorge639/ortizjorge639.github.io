@@ -25,9 +25,12 @@ test('minimal host package has an explicit public-only allowlist and no CLI or p
   const {loadSources}=await import(path.join(target,'scripts/guide-sources.mjs'));
   const corpus = await loadSources();
   assert.ok(corpus.sourceCount>0,'package independently loads the real public corpus');
-  const narrative = corpus.chunks.filter(c => c.projectId === 'inventory-data-assistant');
-  assert.ok(narrative.some(c => c.url === 'https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md'));
-  assert.ok(narrative.every(c => !c.url.includes('github.com/')));
+  for (const id of ['inventory-data-assistant', 'document-evidence-pipeline', 'custom-model-auth-diagnostics']) {
+   const narrative = corpus.chunks.filter(c => c.projectId === id);
+   assert.ok(narrative.some(c => c.url === `https://ortizjorge639.github.io/case-studies/${id}.md`));
+   assert.ok(narrative.every(c => !c.url.includes('github.com/') && !c.url.includes('gist.')));
+   assert.ok(HOST_FILES.includes(`public/case-studies/${id}.md`));
+  }
   assert.equal(JSON.parse(await readFile(path.join(target,'package.json'),'utf8')).type,'module');
   await assert.rejects(writeHostDirectory(target,{configText:'frog:\n  enabled: false\n'}),/exist/i);
  } finally {await rm(dir,{recursive:true,force:true});}

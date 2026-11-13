@@ -443,5 +443,81 @@
         "reviewed": "2026-11-13"
       }
     ]
+  },
+  {
+    "id": "document-evidence-pipeline",
+    "title": "Evidence-preserving document intelligence",
+    "subtitle": "Keep the mark, its source and the decision together.",
+    "illustration": "film",
+    "description": "A PDF evidence pipeline routing native, scanned and hybrid pages into span-preserving decisions, review artifacts and a search-ingestion handoff. This sanitized narrative is not public code inspection.",
+    "capabilities": [
+      "Route native, scanned and hybrid pages; reuse optional document-level Azure Layout",
+      "Join native geometry and detector evidence to original word spans, with deterministic confirmation and review",
+      "Emit enriched, clean and provenance views plus sidecar, review queue and search-ingestion handoff"
+    ],
+    "stack": [
+      "Python / PyMuPDF",
+      "Azure Document Intelligence",
+      "Spatial joins / Markdown"
+    ],
+    "note": "Private implementation; no fresh execution. The documented demo uses the real orchestrator with mocked cloud and detector responses, not accuracy or cloud acceptance. The scanned path may send the full PDF to cloud; page-local processing is not Azure response streaming. Human review remains necessary; confidence is not calibrated probability by default. Redistribution requires separate review.",
+    "problem": "Flattening a PDF can erase whether a crossed-out phrase was confirmed or ambiguous, where it appeared, and why text was changed. Repeated phrases make global replacement unsafe.",
+    "how": "Route each page; collect native annotation/vector geometry evidence or reuse one optional document-level Azure Layout response for scanned detection. Normalize polygons, join original word spans spatially, resolve confirmed versus review decisions deterministically, then emit enriched/clean/provenance outputs, sidecar and search-ingestion records.",
+    "contribution": "Individual role unverified; this narrative does not establish sole authorship. The reviewed implementation combines page routing, evidence joins, deterministic resolution and inspectable artifacts. PyMuPDF, Azure Layout and optional detector dependencies are not claimed as original components. Only this separately authored sanitized narrative is public; code redistribution is a separate gate.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "color": "blue",
+    "repo": "",
+    "sourceType": "curated-case-study",
+    "status": "Private implementation · sanitized narrative",
+    "site": "https://ortizjorge639.github.io/case-studies/document-evidence-pipeline.md",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code inspection)",
+        "url": "https://ortizjorge639.github.io/case-studies/document-evidence-pipeline.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "custom-model-auth-diagnostics",
+    "title": "Diagnosing custom-model authentication",
+    "subtitle": "Observe the client contract before changing the gateway gate.",
+    "illustration": "broker",
+    "description": "A BYOK integration diagnostic using an isolated endpoint to observe authentication metadata, then validate the contract at Azure API Management and clean up. This sanitized narrative is not public code inspection.",
+    "capabilities": [
+      "Use disposable dummy credentials and bounded metadata-only observation on an isolated endpoint",
+      "Validate the expected client contract at the gateway, strip incoming credentials and separate backend identity",
+      "Restore client routing, remove diagnostic configuration and explicitly review retention and access"
+    ],
+    "stack": [
+      "Azure API Management",
+      "GitHub Copilot custom models",
+      "Key Vault / managed identity"
+    ],
+    "note": "Historical guide claims, not fresh execution or current universal client behavior. No model calls, gateway changes or deployments were performed. Never echo, log or forward credential values. Disposable diagnostics need bounded access/lifetime; isolation or an idle response is not a production safety guarantee. Private source stays unlinked; redistribution requires separate review.",
+    "problem": "A blank configured key and a gateway expecting the wrong header can look like the same authentication failure. Guessing against a working route mixes discovery with enforcement.",
+    "how": "Use a separate disposable endpoint with dummy credentials, static mock responses and allowlisted presence/scheme metadata only. The historical guide reports Authorization/Bearer. Validate with a secret-store-backed gateway value before routing, strip the incoming credential before separate managed-identity backend authentication, then restore and clean up.",
+    "contribution": "Individual role unverified; the evidence does not establish sole authorship. This separately authored narrative explains a bounded diagnostic and gateway-validation method using existing platform capabilities. Historical gateway-console, HTTP and client retests are reported by the private guide, not independently rerun. No private guide, policies, screenshots or operational configuration are published.",
+    "categories": [
+      "AI",
+      "Tech"
+    ],
+    "updated": "2026-11-13",
+    "color": "blue",
+    "repo": "",
+    "sourceType": "curated-case-study",
+    "status": "Private implementation · sanitized narrative",
+    "site": "https://ortizjorge639.github.io/case-studies/custom-model-auth-diagnostics.md",
+    "sources": [
+      {
+        "label": "Sanitized case-study narrative (not public code inspection)",
+        "url": "https://ortizjorge639.github.io/case-studies/custom-model-auth-diagnostics.md",
+        "reviewed": "2026-11-13"
+      }
+    ]
   }
 ]

@@ -10,6 +10,7 @@ export const HOST_FILES=Object.freeze([
  'src/projects.ts','src/project-catalog.json','src/stories.ts','src/current-stories.ts','src/screens.ts',
  'data/guide-sources.json','README.md',
  'scripts/source-policy.mjs','src/inventory-story.ts','public/case-studies/inventory-data-assistant.md',
+ 'src/technical-case-stories.ts','public/case-studies/document-evidence-pipeline.md','public/case-studies/custom-model-auth-diagnostics.md',
 ]);
 const root=fileURLToPath(new URL('../',import.meta.url));
 export async function writeHostDirectory(target,{configText}={}) {

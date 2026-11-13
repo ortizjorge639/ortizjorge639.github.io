@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { CURATED_CASE_STUDIES } from './source-policy.mjs';
 const catalog = JSON.parse(await readFile(new URL('../src/project-catalog.json', import.meta.url), 'utf8'));
 
 test('approved landing projects are represented with current public-source boundaries', () => {
@@ -50,9 +51,9 @@ test('every project has public dated sources and explicit problem, implementatio
       const u = new URL(s.url);
       assert.equal(u.protocol,'https:');
       if (p.sourceType === 'curated-case-study') {
-        assert.equal(p.id, 'inventory-data-assistant');
+        assert.ok(Object.hasOwn(CURATED_CASE_STUDIES, p.id));
         assert.equal(p.repo, '');
-        assert.equal(s.url, 'https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md');
+        assert.equal(s.url, CURATED_CASE_STUDIES[p.id].url);
       } else assert.ok(['github.com','v0-just-play-app.vercel.app','firstmind.app','getflowlog.lovable.app'].includes(u.hostname),s.url);
     }
   }

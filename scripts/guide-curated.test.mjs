@@ -1,4 +1,4 @@
-import test from 'node:test';
+import nodeTest from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { projects, repoUrl } from '../src/projects.ts';
@@ -9,8 +9,9 @@ import { renderPage, validateCatalog } from './build-reading.mjs';
 import { validateStories } from './validate-stories.mjs';
 
 const snapshot = () => readFile(new URL('../data/guide-sources.json', import.meta.url), 'utf8').then(JSON.parse);
-const id = 'inventory-data-assistant';
-const url = 'https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md';
+for (const id of ['inventory-data-assistant', 'document-evidence-pipeline', 'custom-model-auth-diagnostics']) {
+const test = (name, fn) => nodeTest(`${id}: ${name}`, fn);
+const url = `https://ortizjorge639.github.io/case-studies/${id}.md`;
 
 test('curated inventory narrative is public evidence without repository eligibility', async () => {
   const p = projects.find(p => p.id === id);
@@ -35,7 +36,7 @@ test('curated inventory narrative is public evidence without repository eligibil
   assert.equal(story.scenes.reduce((n, s) => n + s.duration, 0), 50);
   assert.equal(story.scenes[2].visual.type, 'flow');
   assert.match(JSON.stringify(story), /fictional/i);
-  assert.match(source.text, /not.*measured/i);
+  assert.match(source.text, /not.*measured|not fresh|not.*freshly/i);
 });
 
 test('curated refresh retains the original narrative without any request', async () => {
@@ -114,3 +115,4 @@ test('curated catalog and story cannot acquire private repository links or arbit
     assert.ok(validateStories(stories, projects).length);
   }
 });
+}

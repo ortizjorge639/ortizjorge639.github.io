@@ -1,5 +1,13 @@
-// One approved author-written narrative, never an arbitrary URL/repository ingestion path.
+// Exact approved author-written narratives, never arbitrary URL/repository ingestion paths.
 export const CURATED_CASE_STUDIES = Object.freeze({
+  'document-evidence-pipeline': Object.freeze({
+    url: 'https://ortizjorge639.github.io/case-studies/document-evidence-pipeline.md',
+    file: 'public/case-studies/document-evidence-pipeline.md',
+  }),
+  'custom-model-auth-diagnostics': Object.freeze({
+    url: 'https://ortizjorge639.github.io/case-studies/custom-model-auth-diagnostics.md',
+    file: 'public/case-studies/custom-model-auth-diagnostics.md',
+  }),
   'inventory-data-assistant': Object.freeze({
     url: 'https://ortizjorge639.github.io/case-studies/inventory-data-assistant.md',
     file: 'public/case-studies/inventory-data-assistant.md',
