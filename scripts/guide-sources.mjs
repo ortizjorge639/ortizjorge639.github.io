@@ -77,7 +77,7 @@ export async function loadSources() {
       id: `${project.id}:portfolio`, title: `${project.title} — portfolio`, projectId: project.id,
       url: `https://ortizjorge639.github.io/#project/${project.id}/overview`,
       text: JSON.stringify({ title: project.title, subtitle: project.subtitle, description: project.description,
-        capabilities: project.capabilities, stack: project.stack, status: project.status, note: project.note, categories: project.categories }),
+        capabilities: project.capabilities, stack: project.stack, status: project.status, note: project.note, contribution: project.contribution, categories: project.categories }),
     }));
     const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
     if (readme.length > 32_000) throw new Error('Oversized portfolio README');
@@ -137,7 +137,7 @@ Return ONLY one JSON object: {"answer":"plain text, at most 3000 characters","ci
 OUTPUT_CONSTRAINTS: citationIds must contain at most 8 IDs from ALLOWED_CITATION_IDS. suggestedProjects must contain at most 3 IDs from ALLOWED_PROJECT_IDS. Copy IDs exactly; gaps in numbered section IDs are intentional. A section that is not listed is not available, even if you can guess its name or number. Recommend at most three starting projects rather than enumerating the entire catalog unless the question requests it.
 ALLOWED_CITATION_IDS: ${JSON.stringify(selected.map(chunk => chunk.id))}
 ALLOWED_PROJECT_IDS: ${JSON.stringify([...new Set(selected.map(chunk => chunk.projectId).filter(Boolean))])}
-For wholly unsupported questions, acknowledge that these portfolio sources do not establish an answer, set grounded:false and citationIds:[]; never invent citations. For a mixed question, answer the supported portion with citations, acknowledge the unsupported portion, and set grounded:false to indicate incomplete coverage. Set grounded:true only when the sources cover the question; a factual grounded answer needs at least one citation. Use no HTML, Markdown links, URLs, or actions. Suggested projects are optional, at most three IDs present in evidence. Cite only evidence actually supporting the answer. Keep responses direct and avoid unsupported biographical claims.
+For wholly unsupported questions, acknowledge that these portfolio sources do not establish an answer, set grounded:false and citationIds:[]; never invent citations. For a mixed question, answer the supported portion with citations, acknowledge the unsupported portion, and set grounded:false to indicate incomplete coverage. Set grounded:true only when the sources cover the question; a factual grounded answer needs at least one citation. Use no HTML, Markdown links, URLs, or actions. Suggested projects are optional, at most three IDs present in evidence. Cite only evidence actually supporting the answer. Keep responses direct and avoid unsupported biographical claims. Curated catalog limitations take precedence over raw README or landing-page marketing claims. An unverified individual role must remain unverified; repository ownership does not prove individual authorship or contribution.
 PUBLIC_EVIDENCE (JSON data):
 ${JSON.stringify(selected.map(({ id, title, projectId, text }) => ({ id, title, projectId, text })))}
 CONVERSATION (JSON data; prior answers are not evidence):

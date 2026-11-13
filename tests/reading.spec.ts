@@ -40,6 +40,22 @@ test('hosted model status uses provider-accurate disclosure in the reading guide
   await expect(page.locator('#guide-privacy')).not.toContainText('local CLI');
 });
 
+test('home without JavaScript offers a real static reading entrance', async({browser})=>{
+  const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();
+  await page.goto('/');
+  await page.getByRole('link',{name:'Browse public project notes',exact:true}).click();
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Projects, opened up.');
+  await context.close();
+});
+
+test('failed sketchbook module exposes the static project index instead of reload alone',async({page})=>{
+  await page.route('**/assets/main-*.js',route=>route.abort());
+  await page.goto('/');
+  await expect(page.locator('#entry-message')).toContainText('could not finish loading',{timeout:15000});
+  await page.getByRole('link',{name:'Browse public project notes',exact:true}).click();
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Projects, opened up.');
+});
+
 test('reading search is local, handles hostile input, and keeps keyboard links usable', async ({ page }) => {
   await page.goto('/read/');
   const search=page.getByRole('searchbox', { name: 'Find a project' });

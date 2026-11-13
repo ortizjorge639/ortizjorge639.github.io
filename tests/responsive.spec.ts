@@ -231,9 +231,9 @@ test('archived Flipnotes and date captions fit phones, tablets and short windows
   }
 });
 
-test('all project story templates reflow without losing their controls or sources', async ({ page }) => {
+for (const [width, height] of [[240, 320], [390, 844], [844, 390], [1440, 1000]]) {
+test(`all project story templates reflow without losing their controls or sources at ${width}x${height}`, async ({ page }) => {
   test.setTimeout(90000);
-  for (const [width, height] of [[240, 320], [390, 844], [844, 390], [1440, 1000]]) {
     await page.setViewportSize({ width, height });
     for (const project of projects) {
       const story = projectStories[project.id];
@@ -250,8 +250,8 @@ test('all project story templates reflow without losing their controls or source
       }
       await reachable(page.locator('.story-links a').first());
     }
-  }
 });
+}
 
 test('story state survives foldable-sized resizing and its system diagram keeps real connections', async ({ page }) => {
   const flow = projectStories.repoquest.scenes.find(scene => scene.visual.type === 'flow')!;

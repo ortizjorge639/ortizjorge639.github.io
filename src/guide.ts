@@ -103,6 +103,11 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
   const configuredApi = (import.meta as ImportMeta & { env?: Record<string,string> }).env?.VITE_GUIDE_API ?? '';
   const publicApi = /^https:\/\/[a-z0-9-]+\.azurewebsites\.net$/.test(configuredApi) ? configuredApi : '';
   const api = publicApi;
+  const hostedUnavailable = 'Live answers are temporarily unavailable. Browse the public project notes below.';
+  if (publicApi) {
+    find('#guide-connection').textContent = 'Azure OpenAI · privacy';
+    find('#guide-privacy').textContent = 'Questions, up to six recent messages and relevant public project excerpts are sent to Azure OpenAI only when you send. This site stores no chat transcripts. Microsoft may process flagged content for abuse monitoring and human review; Global Standard may process outside the resource region. Do not send sensitive information. This is AI, not Jorge; citations identify supplied notes, not a guarantee of factual correctness. Chat stays in tab memory and resets on page changes or reload. The service has a small global budget and may be unavailable.';
+  }
   const transcript: Message[] = [];
   let current: Screen = { kind: 'home' };
   let contextProjectId: string | null = null;
@@ -221,7 +226,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
     try {
       const response = await fetch(`${api}/api/guide/status`, { signal: controller.signal, credentials: 'omit' });
       const data: unknown = response.ok ? await response.json() : null;
-      if (!isRecord(data) || data.available !== true || !['copilot-cli','model-api'].includes(String(data.mode)) || (publicApi && (data.mode !== 'model-api' || data.provider !== 'azure-openai'))) throw new Error('The local Copilot bridge is not running. Start npm run dev:guide, then reconnect.');
+      if (!isRecord(data) || data.available !== true || !['copilot-cli','model-api'].includes(String(data.mode)) || (publicApi && (data.mode !== 'model-api' || data.provider !== 'azure-openai'))) throw new Error(publicApi ? hostedUnavailable : 'The local Copilot bridge is not running. Start npm run dev:guide, then reconnect.');
       available = true;
       send.disabled = !!request;
       feedbackMessage('');
@@ -231,7 +236,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
       } else find('#guide-connection').textContent = 'Local Copilot CLI · privacy';
     } catch (error) {
       if (health !== controller) return;
-      const message = controller.signal.aborted ? 'The local bridge did not respond. Start npm run dev:guide, then reconnect.'
+      const message = publicApi ? hostedUnavailable : controller.signal.aborted ? 'The local bridge did not respond. Start npm run dev:guide, then reconnect.'
         : error instanceof Error && !error.message.includes('JSON') ? error.message
           : 'The local Copilot bridge is not running. Start npm run dev:guide, then reconnect.';
       feedbackMessage(message, false, true);
@@ -285,7 +290,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
   async function ask(question: Question, repeating = false) {
     if (request) return;
     if (!available) {
-      feedbackMessage('Connect the local Copilot bridge before sending a question.', false, local);
+      feedbackMessage(publicApi ? hostedUnavailable : 'Connect the local Copilot bridge before sending a question.', false, !!publicApi || local);
       return;
     }
     const controller = new AbortController();
@@ -309,7 +314,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
         signal: controller.signal, body: JSON.stringify(question),
       });
       const data: unknown = await response.json();
-      if (!response.ok) throw new Error(isRecord(data) && typeof data.error === 'string' ? data.error : 'The local guide could not answer. Please try again.');
+      if (!response.ok) throw new Error(isRecord(data) && typeof data.error === 'string' ? data.error : (publicApi ? hostedUnavailable : 'The local guide could not answer. Please try again.'));
       const answer = readAnswer(data);
       if (answer.contextProjectId !== question.projectId) throw new Error('The answer did not match the requested project context. Please try again.');
       if (request !== controller) return;
@@ -326,7 +331,7 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
       root.dataset.phase = controller.signal.aborted && controller.signal.reason !== 'timeout' ? 'idle' : 'error';
       const message = controller.signal.aborted
         ? controller.signal.reason === 'timeout' ? 'The answer took too long. Try a shorter question.' : 'Stopped. Your question is still here if you want to try again.'
-        : error instanceof SyntaxError ? 'The local bridge returned an unreadable response. Please reconnect.'
+        : publicApi ? hostedUnavailable : error instanceof SyntaxError ? 'The local bridge returned an unreadable response. Please reconnect.'
           : error instanceof Error ? error.message : 'Could not reach the local guide. Please reconnect.';
       feedbackMessage(message, true);
       frog.setMood('puzzled');

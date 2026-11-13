@@ -44,8 +44,8 @@ export async function boundedJson(response, maxBytes=64_000) {
   for await (const chunk of response.body) { size+=chunk.length; if (size>maxBytes) throw new Error('provider_response_bound'); chunks.push(chunk); }
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw new Error('provider_response_invalid'); }
 }
-export async function executeModel(prompt,{config,reserveCall,token=identityToken,fetchImpl=fetch,signal,outputTokens=MODEL_LIMITS.outputTokens}={}) {
-  const active=()=>{if(!config.enabled || !Number.isFinite(Date.parse(config.expires)) || Date.now()>=Date.parse(config.expires))throw new Error('disabled');};
+export async function executeModel(prompt,{config,reserveCall,token=identityToken,fetchImpl=fetch,signal,isActive=()=>true,outputTokens=MODEL_LIMITS.outputTokens}={}) {
+  const active=()=>{if(!config.enabled || !isActive() || !Number.isFinite(Date.parse(config.expires)) || Date.now()>=Date.parse(config.expires))throw new Error('disabled');};
   active();
   const bytes=Buffer.byteLength(prompt,'utf8');
   if (bytes>MODEL_LIMITS.promptBytes || !Number.isInteger(outputTokens) || outputTokens<1 || outputTokens>MODEL_LIMITS.outputTokens) throw new Error('prompt_or_output_bound');

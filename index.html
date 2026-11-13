@@ -25,8 +25,8 @@
       @media (prefers-reduced-motion: reduce) { .entry-frog { animation: none; } }
       .entry-wordmark { font: bold clamp(18px, 4vw, 26px)/1.2 ui-monospace, monospace; }
       .entry-center p { margin: 16px 0 0; font: inherit; }
-      #entry-reload { display: inline-block; color: #fffdf6; padding: 12px; }
-      #entry-reload:focus-visible { outline: 2px solid #fffdf6; outline-offset: 3px; }
+      #entry-reload, #entry-read { display: inline-block; color: #fffdf6; padding: 12px; }
+      #entry-reload:focus-visible, #entry-read:focus-visible { outline: 2px solid #fffdf6; outline-offset: 3px; }
     </style>
   </head>
   <body>
@@ -43,14 +43,16 @@
         <span class="entry-wordmark">Joji's Sketchbook</span>
         <p id="entry-message">Opening studio…</p>
         <a id="entry-reload" href="" hidden>Reload</a>
+        <a id="entry-read" href="/read/" hidden>Browse public project notes</a>
       </div>
     </div>
-    <noscript><style>#entry-message{display:none}.entry-frog{animation:none}</style><p style="position:fixed;bottom:24px;z-index:101;color:#fffdf6;padding:16px">This interactive portfolio needs JavaScript. <a style="color:inherit" href="https://github.com/ortizjorge639">Explore Jorge's projects on GitHub</a>.</p></noscript>
+    <noscript><style>#entry-message{display:none}.entry-frog{animation:none}</style><p style="position:fixed;bottom:24px;z-index:101;color:#fffdf6;padding:16px">The sketchbook needs JavaScript, but the project notes do not. <a style="color:inherit" href="/read/">Browse public project notes</a> or <a style="color:inherit" href="https://github.com/ortizjorge639">explore Jorge's projects on GitHub</a>.</p></noscript>
     <script>
       window.setTimeout(function () {
         if (!document.documentElement.hasAttribute('data-app-ready')) {
           document.getElementById('entry-message').textContent = 'The studio could not finish loading. Please reload.';
           document.getElementById('entry-reload').hidden = false;
+          document.getElementById('entry-read').hidden = false;
           document.querySelector('.entry-frog').style.animation = 'none';
         }
       }, 10000);

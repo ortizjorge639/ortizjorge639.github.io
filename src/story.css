@@ -51,7 +51,7 @@
 .story-outcome-art { flex: 0 0 35%; max-width: 160px; }
 .story-outcome-art .story-project-symbol { height: auto; width: 100%; }
 .story-outcome strong { font: 27px/1.05 var(--ui); text-wrap: balance; }
-.story-links { display: flex; gap: 8px 20px; flex-wrap: wrap; }
+.story-links { display: flex; gap: 8px 20px; flex-wrap: wrap; padding-left: 64px; }
 .story-links a { display: inline-flex; gap: 6px; align-items: center; min-height: 32px; font: 21px var(--ui); text-decoration: underline; text-underline-offset: 3px; }
 .story-links .icon { width: 16px; height: 16px; }
 .story-controls { display: flex; align-items: center; justify-content: flex-end; gap: 4px; padding: 3px 8px 3px 66px; border-top: 1px solid var(--line); background: var(--paper); color: var(--blue); }

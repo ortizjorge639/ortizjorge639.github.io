@@ -57,7 +57,7 @@ export function createHostedServer({config,store=config.enabled?cosmosStore(conf
       if(inputTokens>MODEL_LIMITS.promptBytes+256)throw Error('invalid_input');
       const receipt=await reserve(store,config,{kind:'dispatch',inputTokens,outputTokens:MODEL_LIMITS.outputTokens});
       check();
-      const result=await executor(prompt,{config,signal:controller.signal,reserveCall:async()=>{},token:undefined});
+      const result=await executor(prompt,{config,signal:controller.signal,isActive:()=>!kill(),reserveCall:async()=>{},token:undefined});
       const answer=validateAnswer(result,selected,input.projectId);
       await completeReservation(store,config,receipt);
       return send(200,answer);

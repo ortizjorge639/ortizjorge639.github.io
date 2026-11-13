@@ -20,6 +20,14 @@ test('generator rejects traversal, unsafe links, duplicate slugs and missing evi
   assert.throws(()=>reading.validateCatalog([catalog[0],catalog[0]]));
 });
 
+test('individual contribution remains explicitly unverified when source evidence establishes only the artifact',()=>{
+  for(const p of catalog) {
+    assert.match(p.contribution,/individual role (?:is )?unverified/i,p.id);
+    assert.match(reading.renderPage(catalog,p),/individual role (?:is )?unverified/i,p.id);
+  }
+  assert.match(catalog.find(p=>p.id==='repoquest').contribution,/upstream.*qwibitai\/repoquest/i);
+});
+
 test('rendered project copy and source labels cannot become executable markup', () => {
   const clone=structuredClone(catalog);
   const p=clone[0];

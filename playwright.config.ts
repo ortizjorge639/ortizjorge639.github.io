@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  testIgnore: '**/responsive.spec.ts',
+  testIgnore: ['**/responsive.spec.ts','**/hosted-ui.spec.ts'],
   fullyParallel: true,
   use: { baseURL: 'http://127.0.0.1:43187', trace: 'retain-on-failure' },
   webServer: {

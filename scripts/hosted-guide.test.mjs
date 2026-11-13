@@ -124,6 +124,22 @@ test('disconnect during corpus loading and expiry during commit never dispatch p
   }
 });
 
+test('kill activated during managed identity acquisition refuses a fresh provider POST',async()=>{
+  const config=active();let killed=false,calls=0;
+  await assert.rejects(module.executeModel('Public prompt',{config,reserveCall:async()=>{},isActive:()=>!killed,token:async()=>{killed=true;return 'fixture';},fetchImpl:async()=>{calls++;return new Response('{}');}}),/disabled/);
+  assert.equal(calls,0);
+});
+
+test('HTTP kill during real adapter identity await burns reservation without dispatch',async t=>{
+  const {createHostedServer}=await import('./hosted-server.mjs');
+  const config=active();let killed=false,calls=0,value=module.initialLedger(config),version=0;
+  const store={read:async()=>({value:structuredClone(value),etag:String(version)}),replace:async(next,etag)=>{if(etag!==String(version))return false;value=structuredClone(next);version++;return true;}};
+  const server=createHostedServer({config,store,kill:()=>killed,executor:(prompt,options)=>module.executeModel(prompt,{...options,token:async()=>{killed=true;return 'fixture';},fetchImpl:async()=>{calls++;throw Error('must not fetch');}})});
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(()=>{server.closeAllConnections();server.close();});
+  const response=await fetch(`http://127.0.0.1:${server.address().port}/api/guide/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:'What is Just Play?',projectId:'just-play',history:[]})});
+  assert.equal(response.status,503);assert.equal(calls,0);assert.equal(value.requests,1);assert.equal(value.leaseUntil,Number.MAX_SAFE_INTEGER);
+});
+
 test('direct-model config defaults disabled and rejects unsafe or ambiguous activation', () => {
   assert.equal(typeof module.parseConfig, 'function', 'production config adapter must exist');
   assert.equal(module.parseConfig('frog:\n  enabled: false\n').enabled, false);

@@ -504,4 +504,6 @@ for (const project of projects) {
   const reviewed = project.sources?.find(source => source.url.startsWith('https://github.com/'));
   if (story && reviewed) story.sources[0].url = reviewed.url;
 }
-projectStories['bot-meetings-dotnet'].scenes[5].body = 'Preview, not production-ready. Requires tenant admin consent, a transcript access policy, and your own service configuration. Use non-sensitive test meetings only.';
+const meetingPreview = projectStories['bot-meetings-dotnet'].scenes[5];
+meetingPreview.body = 'Preview, not production-ready. Requires tenant admin consent, a transcript access policy, and your own service configuration. Use non-sensitive test meetings only.';
+meetingPreview.visual = { type: 'outcome', result: 'Preview, not production-ready. Use non-sensitive test meetings only; one App Service instance.' };

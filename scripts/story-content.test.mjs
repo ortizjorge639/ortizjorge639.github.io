@@ -62,6 +62,15 @@ test('stories retain project-specific limitations rather than implying shipped o
   }
 });
 
+test('meeting preview final body and outcome both restrict use to non-sensitive tests',()=>{
+  const final=projectStories['bot-meetings-dotnet'].scenes.at(-1);
+  for(const copy of [final.body,final.visual.result]) {
+    assert.match(copy,/preview.*not production-ready/i);
+    assert.match(copy,/non-sensitive test meetings only/i);
+    assert.doesNotMatch(copy,/before using real meeting transcripts/i);
+  }
+});
+
 test('rejects missing, unmatched, and mis-keyed stories', () => {
   rejects(stories => { delete stories.repoquest; }, /repoquest: missing story/);
   rejects(stories => { stories.unapproved = structuredClone(stories.repoquest); }, /unmatched story/);
