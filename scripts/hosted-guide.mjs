@@ -82,7 +82,13 @@ export async function completeReservation(store,config,receipt) {
 
 export async function identityToken(resource,signal,env=process.env,fetchImpl=fetch) {
   const endpoint=new URL(env.IDENTITY_ENDPOINT || 'http://invalid');
-  if (!env.IDENTITY_HEADER || endpoint.protocol!=='http:' || !['127.0.0.1','169.254.129.1','169.254.129.2'].includes(endpoint.hostname)) throw new Error('managed_identity_unavailable');
+  // App Service owns IDENTITY_ENDPOINT and its rotating SSRF-mitigation header.
+  // Its IP changes on redeploy; never derive this URL/header from visitor input.
+  // Follow that platform contract, with extra local numeric socket restrictions,
+  // rather than guessing an Azure allocation IP or allowing arbitrary URLs.
+  const knownHost=['127.0.0.1','169.254.129.1','169.254.129.2'].includes(endpoint.hostname);
+  const platformSocket=/^169\.254\.(?:\d{1,3})\.(?:\d{1,3})$/.test(endpoint.hostname) && endpoint.port==='8081';
+  if (!env.IDENTITY_HEADER || endpoint.protocol!=='http:' || endpoint.username || endpoint.password || endpoint.search || endpoint.hash || !/^\/msi\/token$/i.test(endpoint.pathname) || !(knownHost || platformSocket)) throw new Error('managed_identity_unavailable');
   endpoint.searchParams.set('api-version','2019-08-01'); endpoint.searchParams.set('resource',resource);
   const data=await boundedJson(await fetchImpl(endpoint,{headers:{'X-IDENTITY-HEADER':env.IDENTITY_HEADER},signal,redirect:'error'}),16000);
   if(typeof data.access_token!=='string' || !data.access_token) throw new Error('managed_identity_unavailable');
