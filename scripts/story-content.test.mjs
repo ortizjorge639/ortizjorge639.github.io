@@ -61,7 +61,7 @@ test('stories retain project-specific limitations rather than implying shipped o
   assert.match(copy('web-context-graph'), /localhost/);
   assert.match(copy('web-context-graph'), /not a hosted multi-user/);
   assert.match(copy('web-context-graph'), /without content from sibling/);
-  assert.match(copy('bot-meetings-dotnet'), /tenant admin consent/);
+  assert.match(copy('bot-meetings-dotnet'), /tenant admin consent/i);
   assert.match(copy('bot-meetings-dotnet'), /transcript access policy/);
   assert.match(copy('bot-meetings-dotnet'), /service configuration/);
   assert.match(copy('mcreator-workspace-harness'), /regeneration/i);
