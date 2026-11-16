@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      // Redirect old bookmarks before waiting for any styles, fonts or modules.
+      if (location.hash) location.replace('/sketchbook/' + location.search + location.hash);
+    </script>
+    <meta name="theme-color" content="#202522" />
+    <meta name="description" content="Hi, I’m Jorge Ortiz Flores. Experiments in AI, data, and creative tools. Read the project notes or explore the playful sketchbook." />
+    <meta property="og:title" content="Jorge Ortiz Flores — notes & experiments" />
+    <meta property="og:description" content="AI, data, and creative tools. Two ways into the work: quiet project notes or a playful sketchbook." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ortizjorge639.github.io/" />
+    <meta property="og:image" content="https://ortizjorge639.github.io/social.png" />
+    <link rel="canonical" href="https://ortizjorge639.github.io/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/landing.css" />
+    <title>Jorge Ortiz Flores — notes & experiments</title>
+  </head>
+  <body class="landing-app">
+    <div class="front-door">
+      <header class="landing-header"><span>Jorge Ortiz Flores</span><span class="landing-years">2026–2027</span></header>
+      <main id="landing-content">
+        <img class="landing-portrait" src="/images/jorge-portrait.webp" width="120" height="120" alt="Illustrated portrait of Jorge, smiling behind round glasses" fetchpriority="high" />
+        <h1>Hi, I’m Jorge!</h1>
+        <p class="landing-lead">I’m interested in making complicated tools easier to use.</p>
+        <p class="landing-intro">Exploring AI, data, and creative tools through experiments, public notes, and plenty of iteration.</p>
+        <nav class="landing-paths" aria-label="Explore the work">
+          <a class="landing-path" href="/read/"><span><strong>Read the notes</strong><small>The problems, the work, and the honest edges.</small></span><span aria-hidden="true">↗</span></a>
+          <a class="landing-path" href="/sketchbook/#home"><span><strong>Open the sketchbook</strong><small>A playful portfolio. Explore, watch, leave some ink.</small></span><span aria-hidden="true">↗</span></a>
+        </nav>
+      </main>
+      <footer class="landing-footer">
+        <nav aria-label="Find Jorge online"><a href="https://github.com/ortizjorge639" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="https://www.linkedin.com/in/jorgeortizflores/" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></nav>
+        <div class="landing-ask"><button id="guide-access" aria-expanded="false" hidden>Ask about the work <span aria-hidden="true">↗</span></button><span id="landing-guide-status" role="status"></span></div>
+      </footer>
+      <p class="landing-guide-note" id="landing-guide-note" hidden>Optional AI guide · public project notes, not Jorge. Nothing is sent until you ask.</p>
+    </div>
+    <aside id="reading-guide-host" aria-label="Optional studio guide"></aside>
+    <script type="module" src="/src/landing-entry.ts"></script>
+  </body>
+</html>

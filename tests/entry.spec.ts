@@ -51,7 +51,7 @@ test('button-free spinning splash reveals before any audio and repeats on home r
   await instrumentSound(page);
   await page.clock.install();
   await page.clock.pauseAt(new Date(Date.now() + 1000));
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await page.clock.runFor(100);
   await expect(page.locator('#entry-screen')).toHaveAttribute('data-phase', 'holding');
   await expect(page.locator('#entry-screen')).toBeVisible();
@@ -78,7 +78,7 @@ test('button-free spinning splash reveals before any audio and repeats on home r
 
 test('entry jingle has four square notes followed by two stepped ribbit syllables, once only', async ({ page }) => {
   await instrumentSound(page);
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await expect(page.locator('#entry-screen')).toBeHidden();
   const { notes } = await sound(page);
   expect(notes).toHaveLength(6);
@@ -101,7 +101,7 @@ test('entry jingle has four square notes followed by two stepped ribbit syllable
 
 test('blocked autoplay waits for interaction without blocking entry or queuing duplicate jingles', async ({ page }) => {
   await instrumentSound(page, true);
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await expect(page.locator('#entry-screen')).toBeHidden();
   expect((await sound(page)).notes).toHaveLength(0);
   await expect(page.locator('#sound-toggle')).toHaveAttribute('title', /first interaction/);
@@ -113,7 +113,7 @@ test('blocked autoplay waits for interaction without blocking entry or queuing d
 
 test('muting before unlock cancels the entry sound and mute silences scheduled audio', async ({ page }) => {
   await instrumentSound(page, true);
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await expect(page.locator('#entry-screen')).toBeHidden();
   await page.locator('#sound-toggle').click();
   await expect(page.locator('#sound-toggle')).toHaveAttribute('aria-pressed', 'false');
@@ -121,7 +121,7 @@ test('muting before unlock cancels the entry sound and mute silences scheduled a
   expect((await sound(page)).notes).toHaveLength(0);
   await page.locator('#sound-toggle').click();
   expect((await sound(page)).notes.filter(note => note.type === 'square')).toHaveLength(0);
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await page.reload();
   await expect(page.locator('#entry-screen')).toBeHidden();
   await page.locator('.launcher[href="#projects"]').click();
@@ -134,7 +134,7 @@ test('blue is styled before JavaScript and remains until CSS and fonts settle', 
   let release: (() => void) | undefined;
   const hold = new Promise<void>((resolve) => { release = resolve; });
   await page.route('**/assets/*.js', async (route) => { await hold; await route.continue(); });
-  await page.goto('/', { waitUntil: 'commit' });
+  await page.goto('/sketchbook/', { waitUntil: 'commit' });
   await expect(page.locator('#entry-screen')).toBeVisible();
   expect(await page.locator('#entry-screen').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(49, 87, 188)');
   await expect(page.locator('#app')).toHaveCSS('visibility', 'hidden');
@@ -151,7 +151,7 @@ test('late web fonts use a stable fallback instead of swapping after reveal', as
     contentType: 'text/css', body: "@font-face {font-family: 'VT323'; src: url('https://fonts.gstatic.com/entry-test.woff2') format('woff2'); font-display: swap;}",
   }));
   await page.route('https://fonts.gstatic.com/**', async (route) => { await hold; await route.abort(); });
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.goto('/sketchbook/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#entry-screen')).toBeHidden({ timeout: 7000 });
   await expect(page.locator('html')).toHaveAttribute('data-font-fallback', 'true');
   const font = await page.locator('.studio-logo').evaluate(el => getComputedStyle(el).fontFamily);
@@ -162,7 +162,7 @@ test('late web fonts use a stable fallback instead of swapping after reveal', as
 test('reduced motion skips the blue delay while sound remains an independent preference', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await instrumentSound(page);
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await expect(page.locator('#entry-screen')).toBeHidden();
   await expect(page.locator('#sound-toggle')).toHaveAttribute('aria-pressed', 'true');
   expect((await sound(page)).notes).toHaveLength(6);
@@ -172,7 +172,7 @@ test('greeting starts at the audio-clock ribbit, not while the jingle plays', as
   await instrumentSound(page);
   await page.clock.install();
   await page.clock.pauseAt(new Date(Date.now() + 1000));
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await page.clock.runFor(1600);
   await expect(page.locator('#entry-screen')).toBeHidden();
   const notes = (await sound(page)).notes;
@@ -190,7 +190,7 @@ test('autoplay-delayed ribbit carries its greeting across navigation and mute ca
   await instrumentSound(page, true);
   await page.clock.install();
   await page.clock.pauseAt(new Date(Date.now() + 1000));
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await page.clock.runFor(1600);
   expect((await sound(page)).notes).toHaveLength(0);
   await page.locator('.launcher[href="#projects"]').click();
@@ -199,7 +199,7 @@ test('autoplay-delayed ribbit carries its greeting across navigation and mute ca
   await page.clock.runFor(250);
   await expect(page.locator('.frog-sprite')).toHaveAttribute('data-pose', /crouch|leap/);
   await page.clock.runFor(650);
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await page.reload();
   await page.clock.runFor(1600);
   await page.locator('.launcher[href="#projects"]').click();

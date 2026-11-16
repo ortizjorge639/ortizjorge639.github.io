@@ -12,10 +12,10 @@
     "test:responsive": "playwright test --config=playwright.responsive.config.ts --workers=3",
     "validate:stories": "node --experimental-strip-types scripts/validate-stories.mjs",
     "test:stories": "node --experimental-strip-types --test scripts/story-*.test.mjs",
-    "build": "npm run validate:stories && tsc --noEmit && vite build && node scripts/build-reading.mjs",
+    "build": "npm run validate:stories && tsc --noEmit && vite build && node scripts/build-reading.mjs && node scripts/build-front-door.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "test": "playwright test",
-    "test:unit": "node --test scripts/catalog.test.mjs scripts/reading.test.mjs scripts/reading-depth.test.mjs",
+    "test:unit": "node --test scripts/catalog.test.mjs scripts/reading.test.mjs scripts/reading-depth.test.mjs scripts/front-door.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

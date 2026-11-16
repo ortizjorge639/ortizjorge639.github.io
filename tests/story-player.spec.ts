@@ -17,9 +17,9 @@ async function goFrame(page: Page, count: number) {
   for (let i = 0; i < count; i++) await page.getByRole('button', { name: 'Next frame', exact: true }).click();
 }
 
-test('all catalog projects expose the same six-frame data-driven player and verified source links', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  for (const project of projects) {
+for (const project of projects) {
+  test(`${project.id} exposes its six-frame player and verified source links`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await ready(page, `#project/${project.id}/overview`);
     const story = projectStories[project.id];
     for (let i = 0; i < story.scenes.length; i++) {
@@ -44,8 +44,8 @@ test('all catalog projects expose the same six-frame data-driven player and veri
     await expect(page.getByRole('button', { name: 'Next frame', exact: true })).toBeDisabled();
     await expect(page.locator('.story-links a')).toHaveCount(Number(!!repoUrl(project)) + Number(!!project.site));
     await expect(page.locator('.story-links a').first()).toHaveAttribute('href', repoUrl(project) || project.site!);
-  }
-});
+  });
+}
 
 test('manual upper-screen navigation never alters the catalog or its scroll and selection', async ({ page }) => {
   await ready(page);

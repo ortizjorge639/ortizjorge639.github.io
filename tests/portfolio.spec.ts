@@ -109,7 +109,7 @@ test('home social row uses labeled logo buttons with confirmed profile destinati
 test('opening is paced on reload and bypassed by deep links', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-09-16T12:00:00Z') });
   await page.clock.pauseAt(new Date('2026-09-16T12:00:01Z'));
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await page.clock.runFor(100);
   await assertScreen(page, 'opening');
   await expect(page.locator('#entry-screen button')).toHaveCount(0);
@@ -125,7 +125,7 @@ test('opening is paced on reload and bypassed by deep links', async ({ page }) =
   const direct = await page.context().newPage();
   await direct.goto('/#project/repoquest/overview');
   await assertScreen(direct, 'project');
-  await direct.goto('/');
+  await direct.goto('/sketchbook/');
   await direct.clock.runFor(1700);
   await assertScreen(direct, 'home');
   await direct.close();
@@ -135,7 +135,7 @@ test('entry no longer depends on session storage', async ({ page }) => {
   await page.addInitScript(() => {
     Storage.prototype.setItem = () => { throw new Error('Storage blocked'); };
   });
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await assertScreen(page, 'home');
   await expect(page.locator('#app-notice')).toBeHidden();
   await page.locator('.launcher[href="#projects"]').click();
@@ -331,7 +331,7 @@ test('motion has bounded durations, reduced-motion bypasses it, and sound starts
   });
   expect(durations).toEqual([160]);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await assertScreen(page, 'home');
   await page.locator('.launcher[href="#projects"]').click();
   expect(await page.locator('#lower-content').evaluate((element) => element.getAnimations().length)).toBe(0);
