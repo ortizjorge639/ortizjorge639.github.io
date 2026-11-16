@@ -64,10 +64,10 @@ export function renderPage(catalog, project, assets = '') {
   const toc = project ? `<aside class="on-this-page" aria-label="On this page"><p>On this page</p>${sections.map((s,i)=>i===1&&!project.problem?'':link(`#${anchors[i]}`,s)).join('')}</aside>` : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${e(project?.description ?? 'Public project notes by Jorge: context, implementation, limitations and sources.')}"><meta name="theme-color" content="#fffdf8"><title>${e(title)} — Joji’s project notes</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/read/reading.css">${assets}</head><body class="reading-app" data-project="${e(project?.id ?? '')}">
   <a class="skip-link" href="#content">Skip to content</a>
-  <header class="reading-header">${link('/read/',"joji’s project notes",'class="reading-brand"')}<nav aria-label="Site navigation">${link('/read/','Projects')}${link('/','Sketchbook ↗')}</nav></header>
+  <header class="reading-header">${link('/read/',"joji’s project notes",'class="reading-brand"')}<nav aria-label="Site navigation">${link('/read/','Projects')}${link('/','Home')}${link('/sketchbook/#home','Sketchbook ↗')}</nav></header>
   <div class="reading-layout"><aside class="project-nav"><details><summary>Browse projects</summary><nav aria-label="Project navigation"><ul><li>${link('/read/','Start here',!project?'aria-current="page"':'')}</li>${nav}</ul></nav></details></aside>
   <main id="content" tabindex="-1">${body}</main>${toc}</div>
-  <footer>Built with curiosity. Published sources, clear limits. ${link('/','Back to play ↗')}</footer>
+  <footer>Built with curiosity. Published sources, clear limits. ${link('/sketchbook/#home','Back to play ↗')}</footer>
   <aside id="reading-guide-host" aria-label="Optional studio guide"><button id="guide-access" aria-label="Show studio guide" hidden>Guide</button></aside>
   </body></html>`;
 }

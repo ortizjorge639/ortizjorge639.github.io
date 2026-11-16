@@ -43,14 +43,14 @@ test('hosted model status uses provider-accurate disclosure in the reading guide
 test('home without JavaScript offers a real static reading entrance', async({browser})=>{
   const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();
   await page.goto('/');
-  await page.getByRole('link',{name:'Browse public project notes',exact:true}).click();
+  await page.getByRole('link',{name:'Read the notes',exact:false}).click();
   await expect(page.getByRole('heading',{level:1})).toHaveText('Projects, opened up.');
   await context.close();
 });
 
 test('failed sketchbook module exposes the static project index instead of reload alone',async({page})=>{
   await page.route('**/assets/main-*.js',route=>route.abort());
-  await page.goto('/');
+  await page.goto('/sketchbook/');
   await expect(page.locator('#entry-message')).toContainText('could not finish loading',{timeout:15000});
   await page.getByRole('link',{name:'Browse public project notes',exact:true}).click();
   await expect(page.getByRole('heading',{level:1})).toHaveText('Projects, opened up.');

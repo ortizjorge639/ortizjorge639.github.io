@@ -12,7 +12,7 @@ import { validateStories } from './validate-stories.mjs';
 const snapshot = () => readFile(new URL('../data/guide-sources.json', import.meta.url), 'utf8').then(JSON.parse);
 for (const id of Object.keys(CURATED_CASE_STUDIES)) {
 const test = (name, fn) => nodeTest(`${id}: ${name}`, fn);
-const url = `https://ortizjorge639.github.io/case-studies/${id}.md`;
+const url = CURATED_CASE_STUDIES[id].url;
 
 test('curated inventory narrative is public evidence without repository eligibility', async () => {
   const p = projects.find(p => p.id === id);

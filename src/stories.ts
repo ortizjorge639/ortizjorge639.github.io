@@ -251,26 +251,22 @@ export const projectStories: Record<string, ProjectStory> = {
   'bot-meetings-dotnet': {
     projectId: 'bot-meetings-dotnet',
     sources: [{
-      id: 'meetings-readme',
-      title: 'Meeting Transcript Copilot README',
-      url: 'https://github.com/ortizjorge639/bot-meetings-dotnet/blob/3326539385fa9f9c6412e8f1943302b0e4f17616/README.md',
-    }, {
-      id: 'meetings-summaries',
-      title: 'Scheduled summaries and November 10 pilot acceptance',
-      url: 'https://github.com/ortizjorge639/bot-meetings-dotnet/blob/3326539385fa9f9c6412e8f1943302b0e4f17616/docs/scheduled-summaries.md',
+      id: 'meetings-narrative',
+      title: 'Sanitized historical meeting-assistant narrative (not code proof)',
+      url: 'https://ortizjorge639.github.io/case-studies/meeting-assistant.md',
     }],
     scenes: [
       {
         id: 'find-the-discussion', beat: 'need', duration: 8,
         headline: 'Ask during the meeting, or catch up afterward',
-        body: 'Meeting Copilot can answer from captured live captions or completed Graph transcripts, with citations naming the speakers and times.',
+        body: 'Historical preview: cited answers from live captions or Graph transcripts. This sanitized narrative is not public code inspection or current application proof.',
         visual: { type: 'contrast', before: 'Search through captions or a completed transcript', after: 'Ask a cited question in the original Teams meeting chat' },
-        sources: ['meetings-readme'],
+        sources: ['meetings-narrative'],
       },
       {
         id: 'ready-then-ask', beat: 'approach', duration: 8,
         headline: 'Capture captions, then ask the bot',
-        body: 'An optional ACS browser participant captures finalized captions. It does not answer questions: mention Meeting Copilot in the meeting chat.',
+        body: 'Historically, an optional, default-off ACS browser participant captured finalized captions. Actual bot mentions, not the capture participant, invoked Q&A.',
         visual: {
           type: 'steps',
           items: [
@@ -279,12 +275,12 @@ export const projectStories: Record<string, ProjectStory> = {
             { title: 'Continue afterward', detail: 'Prefer the completed transcript, otherwise recent ended-session captions.' },
           ],
         },
-        sources: ['meetings-readme'],
+        sources: ['meetings-narrative'],
       },
       {
         id: 'transcript-to-answer', beat: 'flow', duration: 9,
         headline: 'Captions or transcript chunks supply the context',
-        body: 'Live questions prefer captured captions. After the session, use its completed Graph transcript or recent ended captions. Selected chunks go to Azure OpenAI.',
+        body: 'Historical flow: live questions preferred captured captions; ended sessions preferred their Graph transcript, otherwise recent ended captions. Chunks supplied model context.',
         visual: {
           type: 'flow',
           nodes: [
@@ -300,12 +296,12 @@ export const projectStories: Record<string, ProjectStory> = {
             { from: 'openai', to: 'chat-answer' },
           ],
         },
-        sources: ['meetings-readme'],
+        sources: ['meetings-narrative'],
       },
       {
         id: 'bot-retrieval-model', beat: 'build', duration: 8,
         headline: 'Separate the bot, retrieval, and model roles',
-        body: '.NET handles Teams activity; ACS captures live captions; Graph retrieves completed transcripts. Azure OpenAI generates answers and optional summaries.',
+        body: 'Published descriptions assign .NET to Teams activity, ACS to captions, Graph to transcripts and Azure OpenAI to answers/summaries. Individual role unverified.',
         visual: {
           type: 'roles',
           items: [
@@ -314,12 +310,12 @@ export const projectStories: Record<string, ProjectStory> = {
             { name: 'Azure OpenAI', role: 'Cited Q&A and source-linked summary drafts' },
           ],
         },
-        sources: ['meetings-readme'],
+        sources: ['meetings-narrative'],
       },
       {
         id: 'retrieval-boundaries', beat: 'details', duration: 9,
         headline: 'Optional updates as the meeting unfolds',
-        body: 'Opt-in rolling and meeting-to-date summaries passed a scoped November 10 pilot. Disabled by default; a later summary still omitted a corrected value.',
+        body: 'Historical rolling and meeting-to-date summaries: a scoped pilot was reported accepted. Disabled by default; a later summary omitted a corrected value.',
         visual: {
           type: 'steps',
           items: [
@@ -328,14 +324,14 @@ export const projectStories: Record<string, ProjectStory> = {
             { title: 'Versioned instructions', detail: 'Use packaged files or optional private Blob instructions; unknown owners and dates stay unknown.' },
           ],
         },
-        sources: ['meetings-readme', 'meetings-summaries'],
+        sources: ['meetings-narrative'],
       },
       {
         id: 'tenant-setup-required', beat: 'use', duration: 8,
-        headline: 'A reusable sample with administrator setup',
-        body: 'Based on a Microsoft Teams sample. Requires tenant admin consent, a transcript access policy, and your own Teams and Azure service configuration.',
-        visual: { type: 'outcome', result: 'Configure permissions and services in your tenant before using real meeting transcripts.' },
-        sources: ['meetings-readme'],
+        headline: 'A historical preview, not production approval',
+        body: 'Historical preview, not production-ready; non-sensitive test meetings only. No fresh execution. Hypothetical walkthrough only; private implementation not inspectable.',
+        visual: { type: 'outcome', result: 'Historical preview, not production-ready; non-sensitive test meetings only. Tenant admin consent, a transcript access policy and service configuration remain prerequisites; narrative approval is not implementation redistribution permission.' },
+        sources: ['meetings-narrative'],
       },
     ],
   },
@@ -515,6 +511,3 @@ for (const project of projects) {
   const reviewed = project.sources?.find(source => source.url.startsWith('https://github.com/'));
   if (story && reviewed) story.sources[0].url = reviewed.url;
 }
-const meetingPreview = projectStories['bot-meetings-dotnet'].scenes[5];
-meetingPreview.body = 'Preview, not production-ready. Requires tenant admin consent, a transcript access policy, and your own service configuration. Use non-sensitive test meetings only.';
-meetingPreview.visual = { type: 'outcome', result: 'Preview, not production-ready. Use non-sensitive test meetings only; one App Service instance.' };

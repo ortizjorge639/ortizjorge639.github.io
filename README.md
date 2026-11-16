@@ -4,6 +4,15 @@ A screen-based, original flipbook-inspired portfolio for Jorge's public projects
 
 **Website:** https://ortizjorge639.github.io/
 
+## Front door and routes
+
+- `/` is a short, static introduction to Jorge Ortiz Flores (2026–2027), with real links to `/read/` and `/sketchbook/#home`. Its text and navigation do not require JavaScript.
+- `/sketchbook/` retains the interactive portfolio. Legacy `/#…` bookmarks replace themselves with `/sketchbook/#…`, carrying the full hash and any outer query unchanged. Without JavaScript, the landing still offers both destinations, but cannot redirect legacy hashes.
+- `landing-shell.html` and `src/landing-entry.ts` are independent Vite inputs; the initial landing imports no sketchbook, catalog, canvas, guide, or audio code. The optional “Ask about the work” button lazy-loads the existing shared guide on click, uses the same `VITE_GUIDE_API`, and stays silent. Live answers still depend on backend availability; availability status alone is not answer verification.
+- `npm run build` first builds the original `index.html` sketchbook and the reading/landing shells. After generating `/read/`, `scripts/build-front-door.mjs` copies the built sketchbook to `dist/sketchbook/index.html` and promotes the built landing to `dist/index.html`. Assets remain root-relative. The Vite development route adapter mirrors the two entry URLs.
+- The small local portrait (`public/images/jorge-portrait.webp`) is optimized from Jorge’s supplied [Super-site avatar](https://assets.super.so/35c53acb-85f1-45f1-9003-06caf3c90885/images/2b7cc2e8-df4f-4fa0-9cc4-a7958d7d41ee/Notion_Face_Portrait.png?width=640), not generated artwork. The front door uses Libre Franklin through Google Fonts with system fallbacks.
+- `tests/landing.spec.ts` covers static no-JavaScript navigation, idle payload isolation, legacy redirects, fixture-only guide success/errors, and narrow-screen overflow. `scripts/front-door.test.mjs` covers source boundaries and postbuild placement; it is included in `test:unit`.
+
 ## Local development
 
 Requires Node.js 22.12+.

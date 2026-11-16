@@ -28,9 +28,9 @@ test('minimal host package has an explicit public-only allowlist and no CLI or p
   assert.ok(corpus.sourceCount>0,'package independently loads the real public corpus');
   for (const id of Object.keys(CURATED_CASE_STUDIES)) {
    const narrative = corpus.chunks.filter(c => c.projectId === id);
-   assert.ok(narrative.some(c => c.url === `https://ortizjorge639.github.io/case-studies/${id}.md`));
+   assert.ok(narrative.some(c => c.url === CURATED_CASE_STUDIES[id].url));
    assert.ok(narrative.every(c => !c.url.includes('github.com/') && !c.url.includes('gist.')));
-   assert.ok(HOST_FILES.includes(`public/case-studies/${id}.md`));
+   assert.ok(HOST_FILES.includes(CURATED_CASE_STUDIES[id].file));
   }
   assert.equal(JSON.parse(await readFile(path.join(target,'package.json'),'utf8')).type,'module');
   await assert.rejects(writeHostDirectory(target,{configText:'frog:\n  enabled: false\n'}),/exist/i);

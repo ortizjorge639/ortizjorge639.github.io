@@ -176,10 +176,10 @@
   "bot-meetings-dotnet": {
     "orientation": {
       "question": "How does an answer stay connected to what was actually said?",
-      "answer": "During an active meeting, answers prefer that session’s captured final captions, with completed transcripts as fallback. After meeting end, they prefer that occurrence’s completed transcript, otherwise recent scoped ended-session captions. Speaker/time references preserve the source boundary."
+      "answer": "In the historical preview, active sessions preferred captured final captions; ended sessions preferred the matching completed transcript, otherwise recent scoped captions. Speaker/time references supported checking the material, not completeness. The private implementation is not inspectable here."
     },
     "architecture": {
-      "scope": "A preview meeting assistant with optional capture and summary paths; not every path is enabled by default.",
+      "scope": "Historical preview architecture from previously published descriptions; optional live capture and summaries were default-off. No fresh execution or private implementation inspection.",
       "nodes": [
         {
           "id": "meeting",
@@ -230,7 +230,7 @@
         }
       ],
       "boundary": "The model does not certify completeness. The summary pilot is off by default; single-instance JSON storage is not a production meeting-data control.",
-      "caption": "Conceptual system map, authored from the reviewed sources. Components and labeled connections are also the text equivalent; this is not a deployment capture."
+      "caption": "Conceptual historical system map from the sanitized narrative, not a deployment capture or accessible implementation/source proof."
     },
     "decisions": [
       {
@@ -256,12 +256,13 @@
     },
     "evidence": {
       "established": [
-        "Public documentation describes caption/transcript selection and citation-bearing answers.",
-        "A two-meeting pilot was accepted; a later summary omitted a corrected value, limiting the claim."
+        "Previously published descriptions cover caption/transcript selection and citation-bearing answers; the separate sanitized narrative preserves that historical account.",
+        "The published account reported a scoped two-meeting pilot accepted, followed by a summary that omitted a corrected value. No fix is claimed."
       ],
       "notEstablished": [
-        "Production approval, broad summary completeness, long-meeting or restart accuracy.",
-        "A fresh live Teams or Graph run during portfolio preparation."
+        "Current private implementation behavior, individual authorship or permission to redistribute implementation.",
+        "Production approval, broad summary completeness, long-meeting, restart or multi-speaker accuracy.",
+        "Any fresh Teams, ACS, Graph or model execution during narrative preparation; the narrative is not code/source proof."
       ]
     }
   },
