@@ -92,6 +92,7 @@ test('ask explicitly lazy-loads the shared quiet guide with grounded fixture sou
   await expect(page.locator('.guide-root')).toHaveCount(0);
   await page.locator('#guide-access').click();
   await expect(page.locator('#guide-panel')).toBeVisible();
+  await expect(page.locator('#guide-access')).toHaveAccessibleName('Ask about the work — Minimize studio guide');
   await expect(page.locator('#guide-send')).toBeEnabled();
   expect(questions).toEqual([]);
   await page.getByLabel('Your question', { exact: true }).fill('What is Lineage?');
@@ -101,7 +102,9 @@ test('ask explicitly lazy-loads the shared quiet guide with grounded fixture sou
   expect(questions).toEqual([{ question: 'What is Lineage?', projectId: null, history: [] }]);
   await expect(page.locator('html')).not.toHaveAttribute('data-unexpected-audio', 'true');
   await page.locator('#guide-minimize').click();
-  await page.locator('#guide-access').click();
+  await expect(page.locator('#guide-access')).toHaveAccessibleName('Ask about the work — Show studio guide');
+  await page.getByRole('button', { name: 'Ask about the work — Show studio guide', exact: true }).click();
+  await expect(page.locator('#guide-access')).toHaveAccessibleName('Ask about the work — Minimize studio guide');
   await expect(page.locator('.guide-root')).toHaveCount(1);
   await expect(page.locator('.guide-message-assistant')).toHaveCount(1);
   await page.getByRole('button', { name: /Open Lineage/ }).click();

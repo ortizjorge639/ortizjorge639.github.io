@@ -49,7 +49,7 @@ function readAnswer(value: unknown): Answer {
   };
 }
 
-interface GuideSurface { host: HTMLElement; app: HTMLElement; preview: HTMLElement; access: HTMLButtonElement; reading?: boolean }
+interface GuideSurface { host: HTMLElement; app: HTMLElement; preview: HTMLElement; access: HTMLButtonElement; reading?: boolean; accessLabel?: string }
 export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => void, surface?: GuideSurface) {
   const host = surface?.host ?? document.querySelector<HTMLElement>('.upper-screen')!;
   const app = surface?.app ?? document.querySelector<HTMLElement>('.studio-app')!;
@@ -194,7 +194,8 @@ export function setupStudioGuide(audio: StudioAudio, onProject: (id: string) => 
     trigger.setAttribute('aria-expanded', String(open));
     trigger.setAttribute('aria-label', open ? 'Minimize studio guide' : 'Ask the studio frog');
     access.setAttribute('aria-expanded', String(open));
-    access.setAttribute('aria-label', open ? 'Minimize studio guide' : 'Show studio guide');
+    const accessAction = open ? 'Minimize studio guide' : 'Show studio guide';
+    access.setAttribute('aria-label', surface?.accessLabel ? `${surface.accessLabel} — ${accessAction}` : accessAction);
     find<HTMLElement>('.frog-unread').hidden = true;
     invitation.hidden = true;
     if (!open) find<HTMLDetailsElement>('.guide-menu').open = false;

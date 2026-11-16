@@ -11,7 +11,7 @@ export function setupLandingGuide(access: HTMLButtonElement) {
   const guide = setupStudioGuide(audio, id => {
     const project = projects.find(project => project.id === id);
     if (project) location.assign(readingUrl(project));
-  }, { host, app: document.body, preview: document.querySelector('main')!, access, reading: true });
+  }, { host, app: document.body, preview: document.querySelector('main')!, access, reading: true, accessLabel: 'Ask about the work' });
   access.setAttribute('aria-controls', 'guide-panel');
   guide.setScreen({ kind: 'home' });
   document.addEventListener('keydown', event => {
