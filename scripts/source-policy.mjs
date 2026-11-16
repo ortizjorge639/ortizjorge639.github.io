@@ -1,5 +1,9 @@
 // Exact approved author-written narratives, never arbitrary URL/repository ingestion paths.
 export const CURATED_CASE_STUDIES = Object.freeze({
+  'bot-meetings-dotnet': Object.freeze({
+    url: 'https://ortizjorge639.github.io/case-studies/meeting-assistant.md',
+    file: 'public/case-studies/meeting-assistant.md',
+  }),
   'gesture-conversation-lab': Object.freeze({
     url: 'https://ortizjorge639.github.io/case-studies/gesture-conversation-lab.md',
     file: 'public/case-studies/gesture-conversation-lab.md',

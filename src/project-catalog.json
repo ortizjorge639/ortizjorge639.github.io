@@ -83,7 +83,7 @@
     "updated": "2026-11-13",
     "illustration": "bot",
     "color": "blue",
-    "description": "A Microsoft Teams preview that answers questions from captured live captions or completed transcripts, with an opt-in pilot for rolling updates and meeting-to-date summaries.",
+    "description": "A historical Microsoft Teams preview for cited questions from live captions and completed transcripts, with optional rolling updates and meeting-to-date summaries; now a sanitized narrative, not public code proof.",
     "capabilities": [
       "Answer live-caption and completed-transcript questions with speaker and timestamp citations",
       "Keep recent ended-session captions available while awaiting the Graph transcript",
@@ -94,23 +94,21 @@
       "Microsoft Graph",
       "Azure OpenAI"
     ],
-    "status": "Preview sample",
-    "note": "Preview, not production-ready. Summaries are disabled by default; the November 10 two-meeting pilot was accepted, but a later summary omitted a corrected value. Long-meeting, restart, and multi-speaker accuracy remain separate checks. Single-instance JSON storage still lacks production data controls; use non-sensitive test meetings only.",
+    "status": "Historical preview narrative",
+    "note": "Historical preview, not production-ready; non-sensitive test meetings only. Summaries disabled by default; a scoped pilot was reported accepted, but a later summary omitted a corrected value. Long-meeting, restart and multi-speaker accuracy remain unproven. JSON storage lacked production data controls; no fresh execution.",
     "problem": "Following decisions during a meeting and finding answers afterward should not require manually searching every caption or transcript.",
-    "how": "An optional ACS browser participant captures finalized live captions; Meeting Copilot answers actual chat mentions. After a session ends, it prefers its completed Graph transcript, otherwise recent ended-session captions. Opt-in summaries post new-caption updates and a condensed meeting-so-far view, using versioned packaged instructions or optional private Blob instructions. Silent windows make no summary model call.",
-    "contribution": "Individual role unverified: the approved public sources describe the artifact, not Jorge’s specific changes. This is an adaptation of a Microsoft Teams sample with a documented transcript-question-answering workflow and deployment configuration. Microsoft services and the original sample are dependencies, not original components claimed by this portfolio.",
+    "how": "Previously published descriptions cover an optional, default-off ACS browser participant capturing finalized live captions and a bot answering chat mentions. Active sessions prefer captions; ended sessions prefer the matching Graph transcript, otherwise recent ended-session captions. Opt-in summaries cover new-caption updates and meeting-so-far views; silent windows make no summary model call. This is historical explanation, not current implementation verification.",
+    "contribution": "Individual role unverified: previously published material describes an adaptation of a Microsoft Teams sample, not Jorge’s specific changes. Microsoft services and the original sample are dependencies. The implementation is now private; this separately authored sanitized narrative is not public code or app proof, and its approval does not authorize implementation redistribution.",
     "sources": [
       {
-        "label": "Public README at reviewed revision",
-        "url": "https://github.com/ortizjorge639/bot-meetings-dotnet/blob/3326539385fa9f9c6412e8f1943302b0e4f17616/README.md",
-        "reviewed": "2026-11-13"
-      },
-      {
-        "label": "Scheduled summaries and scoped pilot acceptance",
-        "url": "https://github.com/ortizjorge639/bot-meetings-dotnet/blob/3326539385fa9f9c6412e8f1943302b0e4f17616/docs/scheduled-summaries.md",
-        "reviewed": "2026-11-13"
+        "label": "Sanitized historical meeting-assistant narrative (not code proof)",
+        "url": "https://ortizjorge639.github.io/case-studies/meeting-assistant.md",
+        "reviewed": "2026-11-16"
       }
-    ]
+    ],
+    "repo": "",
+    "sourceType": "curated-case-study",
+    "site": "https://ortizjorge639.github.io/case-studies/meeting-assistant.md"
   },
   {
     "id": "mcreator-workspace-harness",

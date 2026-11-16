@@ -36,7 +36,11 @@ test('meeting copilot documents live captions and the opt-in summary pilot witho
   assert.match(meeting.how, /ended-session|ended session/i);
   assert.match(meeting.note, /disabled by default/i);
   assert.match(meeting.note, /corrected.*omitted|omitted.*corrected/i);
-  assert.ok(meeting.sources.some(s => s.url.endsWith('/docs/scheduled-summaries.md')));
+  assert.equal(meeting.repo, '');
+  assert.equal(meeting.sourceType, 'curated-case-study');
+  assert.deepEqual(meeting.sources.map(s => s.url), ['https://ortizjorge639.github.io/case-studies/meeting-assistant.md']);
+  assert.match(meeting.note, /historical|no fresh execution/i);
+  assert.match(meeting.contribution, /individual role unverified/i);
 });
 
 test('every project has public dated sources and explicit problem, implementation and attribution', () => {

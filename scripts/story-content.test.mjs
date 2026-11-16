@@ -27,7 +27,7 @@ test('all canonical catalog stories have six ordered beats and 45–60 second ru
   }
 });
 
-test('meeting story covers current live context and summaries with pinned public evidence', () => {
+test('meeting story preserves historical context and summary limits with sanitized narrative evidence', () => {
   const story = projectStories['bot-meetings-dotnet'];
   const text = copy('bot-meetings-dotnet');
   assert.match(text, /finalized captions/i);
@@ -35,7 +35,11 @@ test('meeting story covers current live context and summaries with pinned public
   assert.match(text, /rolling and meeting-to-date summaries/i);
   assert.match(text, /disabled by default/i);
   assert.match(text, /omitted a corrected value/i);
-  assert.ok(story.sources.some(source => source.url.endsWith('/docs/scheduled-summaries.md')));
+  assert.deepEqual(story.sources.map(source => source.url), ['https://ortizjorge639.github.io/case-studies/meeting-assistant.md']);
+  assert.match(text, /historical/i);
+  assert.match(text, /no fresh execution/i);
+  assert.match(text, /individual role unverified/i);
+  assert.doesNotMatch(text, /https:\/\/github\.com\//i);
 });
 
 test('sources match the pinned public README snapshots', () => {

@@ -9,6 +9,7 @@ export const HOST_FILES=Object.freeze([
  'scripts/hosted-server.mjs','scripts/hosted-guide.mjs','scripts/guide-input.mjs','scripts/guide-sources.mjs',
  'src/projects.ts','src/project-catalog.json','src/stories.ts','src/current-stories.ts','src/screens.ts',
  'data/guide-sources.json','README.md',
+ 'public/case-studies/meeting-assistant.md',
  'src/expanded-case-stories.ts',
  'public/case-studies/gesture-conversation-lab.md',
  'public/case-studies/coding-session-dj.md',
