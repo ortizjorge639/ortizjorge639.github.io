@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { CURATED_CASE_STUDIES } from './source-policy.mjs';
 import { projects } from '../src/projects.ts';
 import assert from 'node:assert/strict';
 import { request } from 'node:http';
@@ -50,7 +51,7 @@ test('snapshots: all catalog public sources pinned or exact-approved pages with 
     if (source.sourceType === 'curated-case-study') {
       const project = projects.find(p => p.id === source.projectId);
       assert.equal(project.sourceType, 'curated-case-study');
-      assert.equal(source.url, `https://ortizjorge639.github.io/case-studies/${project.id}.md`);
+      assert.equal(source.url, CURATED_CASE_STUDIES[project.id].url);
       assert.equal(source.repo, undefined);
     } else if (source.sourceType === 'public-page') {
       assert.equal(source.url, projects.find(p => p.id === source.projectId).site);

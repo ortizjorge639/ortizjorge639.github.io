@@ -38,6 +38,8 @@ test('meeting story preserves historical context and summary limits with sanitiz
   assert.deepEqual(story.sources.map(source => source.url), ['https://ortizjorge639.github.io/case-studies/meeting-assistant.md']);
   assert.match(text, /historical/i);
   assert.match(text, /no fresh execution/i);
+  assert.match(story.scenes.at(-1).body, /historical.*no fresh execution.*hypothetical/i);
+  assert.match(story.scenes.at(-1).visual.result, /historical.*not production-ready.*narrative approval is not implementation redistribution permission/i);
   assert.match(text, /individual role unverified/i);
   assert.doesNotMatch(text, /https:\/\/github\.com\//i);
 });
