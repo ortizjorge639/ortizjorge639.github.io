@@ -51,7 +51,7 @@ test('every project has public dated sources and explicit problem, implementatio
     assert.equal(p.capabilities.length,3);
     assert.ok(p.sources?.length, `${p.id} must cite its actual public source`);
     for(const s of p.sources) {
-      assert.equal(s.reviewed, '2026-11-13');
+      assert.equal(s.reviewed, p.id === 'bot-meetings-dotnet' ? '2026-11-16' : '2026-11-13');
       const u = new URL(s.url);
       assert.equal(u.protocol,'https:');
       if (p.sourceType === 'curated-case-study') {
